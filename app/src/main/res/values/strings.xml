@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Scany</string>
     <string name="add_scan">Add scan</string>
+    <string name="get_scans_err">Could not load scans</string>
+    <string name="retry_btn">Retry</string>
+    <string name="failed_card_title">Ooops… something went wrong :(</string>
 </resources>
