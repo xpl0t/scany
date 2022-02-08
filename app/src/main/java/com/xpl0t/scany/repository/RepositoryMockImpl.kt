@@ -6,12 +6,16 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.security.auth.Subject
+import kotlin.random.Random
 
 @Singleton
 class RepositoryMockImpl @Inject constructor() : Repository {
 
     private val scanSubject: BehaviorSubject<List<Scan>> = BehaviorSubject.createDefault(getMockScans())
-    private var failCounter = 0
+
+    private fun shouldFail(): Boolean {
+        return Random.nextInt() % 5 == 0
+    }
 
     private fun getMockScans(): List<Scan> {
         return listOf(
@@ -23,13 +27,13 @@ class RepositoryMockImpl @Inject constructor() : Repository {
     }
 
     override fun getScans(): Observable<List<Scan>> {
-        if (failCounter++ % 2 == 0) return Observable.error(Error("Database offline"))
+        if (shouldFail()) return Observable.error(Error("Database offline"))
 
         return scanSubject
     }
 
     override fun getScan(id: Int): Observable<Scan> {
-        if (failCounter++ % 2 == 0) return Observable.error(Error("Database offline"))
+        if (shouldFail()) return Observable.error(Error("Database offline"))
 
         return scanSubject.concatMap {
             val scan = scanSubject.value!!.find { it.id == id }
@@ -40,7 +44,7 @@ class RepositoryMockImpl @Inject constructor() : Repository {
     }
 
     override fun addScan(scan: Scan): Observable<Scan> {
-        if (failCounter++ % 2 == 0) return Observable.error(Error("Database offline"))
+        if (shouldFail()) return Observable.error(Error("Database offline"))
 
         val newList = scanSubject.value!!.toMutableList()
         val maxId = newList
@@ -55,7 +59,7 @@ class RepositoryMockImpl @Inject constructor() : Repository {
     }
 
     override fun updateScan(scan: Scan): Observable<Scan> {
-        if (failCounter++ % 2 == 0) return Observable.error(Error("Database offline"))
+        if (shouldFail()) return Observable.error(Error("Database offline"))
 
         val newList = scanSubject.value!!.toMutableList()
         val idx = newList.indexOfFirst { it.id == scan.id }
@@ -70,7 +74,7 @@ class RepositoryMockImpl @Inject constructor() : Repository {
     }
 
     override fun removeScan(id: Int): Observable<Int> {
-        if (failCounter++ % 2 == 0) return Observable.error(Error("Database offline"))
+        if (shouldFail()) return Observable.error(Error("Database offline"))
 
         val newList = scanSubject.value!!.toMutableList()
         newList.removeAll { it.id == id }

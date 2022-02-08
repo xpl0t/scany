@@ -13,7 +13,7 @@ class ScanItemAdapter : RecyclerView.Adapter<ScanItemAdapter.ViewHolder>() {
     private var items: List<Scan> = listOf()
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val title: TextView = view.findViewById(R.id.title)
+        val title: TextView = view.findViewById(R.id.scanName)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

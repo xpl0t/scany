@@ -58,8 +58,4 @@ open class BaseFragment(@LayoutRes layoutRes: Int): Fragment(layoutRes) {
             finish()
         return true
     }*/
-
-    protected fun finish() {
-        parentFragmentManager.popBackStack()
-    }
 }

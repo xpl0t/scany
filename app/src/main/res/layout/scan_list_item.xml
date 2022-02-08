@@ -26,7 +26,7 @@
             android:layout_margin="8dp">
 
             <TextView
-                android:id="@+id/title"
+                android:id="@+id/scanName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:alpha="0.8"
@@ -43,9 +43,9 @@
                 android:layout_marginStart="8dp"
                 android:alpha="0.8"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                app:layout_constraintBottom_toBottomOf="@+id/title"
-                app:layout_constraintStart_toEndOf="@id/title"
-                app:layout_constraintTop_toTopOf="@id/title"
+                app:layout_constraintBottom_toBottomOf="@+id/scanName"
+                app:layout_constraintStart_toEndOf="@id/scanName"
+                app:layout_constraintTop_toTopOf="@id/scanName"
                 tools:text="08.07.2020" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
