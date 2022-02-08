@@ -4,10 +4,13 @@ import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.repository.RepositoryMockImpl
 import com.xpl0t.scany.settings.SettingsService
 import com.xpl0t.scany.settings.SettingsServiceMockImpl
+import com.xpl0t.scany.ui.scan.scannamegenerator.RandomScanNameGenerator
+import com.xpl0t.scany.ui.scan.scannamegenerator.ScanNameGenerator
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(ActivityComponent::class)
@@ -18,5 +21,8 @@ abstract class HiltModule {
 
     @Binds
     abstract fun bindRepository(repository: RepositoryMockImpl): Repository
+
+    @Binds
+    abstract fun bindScanNameGenerator(generator: RandomScanNameGenerator): ScanNameGenerator
 
 }

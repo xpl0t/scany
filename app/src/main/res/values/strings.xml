@@ -1,7 +1,29 @@
 <resources>
     <string name="app_name">Scany</string>
-    <string name="add_scan">Add scan</string>
-    <string name="get_scans_err">Could not load scans</string>
     <string name="retry_btn">Retry</string>
-    <string name="failed_card_title">Ooops… something went wrong :(</string>
+    <string name="apply_btn">Apply</string>
+    <string name="cancel_btn">Cancel</string>
+
+    <!-- Error messages -->
+    <string name="error_msg">Ooops… something went wrong :(</string>
+    <string name="get_scans_err">Could not load scans</string>
+    <string name="get_scan_err">Could not load scan</string>
+
+    <!-- Scan list fragment -->
+    <string name="add_scan">Add scan</string>
+
+    <!-- Scan fragment -->
+
+    <!-- Edit name dialog -->
+    <string name="edit_name_dlg_title">Set name</string>
+    <string name="edit_name_label">Name</string>
+    <string name="name_to_short_err">Name to short</string>
+
+    <string-array name="scan_names">
+        <item>Steve\'s CV</item>
+        <item>Grandma\'s insurance</item>
+        <item>Billy\'s poster</item>
+        <item>Mom\'s recipe</item>
+    </string-array>
+
 </resources>
