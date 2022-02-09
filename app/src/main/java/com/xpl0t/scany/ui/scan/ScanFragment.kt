@@ -15,8 +15,10 @@ import com.google.android.material.textfield.TextInputLayout
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.add
 import com.xpl0t.scany.extensions.finish
+import com.xpl0t.scany.extensions.showFragment
 import com.xpl0t.scany.models.Scan
 import com.xpl0t.scany.repository.Repository
+import com.xpl0t.scany.ui.camera.CameraFragment
 import com.xpl0t.scany.ui.common.BaseFragment
 import com.xpl0t.scany.ui.scan.scannamegenerator.ScanNameGenerator
 import com.xpl0t.scany.views.FailedCard
@@ -28,12 +30,9 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import javax.inject.Inject
 
 
-const val scanIdBundleId = "SCAN_ID_BUNDLE_ID"
-
 @AndroidEntryPoint
 class ScanFragment : BaseFragment(R.layout.scan_fragment) {
 
-    private val logTag = "ScanFragment"
     @Inject lateinit var repo: Repository
     @Inject lateinit var scanNameGenerator: ScanNameGenerator
 
@@ -43,10 +42,10 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
     private val scanSubject = PublishSubject.create<Scan>()
     private var scan: Scan? = null
 
-    private val failedCard: FailedCard by lazy { requireView().findViewById(R.id.failed) }
-    private val contentGroup: ConstraintLayout by lazy { requireView().findViewById(R.id.contentGroup) }
-    private val nameTextView: TextView by lazy { requireView().findViewById(R.id.scanName) }
-    private val editNameBtn: MaterialButton by lazy { requireView().findViewById(R.id.editScanName) }
+    private lateinit var failedCard: FailedCard by lazy { requireView().findViewById(R.id.failed) }
+    private lateinit var contentGroup: ConstraintLayout by lazy { requireView().findViewById(R.id.contentGroup) }
+    private lateinit var nameTextView: TextView by lazy { requireView().findViewById(R.id.scanName) }
+    private lateinit var editNameBtn: MaterialButton by lazy { requireView().findViewById(R.id.editScanName) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -58,13 +57,13 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
 
         disposables.add {
             scanSubject.subscribe {
-                Log.d(logTag, "Scan subject next value (id: ${it.id})")
+                Log.d(TAG, "Scan subject next value (id: ${it.id})")
                 scan = it
                 updateUI(it)
             }
         }
 
-        val id = scan?.id ?: arguments?.getInt(scanIdBundleId) ?: 0
+        val id = scan?.id ?: arguments?.getInt(SCAN_ID) ?: 0
         val firstScanObs = if (id > 0) repo.getScan(id).take(1)
             else createScan()
 
@@ -72,11 +71,11 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
 
         actionDisposable = firstScanObs.subscribeBy(
             onNext = {
-                Log.i(logTag, "Got first scan (id: ${it.id})")
+                Log.i(TAG, "Got first scan (id: ${it.id})")
                 scanSubject.onNext(it)
             },
             onError = {
-                Log.e(logTag, "Could not get scan", it)
+                Log.e(TAG, "Could not get scan", it)
                 Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
                 finish()
             }
@@ -90,8 +89,17 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
     }
 
     private fun initViews() {
+        failedCard = requireView().findViewById(R.id.failed)
+        contentGroup: ConstraintLayout by lazy { requireView().findViewById(R.id.contentGroup) }
+        nameTextView: TextView by lazy { requireView().findViewById(R.id.scanName) }
+        editNameBtn: MaterialButton by lazy { requireView().findViewById(R.id.editScanName) }
+
+        nameTextView.setOnClickListener {
+            parentFragmentManager.showFragment(CameraFragment())
+        }
+
         editNameBtn.setOnClickListener {
-            Log.i(logTag, "Clicked edit name button")
+            Log.i(TAG, "Clicked edit name button")
             showUpdateNameDlg()
         }
     }
@@ -116,11 +124,11 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
         val newScan = scan!!.copy(name = name)
         actionDisposable = repo.updateScan(newScan).subscribeBy(
             onNext = {
-                Log.i(logTag, "Updated scan name successfully (id: ${it.id})")
+                Log.i(TAG, "Updated scan name successfully (id: ${it.id})")
                 scanSubject.onNext(it)
             },
             onError = {
-                Log.e(logTag, "Could not set scan name", it)
+                Log.e(TAG, "Could not set scan name", it)
                 Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
             }
         )
@@ -132,6 +140,7 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
             val inputLayout = dlgView.findViewById<TextInputLayout>(R.id.nameInputLayout)
             val editText = dlgView.findViewById<TextInputEditText>(R.id.nameEditText)
             editText.setText(scan?.name ?: "")
+            editText.requestFocus()
 
             setTitle(resources.getString(R.string.edit_name_dlg_title))
             setIcon(R.drawable.edit)
@@ -162,5 +171,10 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
      */
     private fun validateScanName(name: String): String? {
         return if (name.isEmpty()) resources.getString(R.string.name_to_short_err) else null
+    }
+
+    companion object {
+        const val TAG = "ScanFragment"
+        const val SCAN_ID = "SCAN_ID"
     }
 }
