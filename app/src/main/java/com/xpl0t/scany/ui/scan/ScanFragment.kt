@@ -42,10 +42,10 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
     private val scanSubject = PublishSubject.create<Scan>()
     private var scan: Scan? = null
 
-    private lateinit var failedCard: FailedCard by lazy { requireView().findViewById(R.id.failed) }
-    private lateinit var contentGroup: ConstraintLayout by lazy { requireView().findViewById(R.id.contentGroup) }
-    private lateinit var nameTextView: TextView by lazy { requireView().findViewById(R.id.scanName) }
-    private lateinit var editNameBtn: MaterialButton by lazy { requireView().findViewById(R.id.editScanName) }
+    private lateinit var failedCard: FailedCard
+    private lateinit var contentGroup: ConstraintLayout
+    private lateinit var nameTextView: TextView
+    private lateinit var editNameBtn: MaterialButton
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -90,9 +90,9 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
 
     private fun initViews() {
         failedCard = requireView().findViewById(R.id.failed)
-        contentGroup: ConstraintLayout by lazy { requireView().findViewById(R.id.contentGroup) }
-        nameTextView: TextView by lazy { requireView().findViewById(R.id.scanName) }
-        editNameBtn: MaterialButton by lazy { requireView().findViewById(R.id.editScanName) }
+        contentGroup = requireView().findViewById(R.id.contentGroup)
+        nameTextView = requireView().findViewById(R.id.scanName)
+        editNameBtn = requireView().findViewById(R.id.editScanName)
 
         nameTextView.setOnClickListener {
             parentFragmentManager.showFragment(CameraFragment())

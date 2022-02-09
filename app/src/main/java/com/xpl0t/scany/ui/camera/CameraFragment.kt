@@ -20,12 +20,13 @@ import java.util.concurrent.Executors
 
 class CameraFragment : BaseFragment(R.layout.camera_fragment) {
 
-    private val cameraPreview by lazy { requireView().findViewById<PreviewView>(R.id.camPreview) }
+    private lateinit var cameraPreview: PreviewView
 
     private lateinit var cameraExecutor: ExecutorService
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initViews()
 
         if (allPermissionsGranted()) {
             startCamera()
@@ -57,6 +58,10 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
                 .show()
             finish()
         }
+    }
+
+    private fun initViews() {
+        cameraPreview = requireView().findViewById(R.id.camPreview)
     }
 
     private fun startCamera() {
