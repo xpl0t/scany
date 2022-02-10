@@ -31,7 +31,11 @@
     <string name="missing_permission_err">Necessary permission was not granted :(</string>
 
     <!-- Crop fragment -->
-    <string name="crop_image_descr">Bitmap</string>
+    <string name="source_image_descr">Source bitmap</string>
     <string name="apply_crop_btn">Apply crop</string>
+
+    <!-- Improve fragment -->
+    <string name="crop_image_descr">Cropped bitmap</string>
+    <string name="apply_improve_btn">Apply improvements</string>
 
 </resources>
