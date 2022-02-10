@@ -27,6 +27,7 @@
     </string-array>
 
     <!-- Camera fragment -->
+    <string name="take_photo_btn">Take photo</string>
     <string name="missing_permission_err">Necessary permission was not granted :(</string>
 
 </resources>
