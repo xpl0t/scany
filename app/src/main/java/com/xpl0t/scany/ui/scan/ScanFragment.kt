@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -15,12 +17,13 @@ import com.google.android.material.textfield.TextInputLayout
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.add
 import com.xpl0t.scany.extensions.finish
-import com.xpl0t.scany.extensions.showFragment
 import com.xpl0t.scany.models.Scan
+import com.xpl0t.scany.models.ScanImage
 import com.xpl0t.scany.repository.Repository
-import com.xpl0t.scany.ui.camera.CameraFragment
 import com.xpl0t.scany.ui.common.BaseFragment
 import com.xpl0t.scany.ui.scan.scannamegenerator.ScanNameGenerator
+import com.xpl0t.scany.ui.scanimage.ScanBitmaps
+import com.xpl0t.scany.ui.scanimage.improve.ImproveFragment
 import com.xpl0t.scany.views.FailedCard
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.core.Observable
@@ -32,6 +35,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ScanFragment : BaseFragment(R.layout.scan_fragment) {
+
+    private val args: ScanFragmentArgs by navArgs()
 
     @Inject lateinit var repo: Repository
     @Inject lateinit var scanNameGenerator: ScanNameGenerator
@@ -52,6 +57,16 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
         initViews()
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val savedStateHandle = findNavController().currentBackStackEntry?.savedStateHandle
+        savedStateHandle?.getLiveData<ScanBitmaps>(ImproveFragment.SCAN_BITMAPS)?.observe(this) {
+            Log.d(TAG, "Got scan bitmaps")
+            addScanImage(it)
+        }
+    }
+
     override fun onResume() {
         super.onResume()
 
@@ -63,7 +78,7 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
             }
         }
 
-        val id = scan?.id ?: arguments?.getInt(SCAN_ID) ?: 0
+        val id = scan?.id ?: args.scanId
         val firstScanObs = if (id > 0) repo.getScan(id).take(1)
             else createScan()
 
@@ -95,7 +110,8 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
         editNameBtn = requireView().findViewById(R.id.editScanName)
 
         nameTextView.setOnClickListener {
-            parentFragmentManager.showFragment(CameraFragment())
+            val action = ScanFragmentDirections.actionScanFragmentToCameraFragment()
+            findNavController().navigate(action)
         }
 
         editNameBtn.setOnClickListener {
@@ -173,8 +189,34 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
         return if (name.isEmpty()) resources.getString(R.string.name_to_short_err) else null
     }
 
+    private fun addScanImage(bitmaps: ScanBitmaps) {
+        Log.d(TAG, "Add scan image")
+
+        if (scan == null) return
+
+        val images = scan!!.images.toMutableList().apply {
+            val id = if (scan!!.images.isEmpty()) 1
+            else scan!!.images.maxOf { it.id } + 1
+
+            val scanImage = ScanImage(id, bitmaps.source, bitmaps.crop, bitmaps.improved)
+            add(scanImage)
+        }
+
+        val updatedScan = scan!!.copy(images = images)
+
+        repo.updateScan(updatedScan).subscribeBy(
+            onNext = {
+                Log.i(TAG, "Updated scan")
+                scanSubject.onNext(it)
+            },
+            onError = {
+                Log.e(TAG, "Could not update scan", it)
+                Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
+            }
+        )
+    }
+
     companion object {
         const val TAG = "ScanFragment"
-        const val SCAN_ID = "SCAN_ID"
     }
 }

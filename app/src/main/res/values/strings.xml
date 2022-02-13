@@ -7,7 +7,6 @@
     <!-- Error messages -->
     <string name="error_msg">Ooops… something went wrong :(</string>
     <string name="get_scans_err">Could not load scans</string>
-    <string name="get_scan_err">Could not load scan</string>
 
     <!-- Scan list fragment -->
     <string name="add_scan">Add scan</string>

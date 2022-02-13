@@ -5,9 +5,7 @@ import android.view.View
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.xpl0t.scany.R
-import com.xpl0t.scany.extensions.showFragment
 import com.xpl0t.scany.progressbar.ProgressBarService
-import com.xpl0t.scany.ui.scanlist.ScanListFragment
 import com.xpl0t.scany.ui.common.BaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.Disposable
@@ -31,7 +29,6 @@ class MainActivity : BaseActivity() {
         initViews()
 
         initProgressBar()
-        initialNavigation()
     }
 
     override fun onDestroy() {
@@ -52,9 +49,5 @@ class MainActivity : BaseActivity() {
         }
 
         disposables.add(disposable)
-    }
-
-    private fun initialNavigation() {
-        supportFragmentManager.showFragment(ScanListFragment(), false)
     }
 }

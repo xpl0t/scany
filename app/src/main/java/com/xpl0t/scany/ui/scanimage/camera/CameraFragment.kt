@@ -1,4 +1,4 @@
-package com.xpl0t.scany.ui.camera
+package com.xpl0t.scany.ui.scanimage.camera
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -11,14 +11,14 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.finish
-import com.xpl0t.scany.extensions.showFragment
+import com.xpl0t.scany.extensions.runOnUiThread
 import com.xpl0t.scany.extensions.toBitmap
 import com.xpl0t.scany.ui.common.BaseFragment
-import com.xpl0t.scany.ui.crop.CropFragment
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -108,12 +108,17 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
                 override fun onError(exc: ImageCaptureException) {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
                     Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
+                    runOnUiThread {
+                        findNavController().popBackStack()
+                    }
                 }
 
                 override fun onCaptureSuccess(image: ImageProxy) {
                     Log.i(TAG, "Photo capture successful")
                     val bitmap = image.toBitmap()
-                    showCropFragment(bitmap)
+                    runOnUiThread {
+                        showCropFragment(bitmap)
+                    }
                 }
             }
         )
@@ -123,11 +128,8 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
      * Set fragment result bundle and finish fragment.
      */
     private fun showCropFragment(image: Bitmap) {
-        val bundle = Bundle().apply {
-            putParcelable(SOURCE_BITMAP, image)
-        }
-
-        parentFragmentManager.showFragment(CropFragment(), true, bundle)
+        val action = CameraFragmentDirections.actionCameraFragmentToCropFragment(image)
+        findNavController().navigate(action)
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
@@ -136,7 +138,6 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
 
     companion object {
         const val TAG = "CameraFragment"
-        const val SOURCE_BITMAP = "SOURCE_BITMAP"
         private val REQUIRED_PERMISSIONS = listOf(Manifest.permission.CAMERA)
         private const val REQUEST_CODE_PERMISSIONS = 10
     }

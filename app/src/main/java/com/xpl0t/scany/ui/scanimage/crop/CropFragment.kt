@@ -1,20 +1,19 @@
-package com.xpl0t.scany.ui.crop
+package com.xpl0t.scany.ui.scanimage.crop
 
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import com.xpl0t.scany.R
-import com.xpl0t.scany.extensions.finish
-import com.xpl0t.scany.extensions.showFragment
-import com.xpl0t.scany.ui.camera.CameraFragment
 import com.xpl0t.scany.ui.common.BaseFragment
-import com.xpl0t.scany.ui.improve.ImproveFragment
 
 class CropFragment : BaseFragment(R.layout.crop_fragment) {
+
+    private val args: CropFragmentArgs by navArgs()
 
     private lateinit var bitmapPreview: ImageView
     private lateinit var applyCropBtn: FloatingActionButton
@@ -25,15 +24,7 @@ class CropFragment : BaseFragment(R.layout.crop_fragment) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
 
-        val bitmap = arguments?.getParcelable<Bitmap>(CameraFragment.SOURCE_BITMAP)
-        if (bitmap == null) {
-            Log.e(TAG, "No source bitmap supplied")
-            Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
-            finish()
-            return
-        }
-
-        setSourceBitmap(bitmap)
+        setSourceBitmap(args.sourceImg)
     }
 
     private fun initViews() {
@@ -52,16 +43,11 @@ class CropFragment : BaseFragment(R.layout.crop_fragment) {
     }
 
     private fun showImproveFragment(bitmap: Bitmap) {
-        val bundle = Bundle().apply {
-            putParcelable(CameraFragment.SOURCE_BITMAP, sourceBitmap)
-            putParcelable(CROP_BITMAP, bitmap)
-        }
-
-        parentFragmentManager.showFragment(ImproveFragment(), true, bundle)
+        val action = CropFragmentDirections.actionCropFragmentToImproveFragment(sourceBitmap, bitmap)
+        findNavController().navigate(action)
     }
 
     companion object {
         const val TAG = "CropFragment"
-        const val CROP_BITMAP = "CROP_BITMAP"
     }
 }

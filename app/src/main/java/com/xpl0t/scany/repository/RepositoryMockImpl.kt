@@ -5,7 +5,6 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import javax.inject.Inject
 import javax.inject.Singleton
-import javax.security.auth.Subject
 import kotlin.random.Random
 
 @Singleton

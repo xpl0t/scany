@@ -3,27 +3,19 @@ package com.xpl0t.scany.ui.scanlist
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.transition.Visibility
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.snackbar.Snackbar
 import com.xpl0t.scany.R
-import com.xpl0t.scany.extensions.showFragment
+import com.xpl0t.scany.extensions.add
 import com.xpl0t.scany.models.Scan
-import com.xpl0t.scany.progressbar.ProgressBarService
 import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.ui.common.BaseFragment
-import com.xpl0t.scany.ui.scan.ScanFragment
 import com.xpl0t.scany.views.FailedCard
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.kotlin.subscribeBy
-import com.xpl0t.scany.extensions.add
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import javax.inject.Inject
 
@@ -109,10 +101,8 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
      * @param id Id of the scan to open, null indicates a new scan
      */
     private fun showScanView(id: Int?) {
-        val bundle = if(id == null) Bundle()
-            else Bundle().apply { putInt(ScanFragment.SCAN_ID, id) }
-
-        parentFragmentManager.showFragment(ScanFragment(), true, bundle)
+        val action = ScanListFragmentDirections.actionScanListFragmentToScanFragment(id ?: 0)
+        findNavController().navigate(action)
     }
 
     companion object {

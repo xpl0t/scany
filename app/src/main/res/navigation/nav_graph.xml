@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/scanListFragment">
+
+    <fragment
+        android:id="@+id/scanListFragment"
+        android:name="com.xpl0t.scany.ui.scanlist.ScanListFragment"
+        android:label="ScanListFragment" >
+        <action
+            android:id="@+id/action_scanListFragment_to_scanFragment"
+            app:destination="@id/scanFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/scanFragment"
+        android:name="com.xpl0t.scany.ui.scan.ScanFragment"
+        android:label="ScanFragment" >
+        <action
+            android:id="@+id/action_scanFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
+        <argument
+            android:name="scanId"
+            app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="com.xpl0t.scany.ui.scanimage.camera.CameraFragment"
+        android:label="CameraFragment" >
+        <action
+            android:id="@+id/action_cameraFragment_to_cropFragment"
+            app:destination="@id/cropFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cropFragment"
+        android:name="com.xpl0t.scany.ui.scanimage.crop.CropFragment"
+        android:label="CropFragment" >
+        <action
+            android:id="@+id/action_cropFragment_to_improveFragment"
+            app:destination="@id/improveFragment" />
+        <argument
+            android:name="sourceImg"
+            app:argType="android.graphics.Bitmap" />
+    </fragment>
+    <fragment
+        android:id="@+id/improveFragment"
+        android:name="com.xpl0t.scany.ui.scanimage.improve.ImproveFragment"
+        android:label="ImproveFragment" >
+        <argument
+            android:name="sourceImg"
+            app:argType="android.graphics.Bitmap" />
+        <argument
+            android:name="cropImg"
+            app:argType="android.graphics.Bitmap" />
+    </fragment>
+</navigation>

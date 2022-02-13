@@ -1,15 +1,8 @@
 package com.xpl0t.scany.ui.common
 
-import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
-import android.view.View
 import androidx.annotation.LayoutRes
-import androidx.appcompat.app.ActionBar
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import com.xpl0t.scany.R
 
 open class BaseFragment(@LayoutRes layoutRes: Int): Fragment(layoutRes) {
 

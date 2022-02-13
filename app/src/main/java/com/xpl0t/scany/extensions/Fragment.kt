@@ -1,6 +1,7 @@
 package com.xpl0t.scany.extensions
 
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 
 // Taken from: https://stackoverflow.com/a/59655582
 /**
@@ -17,5 +18,5 @@ fun Fragment.runOnUiThread(action: () -> Unit) {
  * Closes fragment.
  */
 fun Fragment.finish() {
-    parentFragmentManager.popBackStack()
+    findNavController().popBackStack()
 }

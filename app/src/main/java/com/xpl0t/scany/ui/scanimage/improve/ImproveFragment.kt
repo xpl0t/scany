@@ -1,19 +1,20 @@
-package com.xpl0t.scany.ui.improve
+package com.xpl0t.scany.ui.scanimage.improve
 
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import com.xpl0t.scany.R
-import com.xpl0t.scany.extensions.finish
-import com.xpl0t.scany.ui.camera.CameraFragment
 import com.xpl0t.scany.ui.common.BaseFragment
-import com.xpl0t.scany.ui.crop.CropFragment
+import com.xpl0t.scany.ui.scanimage.ScanBitmaps
 
 class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
+
+    private val args: ImproveFragmentArgs by navArgs()
 
     private lateinit var bitmapPreview: ImageView
     private lateinit var applyCropBtn: FloatingActionButton
@@ -22,16 +23,7 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
 
-        val sourceBitmap = arguments?.getParcelable<Bitmap>(CameraFragment.SOURCE_BITMAP)
-        val cropBitmap = arguments?.getParcelable<Bitmap>(CropFragment.CROP_BITMAP)
-        if (sourceBitmap == null || cropBitmap == null) {
-            Log.e(TAG, "No source/crop bitmap supplied")
-            Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
-            finish()
-            return
-        }
-
-        setCropBitmap(cropBitmap)
+        setCropBitmap(args.cropImg)
     }
 
     private fun initViews() {
@@ -40,6 +32,7 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
 
         applyCropBtn.setOnClickListener {
             Log.d(TAG, "Apply improve btn clicked")
+            finishWithImprovedImage(args.cropImg)
         }
     }
 
@@ -48,11 +41,14 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
     }
 
     private fun finishWithImprovedImage(improved: Bitmap) {
-        finish()
+        findNavController().getBackStackEntry(R.id.scanFragment).savedStateHandle.apply {
+            set(SCAN_BITMAPS, ScanBitmaps(args.sourceImg, args.cropImg, improved))
+        }
+        findNavController().popBackStack(R.id.scanFragment, false)
     }
 
     companion object {
         const val TAG = "ImproveFragment"
-        const val IMPROVED_BITMAP = "IMPROVED_BITMAP"
+        const val SCAN_BITMAPS = "SCAN_BITMAPS"
     }
 }
