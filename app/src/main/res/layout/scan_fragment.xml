@@ -7,14 +7,6 @@
     android:padding="8dp"
     android:orientation="vertical">
 
-    <com.xpl0t.scany.views.FailedCard
-        android:id="@+id/failed"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:visibility="gone"
-        app:subtitle="@string/get_scans_err" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/contentGroup"
         android:layout_width="match_parent"
@@ -45,6 +37,16 @@
             app:layout_constraintBottom_toBottomOf="@+id/scanName"
             app:layout_constraintStart_toEndOf="@+id/scanName"
             app:layout_constraintTop_toTopOf="@+id/scanName" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/scanImageList"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginHorizontal="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/scanName" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

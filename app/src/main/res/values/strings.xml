@@ -37,4 +37,7 @@
     <string name="crop_image_descr">Cropped bitmap</string>
     <string name="apply_improve_btn">Apply improvements</string>
 
+    <!-- Scan image item -->
+    <string name="scan_image_descr">Scan image</string>
+
 </resources>

@@ -9,6 +9,8 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -24,7 +26,6 @@ import com.xpl0t.scany.ui.common.BaseFragment
 import com.xpl0t.scany.ui.scan.scannamegenerator.ScanNameGenerator
 import com.xpl0t.scany.ui.scanimage.ScanBitmaps
 import com.xpl0t.scany.ui.scanimage.improve.ImproveFragment
-import com.xpl0t.scany.views.FailedCard
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -47,10 +48,11 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
     private val scanSubject = PublishSubject.create<Scan>()
     private var scan: Scan? = null
 
-    private lateinit var failedCard: FailedCard
     private lateinit var contentGroup: ConstraintLayout
     private lateinit var nameTextView: TextView
     private lateinit var editNameBtn: MaterialButton
+    private lateinit var imageList: RecyclerView
+    private lateinit var imageListAdapter: ScanImageItemAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -59,6 +61,8 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        imageListAdapter = ScanImageItemAdapter(requireContext())
 
         val savedStateHandle = findNavController().currentBackStackEntry?.savedStateHandle
         savedStateHandle?.getLiveData<ScanBitmaps>(ImproveFragment.SCAN_BITMAPS)?.observe(this) {
@@ -104,10 +108,15 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
     }
 
     private fun initViews() {
-        failedCard = requireView().findViewById(R.id.failed)
         contentGroup = requireView().findViewById(R.id.contentGroup)
         nameTextView = requireView().findViewById(R.id.scanName)
         editNameBtn = requireView().findViewById(R.id.editScanName)
+        imageList = requireView().findViewById(R.id.scanImageList)
+
+        imageList.adapter = imageListAdapter
+        imageList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        imageList.setHasFixedSize(true)
+        imageList.setItemViewCacheSize(20)
 
         nameTextView.setOnClickListener {
             val action = ScanFragmentDirections.actionScanFragmentToCameraFragment()
@@ -129,9 +138,9 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
 
     private fun updateUI(scan: Scan) {
         contentGroup.visibility = View.VISIBLE
-        failedCard.visibility = View.GONE
 
         nameTextView.text = scan.name
+        imageListAdapter.updateItems(scan.images)
     }
 
     private fun updateScanName(name: String) {
