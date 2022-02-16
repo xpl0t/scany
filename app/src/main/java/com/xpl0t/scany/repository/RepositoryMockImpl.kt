@@ -13,7 +13,7 @@ class RepositoryMockImpl @Inject constructor() : Repository {
     private val scanSubject: BehaviorSubject<List<Scan>> = BehaviorSubject.createDefault(getMockScans())
 
     private fun shouldFail(): Boolean {
-        return Random.nextInt() % 5 == 0
+        return (Random.nextInt() % 5 == 0) and false
     }
 
     private fun getMockScans(): List<Scan> {
