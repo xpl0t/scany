@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
@@ -82,6 +83,13 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
             }
         }
 
+        disposables.add {
+            imageListAdapter.scanImagesOrderChanged.subscribe {
+                Log.i(TAG, "Scan image order changed")
+                updateScanImages(it)
+            }
+        }
+
         val id = scan?.id ?: args.scanId
         val firstScanObs = if (id > 0) repo.getScan(id).take(1)
             else createScan()
@@ -113,6 +121,9 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
         editNameBtn = requireView().findViewById(R.id.editScanName)
         imageList = requireView().findViewById(R.id.scanImageList)
 
+        val callback = ScanImageMoveCallback(imageListAdapter)
+        val touchHelper = ItemTouchHelper(callback)
+        touchHelper.attachToRecyclerView(imageList)
         imageList.adapter = imageListAdapter
         imageList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         imageList.setHasFixedSize(true)
@@ -216,6 +227,25 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
         repo.updateScan(updatedScan).subscribeBy(
             onNext = {
                 Log.i(TAG, "Updated scan")
+                scanSubject.onNext(it)
+            },
+            onError = {
+                Log.e(TAG, "Could not update scan", it)
+                Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
+            }
+        )
+    }
+
+    private fun updateScanImages(scanImages: List<ScanImage>) {
+        Log.d(TAG, "Update scan images")
+
+        if (scan == null) return
+
+        val updatedScan = scan!!.copy(images = scanImages)
+
+        repo.updateScan(updatedScan).subscribeBy(
+            onNext = {
+                Log.i(TAG, "Updated scan images")
                 scanSubject.onNext(it)
             },
             onError = {

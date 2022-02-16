@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
@@ -16,12 +15,13 @@ import com.xpl0t.scany.models.ScanImage
 import io.reactivex.rxjava3.subjects.PublishSubject
 
 
-class ScanImageItemAdapter(private val ctx: Context) : RecyclerView.Adapter<ScanImageItemAdapter.ViewHolder>() {
+class ScanImageItemAdapter(private val ctx: Context) : RecyclerView.Adapter<ScanImageItemAdapter.ViewHolder>(), ScanImageMoveCallback.Contract {
 
     private var lastPosition = -1
 
     val scanImageClicked: PublishSubject<ScanImage> = PublishSubject.create()
-    private var items: List<ScanImage> = listOf()
+    val scanImagesOrderChanged: PublishSubject<List<ScanImage>> = PublishSubject.create()
+    private var items: MutableList<ScanImage> = mutableListOf()
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val card: MaterialCardView = view.findViewById(R.id.scanImageCard)
@@ -62,16 +62,47 @@ class ScanImageItemAdapter(private val ctx: Context) : RecyclerView.Adapter<Scan
     private fun setAnimation(view: View, position: Int) {
         // If the bound view wasn't previously displayed on screen, it's animated
         if (position > lastPosition) {
-            val animation: Animation =
-                AnimationUtils.loadAnimation(ctx, R.anim.slide_in_top)
+            val animation = AnimationUtils.loadAnimation(ctx, R.anim.slide_in_top)
             view.startAnimation(animation)
             lastPosition = position
         }
     }
 
     fun updateItems(items: List<ScanImage>) {
-        this.items = items
+        if (compareLists(items, this.items)) return
+
+        this.items = items.toMutableList()
         notifyItemRangeChanged(0, this.items.count())
+    }
+
+    /**
+     * Compare to list and return true if they equal and false otherwise.
+     */
+    private fun <T> compareLists(l1: List<T>, l2: List<T>): Boolean {
+        if (l1.count() != l2.count()) return false
+
+        for ((idx, value) in l1.withIndex()) {
+            if (value != l2[idx])
+                return false
+        }
+
+        return true
+    }
+
+    override fun onRowMoved(fromPosition: Int, toPosition: Int) {
+        val item = items.removeAt(fromPosition)
+        items.add(toPosition, item)
+
+        scanImagesOrderChanged.onNext(items)
+        notifyItemMoved(fromPosition, toPosition)
+    }
+
+    override fun onRowSelected(viewHolder: ViewHolder) {
+        viewHolder.card.isDragged = true
+    }
+
+    override fun onRowClear(viewHolder: ViewHolder) {
+        viewHolder.card.isDragged = false
     }
 
     companion object {
