@@ -1,0 +1,7 @@
+Executable : C:\Users\jojo\AppData\Local\Android\Sdk\cmake\3.18.1\bin\ninja.exe
+arguments : 
+-C
+C:\Users\jojo\Desktop\dev\scany\opencv\.cxx\Debug\6k67i5a3\arm64-v8a
+opencv_jni_shared
+jvmArgs : 
+
