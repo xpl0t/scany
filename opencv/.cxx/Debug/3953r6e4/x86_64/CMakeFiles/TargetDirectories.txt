@@ -1,3 +1,0 @@
-C:/Users/jojo/Desktop/dev/scany/opencv/.cxx/Debug/3953r6e4/x86_64/CMakeFiles/opencv_jni_shared.dir
-C:/Users/jojo/Desktop/dev/scany/opencv/.cxx/Debug/3953r6e4/x86_64/CMakeFiles/edit_cache.dir
-C:/Users/jojo/Desktop/dev/scany/opencv/.cxx/Debug/3953r6e4/x86_64/CMakeFiles/rebuild_cache.dir

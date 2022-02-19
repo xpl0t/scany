@@ -1,2 +1,0 @@
-ninja: Entering directory `C:\Users\jojo\Desktop\dev\scany\opencv\.cxx\Debug\6k67i5a3\x86'
-ninja: no work to do.
