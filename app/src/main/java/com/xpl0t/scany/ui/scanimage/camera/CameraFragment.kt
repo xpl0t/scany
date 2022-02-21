@@ -3,6 +3,8 @@ package com.xpl0t.scany.ui.scanimage.camera
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.ImageFormat
+import android.media.ImageReader
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -15,13 +17,15 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.xpl0t.scany.R
-import com.xpl0t.scany.extensions.finish
-import com.xpl0t.scany.extensions.runOnUiThread
-import com.xpl0t.scany.extensions.toBitmap
+import com.xpl0t.scany.extensions.*
 import com.xpl0t.scany.ui.common.BaseFragment
+import dagger.hilt.android.AndroidEntryPoint
+import org.opencv.core.Mat
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.system.measureTimeMillis
 
+@AndroidEntryPoint
 class CameraFragment : BaseFragment(R.layout.camera_fragment) {
 
     private lateinit var cameraPreview: PreviewView
@@ -87,7 +91,9 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
                     it.setSurfaceProvider(cameraPreview.surfaceProvider)
                 }
 
-            imageCapture = ImageCapture.Builder().build()
+            imageCapture = ImageCapture.Builder()
+                .setBufferFormat(ImageFormat.YUV_420_888)
+                .build()
 
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
@@ -115,9 +121,27 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
 
                 override fun onCaptureSuccess(image: ImageProxy) {
                     Log.i(TAG, "Photo capture successful")
-                    val bitmap = image.toBitmap()
+
+                    var mat: Mat?
+                    var dur = measureTimeMillis {
+                        mat = image.toMat()
+                    }
+                    Log.d(TAG, "Conversion from yuv to rgb bitmap took $dur milliseconds")
+
+                    dur = measureTimeMillis {
+                        mat!!.apply {
+                            scale(500.0)
+                            grayscale()
+                            blur()
+                            canny()
+                        }
+                    }
+                    Log.d(TAG, "Image processing took $dur milliseconds")
+
+                    val bmp = mat!!.toBitmap()
+
                     runOnUiThread {
-                        showCropFragment(bitmap)
+                        showCropFragment(bmp)
                     }
                 }
             }
