@@ -8,9 +8,7 @@ import org.opencv.android.OpenCVLoader
 class ScanyApplication : Application() {
 
     init {
-        if (!OpenCVLoader.initDebug()) {
-            throw Error("Could not initialize opencv")
-        }
+        System.loadLibrary("opencv_java4")
         System.loadLibrary("yuv-rgb-convert")
     }
 
