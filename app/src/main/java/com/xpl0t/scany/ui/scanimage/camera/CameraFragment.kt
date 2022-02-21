@@ -41,9 +41,8 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
         if (allPermissionsGranted()) {
             startCamera()
         } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(), REQUIRED_PERMISSIONS.toTypedArray(), REQUEST_CODE_PERMISSIONS
-            )
+            // TODO(): Use activity result api.
+            requestPermissions(REQUIRED_PERMISSIONS.toTypedArray(), REQUEST_CODE_PERMISSIONS)
         }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
@@ -62,8 +61,10 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
         if (requestCode != REQUEST_CODE_PERMISSIONS) return
 
         if (allPermissionsGranted()) {
+            Log.i(TAG, "Camera permission granted")
             startCamera()
         } else {
+            Log.e(TAG, "Camera permission not granted")
             Snackbar.make(requireView(), R.string.missing_permission_err, Snackbar.LENGTH_SHORT)
                 .show()
             finish()
