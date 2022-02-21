@@ -72,6 +72,8 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
         }
     }
 
+
+
     override fun onResume() {
         super.onResume()
 
