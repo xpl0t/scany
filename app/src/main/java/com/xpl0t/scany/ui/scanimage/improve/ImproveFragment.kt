@@ -23,7 +23,7 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
 
-        setCropBitmap(args.cropImg)
+        setCropBitmap(args.sourceImg)
     }
 
     private fun initViews() {
@@ -32,7 +32,7 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
 
         applyCropBtn.setOnClickListener {
             Log.d(TAG, "Apply improve btn clicked")
-            finishWithImprovedImage(args.cropImg)
+            finishWithImprovedImage(args.sourceImg)
         }
     }
 
@@ -42,7 +42,7 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
 
     private fun finishWithImprovedImage(improved: Bitmap) {
         findNavController().getBackStackEntry(R.id.scanFragment).savedStateHandle.apply {
-            set(SCAN_BITMAPS, ScanBitmaps(args.sourceImg, args.cropImg, improved))
+            set(SCAN_BITMAPS, ScanBitmaps(args.sourceImg, improved))
         }
         findNavController().popBackStack(R.id.scanFragment, false)
     }

@@ -69,10 +69,9 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
         savedStateHandle?.getLiveData<ScanBitmaps>(ImproveFragment.SCAN_BITMAPS)?.observe(this) {
             Log.d(TAG, "Got scan bitmaps")
             addScanImage(it)
+            savedInstanceState!!.remove(ImproveFragment.SCAN_BITMAPS)
         }
     }
-
-
 
     override fun onResume() {
         super.onResume()
@@ -220,7 +219,7 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
             val id = if (scan!!.images.isEmpty()) 1
             else scan!!.images.maxOf { it.id } + 1
 
-            val scanImage = ScanImage(id, bitmaps.source, bitmaps.crop, bitmaps.improved)
+            val scanImage = ScanImage(id, bitmaps.source, bitmaps.improved)
             add(scanImage)
         }
 

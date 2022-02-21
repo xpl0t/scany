@@ -152,7 +152,7 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
      * Set fragment result bundle and finish fragment.
      */
     private fun showCropFragment(image: Bitmap) {
-        val action = CameraFragmentDirections.actionCameraFragmentToCropFragment(image)
+        val action = CameraFragmentDirections.actionCameraFragmentToImproveFragment(image)
         findNavController().navigate(action)
     }
 

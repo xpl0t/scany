@@ -28,19 +28,8 @@
         android:name="com.xpl0t.scany.ui.scanimage.camera.CameraFragment"
         android:label="CameraFragment" >
         <action
-            android:id="@+id/action_cameraFragment_to_cropFragment"
-            app:destination="@id/cropFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/cropFragment"
-        android:name="com.xpl0t.scany.ui.scanimage.crop.CropFragment"
-        android:label="CropFragment" >
-        <action
-            android:id="@+id/action_cropFragment_to_improveFragment"
+            android:id="@+id/action_cameraFragment_to_improveFragment"
             app:destination="@id/improveFragment" />
-        <argument
-            android:name="sourceImg"
-            app:argType="android.graphics.Bitmap" />
     </fragment>
     <fragment
         android:id="@+id/improveFragment"
@@ -48,9 +37,6 @@
         android:label="ImproveFragment" >
         <argument
             android:name="sourceImg"
-            app:argType="android.graphics.Bitmap" />
-        <argument
-            android:name="cropImg"
             app:argType="android.graphics.Bitmap" />
     </fragment>
 </navigation>
