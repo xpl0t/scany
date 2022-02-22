@@ -1,13 +1,10 @@
 package com.xpl0t.scany.extensions
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import androidx.camera.core.ImageProxy
 import org.opencv.android.Utils
 import org.opencv.core.Mat
 import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
-import java.nio.ByteBuffer
 
 fun Mat.toBitmap(): Bitmap {
     val bmp = Bitmap.createBitmap(cols(), rows(), Bitmap.Config.ARGB_8888)

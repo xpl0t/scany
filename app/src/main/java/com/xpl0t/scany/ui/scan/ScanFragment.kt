@@ -26,8 +26,6 @@ import com.xpl0t.scany.models.ScanImage
 import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.ui.common.BaseFragment
 import com.xpl0t.scany.ui.scan.scannamegenerator.ScanNameGenerator
-import com.xpl0t.scany.ui.scanimage.ScanBitmaps
-import com.xpl0t.scany.ui.scanimage.improve.ImproveFragment
 import com.xpl0t.scany.ui.scanimage.improve.ImproveService
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.core.Observable
@@ -44,7 +42,7 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
 
     @Inject lateinit var repo: Repository
     @Inject lateinit var scanNameGenerator: ScanNameGenerator
-    @Inject() lateinit var improveService: ImproveService
+    @Inject lateinit var improveService: ImproveService
 
     private val disposables: MutableList<Disposable> = mutableListOf()
     private var actionDisposable: Disposable? = null

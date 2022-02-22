@@ -6,13 +6,11 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.finish
 import com.xpl0t.scany.extensions.toBitmap
 import com.xpl0t.scany.ui.common.BaseFragment
-import com.xpl0t.scany.ui.scanimage.ScanBitmaps
 import com.xpl0t.scany.ui.scanimage.camera.CameraService
 import dagger.hilt.android.AndroidEntryPoint
 import org.opencv.core.Mat

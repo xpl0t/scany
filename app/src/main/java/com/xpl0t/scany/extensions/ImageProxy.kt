@@ -1,15 +1,12 @@
 package com.xpl0t.scany.extensions
 
 import android.graphics.ImageFormat
-import android.util.Base64
-import android.util.Log
 import androidx.camera.core.ImageProxy
 import org.opencv.core.Core.ROTATE_90_CLOCKWISE
 import org.opencv.core.Core.rotate
-import org.opencv.core.CvType.*
+import org.opencv.core.CvType.CV_8UC3
 import org.opencv.core.Mat
 import java.nio.ByteBuffer
-import kotlin.system.measureTimeMillis
 
 
 fun ImageProxy.toMat(): Mat {
