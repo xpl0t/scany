@@ -40,9 +40,8 @@ class ScanImageItemAdapter(private val ctx: Context) : RecyclerView.Adapter<Scan
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
 
-        holder.scanImage.setImageBitmap(item.improved)
         Glide.with(holder.itemView)
-            .load(item.improved)
+            .load(item.image)
             .into(holder.scanImage)
 
         holder.card.setOnClickListener {

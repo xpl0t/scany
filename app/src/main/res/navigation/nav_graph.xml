@@ -35,8 +35,5 @@
         android:id="@+id/improveFragment"
         android:name="com.xpl0t.scany.ui.scanimage.improve.ImproveFragment"
         android:label="ImproveFragment" >
-        <argument
-            android:name="sourceImg"
-            app:argType="android.graphics.Bitmap" />
     </fragment>
 </navigation>

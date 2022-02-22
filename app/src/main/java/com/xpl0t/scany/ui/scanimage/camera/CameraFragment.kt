@@ -4,14 +4,12 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.ImageFormat
-import android.media.ImageReader
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -19,20 +17,24 @@ import com.google.android.material.snackbar.Snackbar
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.*
 import com.xpl0t.scany.ui.common.BaseFragment
+import com.xpl0t.scany.ui.scanimage.improve.ImproveFragment
 import dagger.hilt.android.AndroidEntryPoint
 import org.opencv.core.Mat
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import javax.inject.Inject
 import kotlin.system.measureTimeMillis
 
 @AndroidEntryPoint
 class CameraFragment : BaseFragment(R.layout.camera_fragment) {
 
+    @Inject() lateinit var service: CameraService
+
     private lateinit var cameraPreview: PreviewView
     private lateinit var takePhotoBtn: FloatingActionButton
 
     private var imageCapture: ImageCapture? = null
-    private lateinit var cameraExecutor: ExecutorService
+    private var cameraExecutor: ExecutorService? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,7 +52,7 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
 
     override fun onDestroy() {
         super.onDestroy()
-        cameraExecutor.shutdown()
+        cameraExecutor?.shutdown()
     }
 
     override fun onRequestPermissionsResult(
@@ -111,7 +113,7 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
     private fun takePhoto() {
         val imageCapture = imageCapture ?: return
 
-        imageCapture.takePicture(cameraExecutor, object : ImageCapture.OnImageCapturedCallback() {
+        imageCapture.takePicture(cameraExecutor!!, object : ImageCapture.OnImageCapturedCallback() {
                 override fun onError(exc: ImageCaptureException) {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
                     Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
@@ -139,10 +141,8 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
                     }
                     Log.d(TAG, "Image processing took $dur milliseconds")
 
-                    val bmp = mat!!.toBitmap()
-
                     runOnUiThread {
-                        showCropFragment(bmp)
+                        showImproveFragment(mat!!)
                     }
                 }
             }
@@ -152,9 +152,9 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
     /**
      * Set fragment result bundle and finish fragment.
      */
-    private fun showCropFragment(image: Bitmap) {
-        val action = CameraFragmentDirections.actionCameraFragmentToImproveFragment(image)
-        findNavController().navigate(action)
+    private fun showImproveFragment(image: Mat) {
+        service.document = image
+        findNavController().navigate(R.id.improveFragment)
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {

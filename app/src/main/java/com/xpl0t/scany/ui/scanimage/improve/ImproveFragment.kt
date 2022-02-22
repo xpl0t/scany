@@ -9,12 +9,23 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.xpl0t.scany.R
+import com.xpl0t.scany.extensions.finish
+import com.xpl0t.scany.extensions.toBitmap
 import com.xpl0t.scany.ui.common.BaseFragment
 import com.xpl0t.scany.ui.scanimage.ScanBitmaps
+import com.xpl0t.scany.ui.scanimage.camera.CameraService
+import dagger.hilt.android.AndroidEntryPoint
+import org.opencv.core.Mat
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
 
-    private val args: ImproveFragmentArgs by navArgs()
+    @Inject() lateinit var cameraService: CameraService
+    @Inject() lateinit var improveService: ImproveService
+
+    private lateinit var mat: Mat
+    private lateinit var bitmap: Bitmap
 
     private lateinit var bitmapPreview: ImageView
     private lateinit var applyCropBtn: FloatingActionButton
@@ -23,7 +34,15 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
 
-        setCropBitmap(args.sourceImg)
+        if (cameraService.document == null) {
+            Log.e(TAG, "Document null")
+            finish()
+            return
+        }
+
+        mat = cameraService.document!!
+        bitmap = mat.toBitmap()
+        setDocPreview(bitmap)
     }
 
     private fun initViews() {
@@ -32,18 +51,16 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
 
         applyCropBtn.setOnClickListener {
             Log.d(TAG, "Apply improve btn clicked")
-            finishWithImprovedImage(args.sourceImg)
+            finishWithImprovedImage(bitmap)
         }
     }
 
-    private fun setCropBitmap(bitmap: Bitmap) {
+    private fun setDocPreview(bitmap: Bitmap) {
         bitmapPreview.setImageBitmap(bitmap)
     }
 
     private fun finishWithImprovedImage(improved: Bitmap) {
-        findNavController().getBackStackEntry(R.id.scanFragment).savedStateHandle.apply {
-            set(SCAN_BITMAPS, ScanBitmaps(args.sourceImg, improved))
-        }
+        improveService.documentSubject.onNext(improved)
         findNavController().popBackStack(R.id.scanFragment, false)
     }
 

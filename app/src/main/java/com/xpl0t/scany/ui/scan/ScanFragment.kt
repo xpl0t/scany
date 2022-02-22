@@ -1,6 +1,7 @@
 package com.xpl0t.scany.ui.scan
 
 import android.app.AlertDialog
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -27,6 +28,7 @@ import com.xpl0t.scany.ui.common.BaseFragment
 import com.xpl0t.scany.ui.scan.scannamegenerator.ScanNameGenerator
 import com.xpl0t.scany.ui.scanimage.ScanBitmaps
 import com.xpl0t.scany.ui.scanimage.improve.ImproveFragment
+import com.xpl0t.scany.ui.scanimage.improve.ImproveService
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -42,9 +44,11 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
 
     @Inject lateinit var repo: Repository
     @Inject lateinit var scanNameGenerator: ScanNameGenerator
+    @Inject() lateinit var improveService: ImproveService
 
     private val disposables: MutableList<Disposable> = mutableListOf()
     private var actionDisposable: Disposable? = null
+    private var scanImageDisposable: Disposable? = null
 
     private val scanSubject = PublishSubject.create<Scan>()
     private var scan: Scan? = null
@@ -62,14 +66,12 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         imageListAdapter = ScanImageItemAdapter(requireContext())
 
-        val savedStateHandle = findNavController().currentBackStackEntry?.savedStateHandle
-        savedStateHandle?.getLiveData<ScanBitmaps>(ImproveFragment.SCAN_BITMAPS)?.observe(this) {
-            Log.d(TAG, "Got scan bitmaps")
+        scanImageDisposable?.dispose()
+        scanImageDisposable = improveService.documentSubject.subscribe {
+            Log.d(TAG, "Got scan bitmap")
             addScanImage(it)
-            savedInstanceState!!.remove(ImproveFragment.SCAN_BITMAPS)
         }
     }
 
@@ -210,7 +212,7 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
         return if (name.isEmpty()) resources.getString(R.string.name_to_short_err) else null
     }
 
-    private fun addScanImage(bitmaps: ScanBitmaps) {
+    private fun addScanImage(bitmap: Bitmap) {
         Log.d(TAG, "Add scan image")
 
         if (scan == null) return
@@ -219,7 +221,7 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
             val id = if (scan!!.images.isEmpty()) 1
             else scan!!.images.maxOf { it.id } + 1
 
-            val scanImage = ScanImage(id, bitmaps.source, bitmaps.improved)
+            val scanImage = ScanImage(id, bitmap)
             add(scanImage)
         }
 
