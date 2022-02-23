@@ -12,6 +12,13 @@
     <string name="add_scan">Add scan</string>
 
     <!-- Scan fragment -->
+    <string name="add_scan_image">Add page</string>
+    <string name="export_pdf">Export PDF</string>
+    <string name="delete_scan">Delete scan</string>
+
+    <!-- Delete scan dialog -->
+    <string name="delete_scan_dlg_title">Delete scan?</string>
+    <string name="delete_scan_dlg_delete">Delete</string>
 
     <!-- Edit name dialog -->
     <string name="edit_name_dlg_title">Set name</string>

@@ -4,8 +4,7 @@ import android.app.AlertDialog
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
+import android.view.*
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.navigation.fragment.findNavController
@@ -40,9 +39,14 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
 
     private val args: ScanFragmentArgs by navArgs()
 
-    @Inject lateinit var repo: Repository
-    @Inject lateinit var scanNameGenerator: ScanNameGenerator
-    @Inject lateinit var improveService: ImproveService
+    @Inject
+    lateinit var repo: Repository
+
+    @Inject
+    lateinit var scanNameGenerator: ScanNameGenerator
+
+    @Inject
+    lateinit var improveService: ImproveService
 
     private val disposables: MutableList<Disposable> = mutableListOf()
     private var actionDisposable: Disposable? = null
@@ -56,6 +60,7 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
     private lateinit var editNameBtn: MaterialButton
     private lateinit var imageList: RecyclerView
     private lateinit var imageListAdapter: ScanImageItemAdapter
+    private lateinit var addScanImageBtn: MaterialButton
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -64,12 +69,32 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+
         imageListAdapter = ScanImageItemAdapter(requireContext())
 
         scanImageDisposable?.dispose()
         scanImageDisposable = improveService.documentSubject.subscribe {
             Log.d(TAG, "Got scan bitmap")
             addScanImage(it)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.scan_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.deleteScan -> {
+                showDeleteScanDlg()
+                true
+            }
+            R.id.exportPdf -> {
+                exportPdf()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -93,21 +118,22 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
 
         val id = scan?.id ?: args.scanId
         val firstScanObs = if (id > 0) repo.getScan(id).take(1)
-            else createScan()
+        else createScan()
 
-        if (actionDisposable?.isDisposed == false) return
+        disposables.add {
+            firstScanObs.subscribeBy(
+                onNext = {
+                    Log.i(TAG, "Got first scan (id: ${it.id})")
+                    scanSubject.onNext(it)
+                },
+                onError = {
+                    Log.e(TAG, "Could not get scan", it)
+                    Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
+                    finish()
+                }
+            )
+        }
 
-        actionDisposable = firstScanObs.subscribeBy(
-            onNext = {
-                Log.i(TAG, "Got first scan (id: ${it.id})")
-                scanSubject.onNext(it)
-            },
-            onError = {
-                Log.e(TAG, "Could not get scan", it)
-                Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
-                finish()
-            }
-        )
     }
 
     override fun onPause() {
@@ -121,23 +147,25 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
         nameTextView = requireView().findViewById(R.id.scanName)
         editNameBtn = requireView().findViewById(R.id.editScanName)
         imageList = requireView().findViewById(R.id.scanImageList)
+        addScanImageBtn = requireView().findViewById(R.id.addScanImage)
 
         val callback = ScanImageMoveCallback(imageListAdapter)
         val touchHelper = ItemTouchHelper(callback)
         touchHelper.attachToRecyclerView(imageList)
         imageList.adapter = imageListAdapter
-        imageList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        imageList.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         imageList.setHasFixedSize(true)
         imageList.setItemViewCacheSize(20)
-
-        nameTextView.setOnClickListener {
-            val action = ScanFragmentDirections.actionScanFragmentToCameraFragment()
-            findNavController().navigate(action)
-        }
 
         editNameBtn.setOnClickListener {
             Log.i(TAG, "Clicked edit name button")
             showUpdateNameDlg()
+        }
+
+        addScanImageBtn.setOnClickListener {
+            val action = ScanFragmentDirections.actionScanFragmentToCameraFragment()
+            findNavController().navigate(action)
         }
     }
 
@@ -200,7 +228,6 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
         }
     }
 
-    // TODO(): Find better validation method.
     /**
      * Validate a scan name.
      *
@@ -213,7 +240,7 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
     private fun addScanImage(bitmap: Bitmap) {
         Log.d(TAG, "Add scan image")
 
-        if (scan == null) return
+        if (scan == null || actionDisposable?.isDisposed == false) return
 
         val images = scan!!.images.toMutableList().apply {
             val id = if (scan!!.images.isEmpty()) 1
@@ -225,7 +252,7 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
 
         val updatedScan = scan!!.copy(images = images)
 
-        repo.updateScan(updatedScan).subscribeBy(
+        actionDisposable = repo.updateScan(updatedScan).subscribeBy(
             onNext = {
                 Log.i(TAG, "Updated scan")
                 scanSubject.onNext(it)
@@ -240,11 +267,11 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
     private fun updateScanImages(scanImages: List<ScanImage>) {
         Log.d(TAG, "Update scan images")
 
-        if (scan == null) return
+        if (scan == null || actionDisposable?.isDisposed == false) return
 
         val updatedScan = scan!!.copy(images = scanImages)
 
-        repo.updateScan(updatedScan).subscribeBy(
+        actionDisposable = repo.updateScan(updatedScan).subscribeBy(
             onNext = {
                 Log.i(TAG, "Updated scan images")
                 scanSubject.onNext(it)
@@ -254,6 +281,45 @@ class ScanFragment : BaseFragment(R.layout.scan_fragment) {
                 Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
             }
         )
+    }
+
+    private fun showDeleteScanDlg() {
+        Log.d(TAG, "Show delete scan dialog")
+
+        if (scan == null) return
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(resources.getString(R.string.delete_scan_dlg_title))
+            .setNegativeButton(resources.getString(R.string.cancel_btn)) { _, _ ->
+                Log.d(TAG, "Delete scan canceled")
+            }
+            .setPositiveButton(resources.getString(R.string.delete_scan_dlg_delete)) { _, _ ->
+                deleteScan()
+            }
+            .show()
+
+    }
+
+    private fun deleteScan() {
+        Log.d(TAG, "Delete scan")
+
+        if (scan == null || actionDisposable?.isDisposed == false) return
+
+        repo.removeScan(scan!!.id).subscribeBy(
+            onNext = {
+                Log.i(TAG, "Deleted scan")
+                finish()
+            },
+            onError = {
+                Log.e(TAG, "Could not delete scan", it)
+                Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT)
+                    .show()
+            }
+        )
+    }
+
+    private fun exportPdf() {
+        Log.d(TAG, "Export Pdf")
     }
 
     companion object {

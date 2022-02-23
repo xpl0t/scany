@@ -39,6 +39,8 @@ class MainActivity : BaseActivity() {
     private fun initViews() {
         progressBar = findViewById(R.id.progressBar)
         toolbar = findViewById(R.id.toolbar)
+
+        setSupportActionBar(toolbar)
     }
 
     private fun initProgressBar() {
