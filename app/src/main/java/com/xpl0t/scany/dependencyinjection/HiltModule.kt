@@ -4,8 +4,8 @@ import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.repository.RepositoryMockImpl
 import com.xpl0t.scany.settings.SettingsService
 import com.xpl0t.scany.settings.SettingsServiceMockImpl
-import com.xpl0t.scany.ui.scan.scannamegenerator.RandomScanNameGenerator
-import com.xpl0t.scany.ui.scan.scannamegenerator.ScanNameGenerator
+import com.xpl0t.scany.ui.scanlist.scannamegenerator.RandomScanNameGenerator
+import com.xpl0t.scany.ui.scanlist.scannamegenerator.ScanNameGenerator
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

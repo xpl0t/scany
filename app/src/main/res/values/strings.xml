@@ -9,12 +9,17 @@
     <string name="get_scans_err">Could not load scans</string>
 
     <!-- Scan list fragment -->
+    <string name="scan_list_title">Scans</string>
     <string name="add_scan">Add scan</string>
 
     <!-- Scan fragment -->
-    <string name="add_scan_image">Add page</string>
+    <string name="add_page">Page</string>
+    <string name="add_page_long">Add page</string>
     <string name="export_pdf">Export PDF</string>
     <string name="delete_scan">Delete scan</string>
+    <string name="no_page">No pages currently…</string>
+    <string name="reorder">Reorder</string>
+    <string name="edit_title">Edit title</string>
 
     <!-- Delete scan dialog -->
     <string name="delete_scan_dlg_title">Delete scan?</string>

@@ -1,63 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp">
+    android:background="@drawable/backdrop_corner"
+    android:backgroundTint="?colorSurface"
+    android:elevation="10dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/contentGroup"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        tools:visibility="visible">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/scanName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-            android:textColor="?colorOnSurface"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/backDropHeader"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Scan 123" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <Button
-            android:id="@+id/editScanName"
-            style="@style/IconButton"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginStart="8dp"
-            app:icon="@drawable/edit"
-            app:iconSize="20dp"
-            app:layout_constraintBottom_toBottomOf="@+id/scanName"
-            app:layout_constraintStart_toEndOf="@+id/scanName"
-            app:layout_constraintTop_toTopOf="@+id/scanName" />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|start"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="8dp"
+                android:textColor="?colorOnSurface"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/addPageHeader"
+                app:layout_constraintHorizontal_bias="0.45"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Test 123" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/addPageHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@+id/toggleBottomSheet"
+                android:text="@string/add_page"
+                app:icon="@drawable/add"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/toggleBottomSheet"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/toggleBottomSheet"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center|end"
+                android:padding="20dp"
+                android:src="@drawable/arrow_up"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="?colorOnSurface" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <View
+            android:id="@+id/headerDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="?dividerVertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/backDropHeader" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/scanImageList"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="4dp"
-            android:layout_marginTop="8dp"
+            android:layout_height="0dp"
+            android:paddingVertical="8dp"
+            android:paddingHorizontal="16dp"
+            android:clipToPadding="false"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/scanName" />
+            app:layout_constraintTop_toBottomOf="@+id/headerDivider" />
 
-        <Button
-            android:id="@+id/addScanImage"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/noPageCard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/add_scan_image"
-            app:icon="@drawable/add"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/scanImageList" />
+            app:layout_constraintTop_toBottomOf="@+id/headerDivider"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_page"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="?colorOnSurface" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/addPage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/add_page_long"
+                    app:icon="@drawable/add" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</ScrollView>
+</LinearLayout>

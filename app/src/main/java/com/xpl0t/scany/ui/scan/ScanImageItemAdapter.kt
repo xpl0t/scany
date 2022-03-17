@@ -61,7 +61,7 @@ class ScanImageItemAdapter(private val ctx: Context) : RecyclerView.Adapter<Scan
     private fun setAnimation(view: View, position: Int) {
         // If the bound view wasn't previously displayed on screen, it's animated
         if (position > lastPosition) {
-            val animation = AnimationUtils.loadAnimation(ctx, R.anim.slide_in_top)
+            val animation = AnimationUtils.loadAnimation(ctx, android.R.anim.slide_in_left)
             view.startAnimation(animation)
             lastPosition = position
         }

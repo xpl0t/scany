@@ -1,12 +1,10 @@
 package com.xpl0t.scany.ui.scanlist
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.card.MaterialCardView
+import com.google.android.material.button.MaterialButton
 import com.xpl0t.scany.R
 import com.xpl0t.scany.models.Scan
 import io.reactivex.rxjava3.subjects.PublishSubject
@@ -17,8 +15,7 @@ class ScanItemAdapter : RecyclerView.Adapter<ScanItemAdapter.ViewHolder>() {
     private var items: List<Scan> = listOf()
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val card: MaterialCardView = view.findViewById(R.id.scanCard)
-        val title: TextView = view.findViewById(R.id.scanName)
+        val selectScanBtn: MaterialButton = view.findViewById(R.id.selectScan)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -29,11 +26,7 @@ class ScanItemAdapter : RecyclerView.Adapter<ScanItemAdapter.ViewHolder>() {
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
 
-        holder.title.text = item.name
-        holder.card.setOnClickListener {
-            Log.d(TAG, "Scan card clicked (id: ${item.id})")
-            scanClicked.onNext(item)
-        }
+        holder.selectScanBtn.text = item.name
     }
 
     override fun getItemCount(): Int = items.count()

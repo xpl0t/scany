@@ -1,4 +1,4 @@
-package com.xpl0t.scany.ui.scan.scannamegenerator
+package com.xpl0t.scany.ui.scanlist.scannamegenerator
 
 import android.content.Context
 import com.xpl0t.scany.R

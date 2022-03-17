@@ -5,35 +5,30 @@
     app:startDestination="@id/scanListFragment">
 
     <fragment
-        android:id="@+id/scanListFragment"
-        android:name="com.xpl0t.scany.ui.scanlist.ScanListFragment"
-        android:label="ScanListFragment" >
-        <action
-            android:id="@+id/action_scanListFragment_to_scanFragment"
-            app:destination="@id/scanFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/scanFragment"
-        android:name="com.xpl0t.scany.ui.scan.ScanFragment"
-        android:label="ScanFragment" >
-        <action
-            android:id="@+id/action_scanFragment_to_cameraFragment"
-            app:destination="@id/cameraFragment" />
-        <argument
-            android:name="scanId"
-            app:argType="integer" />
-    </fragment>
-    <fragment
         android:id="@+id/cameraFragment"
         android:name="com.xpl0t.scany.ui.scanimage.camera.CameraFragment"
         android:label="CameraFragment" >
         <action
             android:id="@+id/action_cameraFragment_to_improveFragment"
             app:destination="@id/improveFragment" />
+        <argument
+            android:name="scanId"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/improveFragment"
         android:name="com.xpl0t.scany.ui.scanimage.improve.ImproveFragment"
         android:label="ImproveFragment" >
+        <argument
+            android:name="scanId"
+            app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/scanListFragment"
+        android:name="com.xpl0t.scany.ui.scanlist.ScanListFragment"
+        android:label="ScanListFragment" >
+        <action
+            android:id="@+id/action_scanListFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
     </fragment>
 </navigation>

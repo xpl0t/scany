@@ -1,6 +1,7 @@
 package com.xpl0t.scany.repository
 
 import com.xpl0t.scany.models.Scan
+import com.xpl0t.scany.models.ScanImage
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import javax.inject.Inject
@@ -70,6 +71,27 @@ class RepositoryMockImpl @Inject constructor() : Repository {
         scanSubject.onNext(newList)
 
         return Observable.just(scan)
+    }
+
+    override fun addScanImg(scanId: Int, scanImg: ScanImage): Observable<Scan> {
+        if (shouldFail()) return Observable.error(Error("Database offline"))
+
+        val newList = scanSubject.value!!.toMutableList()
+        val idx = newList.indexOfFirst { it.id == scanId }
+        if (idx == -1)
+            return Observable.error(Error("No scan with id $scanId found!"))
+
+        val scan = newList[idx]
+        val scanImgId = if (scan.images.isEmpty()) 1 else scan.images.maxOf { it.id } + 1
+        val newScanImgList = scan.images.toMutableList()
+        newScanImgList.add(scanImg.copy(id = scanImgId))
+        val newScan = scan.copy(images = newScanImgList)
+
+        newList.removeAt(idx)
+        newList.add(idx, newScan)
+        scanSubject.onNext(newList)
+
+        return Observable.just(newScan)
     }
 
     override fun removeScan(id: Int): Observable<Int> {

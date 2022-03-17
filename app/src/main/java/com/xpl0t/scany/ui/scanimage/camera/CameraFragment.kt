@@ -11,11 +11,13 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.*
 import com.xpl0t.scany.ui.common.BaseFragment
+import com.xpl0t.scany.ui.scanimage.improve.ImproveFragmentArgs
 import dagger.hilt.android.AndroidEntryPoint
 import org.opencv.core.Mat
 import java.util.concurrent.ExecutorService
@@ -25,6 +27,8 @@ import kotlin.system.measureTimeMillis
 
 @AndroidEntryPoint
 class CameraFragment : BaseFragment(R.layout.camera_fragment) {
+
+    private val args: CameraFragmentArgs by navArgs()
 
     @Inject() lateinit var service: CameraService
 
@@ -152,7 +156,9 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
      */
     private fun showImproveFragment(image: Mat) {
         service.document = image
-        findNavController().navigate(R.id.improveFragment)
+        val action = CameraFragmentDirections
+            .actionCameraFragmentToImproveFragment(args.scanId)
+        findNavController().navigate(action)
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
