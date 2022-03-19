@@ -17,7 +17,6 @@ import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.ui.common.BaseFragment
 import com.xpl0t.scany.ui.scan.ScanFragment
 import com.xpl0t.scany.ui.scanimage.camera.CameraService
-import com.xpl0t.scany.util.Optional
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy

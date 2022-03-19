@@ -17,7 +17,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.*
 import com.xpl0t.scany.ui.common.BaseFragment
-import com.xpl0t.scany.ui.scanimage.improve.ImproveFragmentArgs
 import dagger.hilt.android.AndroidEntryPoint
 import org.opencv.core.Mat
 import java.util.concurrent.ExecutorService

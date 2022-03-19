@@ -1,7 +1,6 @@
 package com.xpl0t.scany.ui.scan
 
 import android.app.AlertDialog
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -88,13 +87,6 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener {
 
     override fun onResume() {
         super.onResume()
-
-        /*al bottomSheetToggleImg = if (currentState == BottomSheetBehavior.STATE_COLLAPSED)
-            R.drawable.arrow_up
-        else
-            R.drawable.clear
-
-        bottomSheetToggle.setImageResource(bottomSheetToggleImg)*/
 
         disposables.add {
             scanSubject.subscribe {
