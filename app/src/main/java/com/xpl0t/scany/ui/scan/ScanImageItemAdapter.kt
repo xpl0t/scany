@@ -15,12 +15,11 @@ import com.xpl0t.scany.models.ScanImage
 import io.reactivex.rxjava3.subjects.PublishSubject
 
 
-class ScanImageItemAdapter(private val ctx: Context) : RecyclerView.Adapter<ScanImageItemAdapter.ViewHolder>(), ScanImageMoveCallback.Contract {
+class ScanImageItemAdapter(private val ctx: Context) : RecyclerView.Adapter<ScanImageItemAdapter.ViewHolder>() {
 
     private var lastPosition = -1
 
     val scanImageClicked: PublishSubject<ScanImage> = PublishSubject.create()
-    val scanImagesOrderChanged: PublishSubject<List<ScanImage>> = PublishSubject.create()
     private var items: MutableList<ScanImage> = mutableListOf()
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -86,22 +85,6 @@ class ScanImageItemAdapter(private val ctx: Context) : RecyclerView.Adapter<Scan
         }
 
         return true
-    }
-
-    override fun onRowMoved(fromPosition: Int, toPosition: Int) {
-        val item = items.removeAt(fromPosition)
-        items.add(toPosition, item)
-
-        scanImagesOrderChanged.onNext(items)
-        notifyItemMoved(fromPosition, toPosition)
-    }
-
-    override fun onRowSelected(viewHolder: ViewHolder) {
-        viewHolder.card.isDragged = true
-    }
-
-    override fun onRowClear(viewHolder: ViewHolder) {
-        viewHolder.card.isDragged = false
     }
 
     companion object {

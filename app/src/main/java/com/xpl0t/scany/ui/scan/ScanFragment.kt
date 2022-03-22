@@ -97,13 +97,6 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener {
                 updateUI(scan)
             }
         }
-
-        disposables.add {
-            imageListAdapter.scanImagesOrderChanged.subscribe {
-                Log.i(TAG, "Scan image order changed")
-                updateScanImages(it)
-            }
-        }
     }
 
     override fun onPause() {
@@ -122,9 +115,6 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener {
         addPageHeaderBtn = requireView().findViewById(R.id.addPageHeader)
         addPageBtn = requireView().findViewById(R.id.addPage)
 
-        val callback = ScanImageMoveCallback(imageListAdapter)
-        val touchHelper = ItemTouchHelper(callback)
-        touchHelper.attachToRecyclerView(imageList)
         imageList.adapter = imageListAdapter
         imageList.layoutManager = LinearLayoutManager(requireContext())
         imageList.setHasFixedSize(true)
@@ -285,25 +275,6 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener {
      */
     private fun validateScanName(name: String): String? {
         return if (name.isEmpty()) resources.getString(R.string.name_to_short_err) else null
-    }
-
-    private fun updateScanImages(scanImages: List<ScanImage>) {
-        Log.d(TAG, "Update scan images")
-
-        if (scan == null || actionDisposable?.isDisposed == false) return
-
-        val updatedScan = scan!!.copy(images = scanImages)
-
-        actionDisposable = repo.updateScan(updatedScan).subscribeBy(
-            onNext = {
-                Log.i(TAG, "Updated scan images")
-                scanSubject.onNext(Optional(it))
-            },
-            onError = {
-                Log.e(TAG, "Could not update scan", it)
-                Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
-            }
-        )
     }
 
     private fun showCameraFragment() {
