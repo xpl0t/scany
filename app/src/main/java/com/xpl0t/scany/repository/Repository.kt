@@ -1,7 +1,7 @@
 package com.xpl0t.scany.repository
 
 import com.xpl0t.scany.models.Scan
-import com.xpl0t.scany.models.ScanImage
+import com.xpl0t.scany.models.Page
 import io.reactivex.rxjava3.core.Observable
 
 interface Repository {
@@ -29,7 +29,7 @@ interface Repository {
     /**
      * Adds a scan and returns an observable emitting the new scan once added.
      */
-    fun addScanImg(scanId: Int, scanImg: ScanImage): Observable<Scan>
+    fun addPage(scanId: Int, scanImg: Page): Observable<Scan>
 
     /**
      * Removes a scan and returns an observable emitting once the removal succeeded.

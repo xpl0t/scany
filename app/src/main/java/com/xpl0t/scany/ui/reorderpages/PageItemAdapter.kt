@@ -8,14 +8,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.card.MaterialCardView
 import com.xpl0t.scany.R
-import com.xpl0t.scany.models.ScanImage
+import com.xpl0t.scany.models.Page
 import io.reactivex.rxjava3.subjects.PublishSubject
 
 
 class PageItemAdapter : RecyclerView.Adapter<PageItemAdapter.ViewHolder>(), PageMoveCallback.Contract {
 
-    val pageOrderChanged: PublishSubject<List<ScanImage>> = PublishSubject.create()
-    private var items: MutableList<ScanImage> = mutableListOf()
+    val pageOrderChanged: PublishSubject<List<Page>> = PublishSubject.create()
+    private var items: MutableList<Page> = mutableListOf()
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val pageCard: MaterialCardView = view.findViewById(R.id.pageCard)
@@ -45,7 +45,7 @@ class PageItemAdapter : RecyclerView.Adapter<PageItemAdapter.ViewHolder>(), Page
         holder.clearAnimation()
     }
 
-    fun updateItems(items: List<ScanImage>) {
+    fun updateItems(items: List<Page>) {
         if (compareLists(items, this.items)) return
 
         this.items = items.toMutableList()

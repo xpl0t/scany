@@ -13,7 +13,7 @@ import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.add
 import com.xpl0t.scany.extensions.finish
 import com.xpl0t.scany.models.Scan
-import com.xpl0t.scany.models.ScanImage
+import com.xpl0t.scany.models.Page
 import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.ui.common.BaseFragment
 import com.xpl0t.scany.util.Optional
@@ -78,7 +78,7 @@ class ReorderPagesFragment : BaseFragment(R.layout.reorder_pages_fragment) {
         disposables.forEach { it.dispose() }
         actionDisposable?.dispose()
     }
-    
+
     private fun initViews() {
         toolbar = requireView().findViewById(R.id.toolbar)
         pages = requireView().findViewById(R.id.pages)
@@ -136,17 +136,17 @@ class ReorderPagesFragment : BaseFragment(R.layout.reorder_pages_fragment) {
         }
 
         pages.visibility = View.VISIBLE
-        pageItemAdapter.updateItems(scan.images)
+        pageItemAdapter.updateItems(scan.pages)
     }
 
-    private fun updatePageOrder(pages: List<ScanImage>) {
+    private fun updatePageOrder(pages: List<Page>) {
         Log.d(TAG, "Update page order")
 
         if (scan == null) return
 
         actionDisposable?.dispose()
 
-        val updatedScan = scan!!.copy(images = pages)
+        val updatedScan = scan!!.copy(pages = pages)
 
         actionDisposable = repo.updateScan(updatedScan).subscribeBy(
             onNext = {

@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/cameraFragment"
-        android:name="com.xpl0t.scany.ui.scanimage.camera.CameraFragment"
+        android:name="com.xpl0t.scany.ui.page.camera.CameraFragment"
         android:label="CameraFragment" >
         <action
             android:id="@+id/action_cameraFragment_to_improveFragment"
@@ -17,7 +17,7 @@
     </fragment>
     <fragment
         android:id="@+id/improveFragment"
-        android:name="com.xpl0t.scany.ui.scanimage.improve.ImproveFragment"
+        android:name="com.xpl0t.scany.ui.page.improve.ImproveFragment"
         android:label="ImproveFragment" >
         <argument
             android:name="scanId"

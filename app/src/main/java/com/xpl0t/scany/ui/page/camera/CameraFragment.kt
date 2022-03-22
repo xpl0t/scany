@@ -1,4 +1,4 @@
-package com.xpl0t.scany.ui.scanimage.camera
+package com.xpl0t.scany.ui.page.camera
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -154,7 +154,7 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
      * Set fragment result bundle and finish fragment.
      */
     private fun showImproveFragment(image: Mat) {
-        service.document = image
+        service.page = image
         val action = CameraFragmentDirections
             .actionCameraFragmentToImproveFragment(args.scanId)
         findNavController().navigate(action)

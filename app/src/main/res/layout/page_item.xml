@@ -8,7 +8,7 @@
     android:orientation="vertical">
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/scanImageCard"
+        android:id="@+id/pageCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -22,10 +22,10 @@
         app:strokeWidth="1dp">
 
         <ImageView
-            android:id="@+id/scanImage"
+            android:id="@+id/pageImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/scan_image_descr"
+            android:contentDescription="@string/page_image_descr"
             android:scaleType="fitCenter"
             tools:src="@drawable/test_doc" />
 

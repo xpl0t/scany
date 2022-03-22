@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -24,7 +23,6 @@ import com.google.android.material.textview.MaterialTextView
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.add
 import com.xpl0t.scany.models.Scan
-import com.xpl0t.scany.models.ScanImage
 import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.ui.scanlist.ScanListFragmentDirections
 import com.xpl0t.scany.util.Optional
@@ -51,8 +49,8 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener {
     private lateinit var titleTextView: MaterialTextView
     private lateinit var bottomSheetToggle: ImageView
     private lateinit var noPageCard: MaterialCardView
-    private lateinit var imageList: RecyclerView
-    private lateinit var imageListAdapter: ScanImageItemAdapter
+    private lateinit var pageList: RecyclerView
+    private lateinit var pageAdapter: PageItemAdapter
     private lateinit var addPageHeaderBtn: MaterialButton
     private lateinit var addPageBtn: MaterialButton
 
@@ -82,7 +80,7 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        imageListAdapter = ScanImageItemAdapter(requireContext())
+        pageAdapter = PageItemAdapter(requireContext())
     }
 
     override fun onResume() {
@@ -111,14 +109,14 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener {
         titleTextView = requireView().findViewById(R.id.title)
         bottomSheetToggle = requireView().findViewById(R.id.toggleBottomSheet)
         noPageCard = requireView().findViewById(R.id.noPageCard)
-        imageList = requireView().findViewById(R.id.scanImageList)
+        pageList = requireView().findViewById(R.id.pageList)
         addPageHeaderBtn = requireView().findViewById(R.id.addPageHeader)
         addPageBtn = requireView().findViewById(R.id.addPage)
 
-        imageList.adapter = imageListAdapter
-        imageList.layoutManager = LinearLayoutManager(requireContext())
-        imageList.setHasFixedSize(true)
-        imageList.setItemViewCacheSize(20)
+        pageList.adapter = pageAdapter
+        pageList.layoutManager = LinearLayoutManager(requireContext())
+        pageList.setHasFixedSize(true)
+        pageList.setItemViewCacheSize(20)
 
         addPageHeaderBtn.setOnClickListener {
             showCameraFragment()
@@ -229,7 +227,7 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener {
     override fun reorderPages() {
         Log.d(TAG, "Reorder pages")
 
-        val pageCount = scan?.images?.count()
+        val pageCount = scan?.pages?.count()
         if (pageCount != null && pageCount < 2) {
             Snackbar.make(requireView(), R.string.reorder_min_2_pages, Snackbar.LENGTH_SHORT).show()
             return
@@ -254,18 +252,18 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener {
         if (scan == null) {
             titleTextView.text = ""
             addPageHeaderBtn.visibility = View.GONE
-            imageList.visibility = View.GONE
+            pageList.visibility = View.GONE
             noPageCard.visibility = View.GONE
             return
         }
 
         addPageHeaderBtn.visibility = View.VISIBLE
 
-        noPageCard.visibility = if (scan.images.isEmpty()) View.VISIBLE else View.GONE
-        imageList.visibility = if (scan.images.isNotEmpty()) View.VISIBLE else View.GONE
+        noPageCard.visibility = if (scan.pages.isEmpty()) View.VISIBLE else View.GONE
+        pageList.visibility = if (scan.pages.isNotEmpty()) View.VISIBLE else View.GONE
 
         titleTextView.text = scan.name
-        imageListAdapter.updateItems(scan.images)
+        pageAdapter.updateItems(scan.pages)
     }
 
     /**

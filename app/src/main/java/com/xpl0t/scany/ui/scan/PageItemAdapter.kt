@@ -11,20 +11,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.card.MaterialCardView
 import com.xpl0t.scany.R
-import com.xpl0t.scany.models.ScanImage
+import com.xpl0t.scany.models.Page
 import io.reactivex.rxjava3.subjects.PublishSubject
 
 
-class ScanImageItemAdapter(private val ctx: Context) : RecyclerView.Adapter<ScanImageItemAdapter.ViewHolder>() {
+class PageItemAdapter(private val ctx: Context) : RecyclerView.Adapter<PageItemAdapter.ViewHolder>() {
 
     private var lastPosition = -1
 
-    val scanImageClicked: PublishSubject<ScanImage> = PublishSubject.create()
-    private var items: MutableList<ScanImage> = mutableListOf()
+    val pageClicked: PublishSubject<Page> = PublishSubject.create()
+    private var items: MutableList<Page> = mutableListOf()
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val card: MaterialCardView = view.findViewById(R.id.scanImageCard)
-        val scanImage: ImageView = view.findViewById(R.id.scanImage)
+        val card: MaterialCardView = view.findViewById(R.id.pageCard)
+        val scanImage: ImageView = view.findViewById(R.id.pageImage)
 
         fun clearAnimation() {
             itemView.clearAnimation()
@@ -32,7 +32,7 @@ class ScanImageItemAdapter(private val ctx: Context) : RecyclerView.Adapter<Scan
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.scan_image_item, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.page_item, parent, false)
         return ViewHolder(view)
     }
 
@@ -45,7 +45,7 @@ class ScanImageItemAdapter(private val ctx: Context) : RecyclerView.Adapter<Scan
 
         holder.card.setOnClickListener {
             Log.d(TAG, "Scan image card clicked (id: ${item.id})")
-            scanImageClicked.onNext(item)
+            pageClicked.onNext(item)
         }
         setAnimation(holder.itemView, position)
     }
@@ -66,7 +66,7 @@ class ScanImageItemAdapter(private val ctx: Context) : RecyclerView.Adapter<Scan
         }
     }
 
-    fun updateItems(items: List<ScanImage>) {
+    fun updateItems(items: List<Page>) {
         if (compareLists(items, this.items)) return
 
         this.items = items.toMutableList()

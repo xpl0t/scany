@@ -1,7 +1,7 @@
 package com.xpl0t.scany.repository
 
 import com.xpl0t.scany.models.Scan
-import com.xpl0t.scany.models.ScanImage
+import com.xpl0t.scany.models.Page
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import javax.inject.Inject
@@ -19,10 +19,10 @@ class RepositoryMockImpl @Inject constructor() : Repository {
 
     private fun getMockScans(): List<Scan> {
         return listOf(
-            Scan(1, "Test Scan :)", images = listOf()),
-            Scan(2, "Test 123", images = listOf()),
-            Scan(3, "Testy testy", images = listOf()),
-            Scan(4, "Testo testo", images = listOf())
+            Scan(1, "Test Scan :)", pages = listOf()),
+            Scan(2, "Test 123", pages = listOf()),
+            Scan(3, "Testy testy", pages = listOf()),
+            Scan(4, "Testo testo", pages = listOf())
         )
     }
 
@@ -73,7 +73,7 @@ class RepositoryMockImpl @Inject constructor() : Repository {
         return Observable.just(scan)
     }
 
-    override fun addScanImg(scanId: Int, scanImg: ScanImage): Observable<Scan> {
+    override fun addPage(scanId: Int, scanImg: Page): Observable<Scan> {
         if (shouldFail()) return Observable.error(Error("Database offline"))
 
         val newList = scanSubject.value!!.toMutableList()
@@ -82,10 +82,10 @@ class RepositoryMockImpl @Inject constructor() : Repository {
             return Observable.error(Error("No scan with id $scanId found!"))
 
         val scan = newList[idx]
-        val scanImgId = if (scan.images.isEmpty()) 1 else scan.images.maxOf { it.id } + 1
-        val newScanImgList = scan.images.toMutableList()
+        val scanImgId = if (scan.pages.isEmpty()) 1 else scan.pages.maxOf { it.id } + 1
+        val newScanImgList = scan.pages.toMutableList()
         newScanImgList.add(scanImg.copy(id = scanImgId))
-        val newScan = scan.copy(images = newScanImgList)
+        val newScan = scan.copy(pages = newScanImgList)
 
         newList.removeAt(idx)
         newList.add(idx, newScan)

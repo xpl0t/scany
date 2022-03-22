@@ -1,4 +1,4 @@
-package com.xpl0t.scany.ui.scanimage.improve
+package com.xpl0t.scany.ui.page.improve
 
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -12,11 +12,11 @@ import com.google.android.material.snackbar.Snackbar
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.finish
 import com.xpl0t.scany.extensions.toBitmap
-import com.xpl0t.scany.models.ScanImage
+import com.xpl0t.scany.models.Page
 import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.ui.common.BaseFragment
 import com.xpl0t.scany.ui.scan.ScanFragment
-import com.xpl0t.scany.ui.scanimage.camera.CameraService
+import com.xpl0t.scany.ui.page.camera.CameraService
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -43,13 +43,13 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
 
-        if (cameraService.document == null) {
+        if (cameraService.page == null) {
             Log.e(TAG, "Document null")
             finish()
             return
         }
 
-        mat = cameraService.document!!
+        mat = cameraService.page!!
         bitmap = mat.toBitmap()
         setDocPreview(bitmap)
     }
@@ -65,7 +65,7 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
 
         applyCropBtn.setOnClickListener {
             Log.d(TAG, "Apply improve btn clicked")
-            addScanImage(bitmap)
+            addPage(bitmap)
         }
     }
 
@@ -73,14 +73,14 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
         bitmapPreview.setImageBitmap(bitmap)
     }
 
-    private fun addScanImage(bitmap: Bitmap) {
+    private fun addPage(bitmap: Bitmap) {
         Log.d(ScanFragment.TAG, "Add scan image")
 
         if (actionDisposable?.isDisposed == false) return
 
-        val scanImg = ScanImage(image = bitmap)
+        val page = Page(image = bitmap)
 
-        actionDisposable = repo.addScanImg(args.scanId, scanImg).subscribeBy(
+        actionDisposable = repo.addPage(args.scanId, page).subscribeBy(
             onNext = {
                 Log.i(ScanFragment.TAG, "Added scan image")
                 returnToScanListFragment()

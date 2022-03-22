@@ -50,13 +50,10 @@
     <string name="crop_image_descr">Cropped bitmap</string>
     <string name="apply_improve_btn">Apply improvements</string>
 
-    <!-- Scan image item -->
-    <string name="scan_image_descr">Scan image</string>
-
     <!-- Reorder pages fragment -->
     <string name="reorder_pages_title">Reorder pages</string>
 
-    <!-- Reorder pages item -->
+    <!-- Page item -->
     <string name="page_image_descr">Page</string>
 
 </resources>
