@@ -138,7 +138,6 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
         scanFragmentContainer = requireView().findViewById(R.id.scanFragment)
         scanRadioGroup = requireView().findViewById(R.id.scanList)
 
-        toolbar.inflateMenu(R.menu.scan_menu)
         toolbar.setOnMenuItemClickListener { handleMenuItem(it) }
 
         scanRadioGroup.setOnCheckedChangeListener { _, id ->

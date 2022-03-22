@@ -238,6 +238,16 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener {
 
     override fun reorderPages() {
         Log.d(TAG, "Reorder pages")
+
+        val pageCount = scan?.images?.count()
+        if (pageCount != null && pageCount < 2) {
+            Snackbar.make(requireView(), R.string.reorder_min_2_pages, Snackbar.LENGTH_SHORT).show()
+            return
+        }
+
+        val action = ScanListFragmentDirections
+            .actionScanListFragmentToReorderPagesFragment(scan?.id ?: return)
+        findNavController().navigate(action)
     }
 
     override fun expand() {

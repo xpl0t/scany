@@ -20,6 +20,7 @@
     <string name="no_page">No pages currently…</string>
     <string name="reorder">Reorder</string>
     <string name="edit_title">Edit title</string>
+    <string name="reorder_min_2_pages">A minimum of two pages is required to reorder</string>
 
     <!-- Delete scan dialog -->
     <string name="delete_scan_dlg_title">Delete scan?</string>
@@ -51,5 +52,11 @@
 
     <!-- Scan image item -->
     <string name="scan_image_descr">Scan image</string>
+
+    <!-- Reorder pages fragment -->
+    <string name="reorder_pages_title">Reorder pages</string>
+
+    <!-- Reorder pages item -->
+    <string name="page_image_descr">Page</string>
 
 </resources>

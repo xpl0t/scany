@@ -17,6 +17,7 @@
             style="@style/Widget.MaterialComponents.Toolbar.Primary"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            app:menu="@menu/scan_menu"
             app:title="@string/app_name" />
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -125,4 +126,3 @@
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </LinearLayout>
-

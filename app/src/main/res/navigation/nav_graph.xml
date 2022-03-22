@@ -30,5 +30,16 @@
         <action
             android:id="@+id/action_scanListFragment_to_cameraFragment"
             app:destination="@id/cameraFragment" />
+        <action
+            android:id="@+id/action_scanListFragment_to_reorderPagesFragment"
+            app:destination="@id/reorderPagesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/reorderPagesFragment"
+        android:name="com.xpl0t.scany.ui.reorderpages.ReorderPagesFragment"
+        android:label="ReorderPagesFragment" >
+        <argument
+            android:name="scanId"
+            app:argType="integer" />
     </fragment>
 </navigation>
