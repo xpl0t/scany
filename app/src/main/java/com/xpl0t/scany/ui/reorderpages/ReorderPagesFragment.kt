@@ -78,9 +78,7 @@ class ReorderPagesFragment : BaseFragment(R.layout.reorder_pages_fragment) {
         disposables.forEach { it.dispose() }
         actionDisposable?.dispose()
     }
-
-
-
+    
     private fun initViews() {
         toolbar = requireView().findViewById(R.id.toolbar)
         pages = requireView().findViewById(R.id.pages)
@@ -88,7 +86,10 @@ class ReorderPagesFragment : BaseFragment(R.layout.reorder_pages_fragment) {
         toolbar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.apply -> {
-                    finish()
+                    if (actionDisposable?.isDisposed != false) {
+                        finish()
+                    }
+
                     true
                 }
                 else -> false
