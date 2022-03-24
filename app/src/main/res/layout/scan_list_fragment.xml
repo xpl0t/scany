@@ -89,16 +89,17 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/addScan"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        style="@style/Widget.MaterialComponents.Button"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="20dp"
                         android:text="@string/add_scan"
-                        android:textColor="?colorOnPrimary"
+                        android:textColor="?colorOnSecondary"
+                        android:backgroundTint="?colorSecondary"
                         app:icon="@drawable/add"
-                        app:iconTint="?colorOnPrimary"
+                        app:iconTint="?colorOnSecondary"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/scanList" />
