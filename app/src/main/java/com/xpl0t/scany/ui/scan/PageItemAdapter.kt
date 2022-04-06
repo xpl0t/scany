@@ -20,7 +20,7 @@ class PageItemAdapter(private val ctx: Context) : RecyclerView.Adapter<PageItemA
     private var lastPosition = -1
 
     val pageClicked: PublishSubject<Page> = PublishSubject.create()
-    private var items: MutableList<Page> = mutableListOf()
+    private var items: List<Page> = listOf()
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val card: MaterialCardView = view.findViewById(R.id.pageCard)
@@ -39,8 +39,8 @@ class PageItemAdapter(private val ctx: Context) : RecyclerView.Adapter<PageItemA
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
 
-        Glide.with(holder.itemView)
-            .load(item.image)
+        Glide.with(ctx)
+            .load(item)
             .into(holder.scanImage)
 
         holder.card.setOnClickListener {
@@ -69,8 +69,12 @@ class PageItemAdapter(private val ctx: Context) : RecyclerView.Adapter<PageItemA
     fun updateItems(items: List<Page>) {
         if (compareLists(items, this.items)) return
 
-        this.items = items.toMutableList()
-        notifyItemRangeChanged(0, this.items.count())
+        this.items = items
+        notifyDataSetChanged()
+    }
+
+    fun resetAnimation() {
+        lastPosition = -1
     }
 
     /**

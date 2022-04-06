@@ -35,7 +35,7 @@ class PageItemAdapter : RecyclerView.Adapter<PageItemAdapter.ViewHolder>(), Page
         val item = items[position]
 
         Glide.with(holder.itemView)
-            .load(item.image)
+            .load(item)
             .into(holder.pageImage)
     }
 

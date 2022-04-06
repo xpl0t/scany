@@ -3,6 +3,7 @@ package com.xpl0t.scany.repository
 import com.xpl0t.scany.models.Scan
 import com.xpl0t.scany.models.Page
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -41,6 +42,10 @@ class RepositoryMockImpl @Inject constructor() : Repository {
 
             Observable.just(scan)
         }
+    }
+
+    override fun getPageImage(pageId: Int): Single<ByteArray> {
+        TODO("Not yet implemented")
     }
 
     override fun addScan(scan: Scan): Observable<Scan> {
@@ -104,4 +109,7 @@ class RepositoryMockImpl @Inject constructor() : Repository {
         return Observable.just(0)
     }
 
+    override fun reorderPages(scanId: Int, pages: List<Page>): Observable<List<Page>> {
+        TODO("Not yet implemented")
+    }
 }

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.size
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +23,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.add
+import com.xpl0t.scany.extensions.runOnUiThread
 import com.xpl0t.scany.models.Scan
 import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.ui.scanlist.ScanListFragmentDirections
@@ -114,9 +116,8 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener {
         addPageBtn = requireView().findViewById(R.id.addPage)
 
         pageList.adapter = pageAdapter
-        pageList.layoutManager = LinearLayoutManager(requireContext())
         pageList.setHasFixedSize(true)
-        pageList.setItemViewCacheSize(20)
+        pageList.setItemViewCacheSize(5)
 
         addPageHeaderBtn.setOnClickListener {
             showCameraFragment()
@@ -160,17 +161,26 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener {
             return
         }
 
+        // If the scan changed reset the list animation
+        if (id != scan?.id) {
+            pageAdapter.resetAnimation()
+        }
+
         scanDisposable?.dispose()
 
         scanDisposable = repo.getScan(id).take(1).subscribeBy(
             onNext = {
                 Log.i(TAG, "Got scan (id: ${it.id})")
-                scanSubject.onNext(Optional(it))
+                runOnUiThread {
+                    scanSubject.onNext(Optional(it))
+                }
             },
             onError = {
                 Log.e(TAG, "Could not get scan", it)
                 Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
-                scanSubject.onNext(Optional.empty())
+                runOnUiThread {
+                    scanSubject.onNext(Optional.empty())
+                }
             }
         )
     }
@@ -182,7 +192,9 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener {
         actionDisposable = repo.updateScan(newScan).subscribeBy(
             onNext = {
                 Log.i(TAG, "Updated scan name successfully (id: ${it.id})")
-                scanSubject.onNext(Optional(it))
+                runOnUiThread {
+                    scanSubject.onNext(Optional(it))
+                }
             },
             onError = {
                 Log.e(TAG, "Could not set scan name", it)

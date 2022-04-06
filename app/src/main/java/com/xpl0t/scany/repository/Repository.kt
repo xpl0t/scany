@@ -2,7 +2,9 @@ package com.xpl0t.scany.repository
 
 import com.xpl0t.scany.models.Scan
 import com.xpl0t.scany.models.Page
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
 
 interface Repository {
 
@@ -12,9 +14,14 @@ interface Repository {
     fun getScans(): Observable<List<Scan>>
 
     /**
-     * Get an observable emitting the scan with the specified id if found and null otherwise.
+     * Get an observable emitting the scan with the specified id if found.
      */
     fun getScan(id: Int): Observable<Scan>
+
+    /**
+     * Get an observable emitting the page image as ByteArray.
+     */
+    fun getPageImage(pageId: Int): Single<ByteArray>
 
     /**
      * Adds a scan and returns an observable emitting the new scan once added.
@@ -36,5 +43,10 @@ interface Repository {
      * The emitted number is meant to be ignored and has no significance.
      */
     fun removeScan(id: Int): Observable<Int>
+
+    /**
+     * Reorders pages based on the list provided.
+     */
+    fun reorderPages(scanId: Int, pages: List<Page>): Observable<List<Page>>
 
 }

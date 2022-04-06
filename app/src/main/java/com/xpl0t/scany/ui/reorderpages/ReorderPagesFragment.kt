@@ -12,6 +12,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.add
 import com.xpl0t.scany.extensions.finish
+import com.xpl0t.scany.extensions.runOnUiThread
 import com.xpl0t.scany.models.Scan
 import com.xpl0t.scany.models.Page
 import com.xpl0t.scany.repository.Repository
@@ -21,6 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.subjects.BehaviorSubject
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -37,8 +39,10 @@ class ReorderPagesFragment : BaseFragment(R.layout.reorder_pages_fragment) {
     private var scan: Scan? = null
 
     private lateinit var toolbar: MaterialToolbar
-    private lateinit var pages: RecyclerView
+    private lateinit var pageList: RecyclerView
     private lateinit var pageItemAdapter: PageItemAdapter
+
+    private var pages: List<Page>? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -59,15 +63,18 @@ class ReorderPagesFragment : BaseFragment(R.layout.reorder_pages_fragment) {
 
                 Log.d(TAG, "Scan subject next value (id: ${scan?.id})")
                 this.scan = scan
+                pages = scan?.pages
                 updateUI(scan)
             }
         }
 
         disposables.add {
-            pageItemAdapter.pageOrderChanged.subscribe {
-                Log.i(TAG, "Page order changed")
-                updatePageOrder(it)
-            }
+            pageItemAdapter.pageOrderChanged
+                .debounce(400, TimeUnit.MILLISECONDS)
+                .subscribe {
+                    Log.i(TAG, "Page order changed")
+                    updatePageOrder(it)
+                }
         }
 
         getScan(args.scanId)
@@ -81,7 +88,7 @@ class ReorderPagesFragment : BaseFragment(R.layout.reorder_pages_fragment) {
 
     private fun initViews() {
         toolbar = requireView().findViewById(R.id.toolbar)
-        pages = requireView().findViewById(R.id.pages)
+        pageList = requireView().findViewById(R.id.pages)
 
         toolbar.setOnMenuItemClickListener {
             when (it.itemId) {
@@ -98,11 +105,11 @@ class ReorderPagesFragment : BaseFragment(R.layout.reorder_pages_fragment) {
 
         val callback = PageMoveCallback(pageItemAdapter)
         val touchHelper = ItemTouchHelper(callback)
-        touchHelper.attachToRecyclerView(pages)
-        pages.adapter = pageItemAdapter
-        pages.layoutManager = GridLayoutManager(requireContext(), 3)
-        pages.setHasFixedSize(true)
-        pages.setItemViewCacheSize(20)
+        touchHelper.attachToRecyclerView(pageList)
+        pageList.adapter = pageItemAdapter
+        pageList.layoutManager = GridLayoutManager(requireContext(), 3)
+        pageList.setHasFixedSize(true)
+        pageList.setItemViewCacheSize(20)
     }
 
     private fun getScan(id: Int?) {
@@ -117,12 +124,16 @@ class ReorderPagesFragment : BaseFragment(R.layout.reorder_pages_fragment) {
             repo.getScan(id).take(1).subscribeBy(
                 onNext = {
                     Log.i(TAG, "Got scan (id: ${it.id})")
-                    scanSubject.onNext(Optional(it))
+                    runOnUiThread {
+                        scanSubject.onNext(Optional(it))
+                    }
                 },
                 onError = {
                     Log.e(TAG, "Could not get scan", it)
                     Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
-                    finish()
+                    runOnUiThread {
+                        finish()
+                    }
                 }
             )
         }
@@ -131,11 +142,11 @@ class ReorderPagesFragment : BaseFragment(R.layout.reorder_pages_fragment) {
 
     private fun updateUI(scan: Scan?) {
         if (scan == null) {
-            pages.visibility = View.GONE
+            pageList.visibility = View.GONE
             return
         }
 
-        pages.visibility = View.VISIBLE
+        pageList.visibility = View.VISIBLE
         pageItemAdapter.updateItems(scan.pages)
     }
 
@@ -144,14 +155,21 @@ class ReorderPagesFragment : BaseFragment(R.layout.reorder_pages_fragment) {
 
         if (scan == null) return
 
-        actionDisposable?.dispose()
+        if (actionDisposable?.isDisposed == false) {
+            Log.w(TAG, "Can not update page order, because previous query did not finish yet")
+            return
+        }
 
-        val updatedScan = scan!!.copy(pages = pages)
+        // Ensuring the pages from the list adapter are congruent, with those from the database.
+        val congruentPages = pages.map { p ->
+            val dbEquivalent = this.pages?.find { it.id == p.id }
+            p.copy(next = dbEquivalent?.next)
+        }
 
-        actionDisposable = repo.updateScan(updatedScan).subscribeBy(
+        actionDisposable = repo.reorderPages(scan!!.id, congruentPages).subscribeBy(
             onNext = {
                 Log.i(TAG, "Updated scan images")
-                scanSubject.onNext(Optional(it))
+                this.pages = it
             },
             onError = {
                 Log.e(TAG, "Could not update scan", it)

@@ -19,6 +19,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.add
 import com.xpl0t.scany.extensions.getThemeColor
+import com.xpl0t.scany.extensions.runOnUiThread
 import com.xpl0t.scany.models.Scan
 import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.ui.common.BaseFragment
@@ -83,7 +84,6 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
                 }
                 .subscribe {
                     Log.d(TAG, "Current scan subject emitted ${if (it.isEmpty) null else it.value}")
-                    // bundle.putInt(CUR_SCAN_ID, currentScan ?: 0)
                     updateToolbar(it)
 
                     if (it.isEmpty) {
@@ -104,7 +104,9 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
                 Log.i(TAG, "Got scans")
                 // failedCard.visibility = View.GONE
                 // scanRadioGroup.visibility = View.VISIBLE
-                updateScanList(it)
+                runOnUiThread {
+                    updateScanList(it)
+                }
             }
         }
 
@@ -139,13 +141,6 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
         scanRadioGroup = requireView().findViewById(R.id.scanList)
 
         toolbar.setOnMenuItemClickListener { handleMenuItem(it) }
-
-        scanRadioGroup.setOnCheckedChangeListener { _, id ->
-            if (id == -1) return@setOnCheckedChangeListener
-
-            Log.d(TAG, "Selected scan $id")
-            currentScanSubject.onNext(Optional(id))
-        }
 
         // list = requireView().findViewById(R.id.scanList)
         // list.adapter = listAdapter
@@ -196,6 +191,9 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
     }
 
     private fun updateScanList(scans: List<Scan>) {
+        val lel = scans.map { it.name }.joinToString()
+        Log.i(TAG, "Update radio buttons $lel")
+
         scanRadioGroup.clearCheck()
 
         // Add & update radio buttons
@@ -208,6 +206,10 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
 
             radioBtn.id = scan.id
             radioBtn.text = scan.name
+            radioBtn.setOnClickListener {
+                Log.d(TAG, "Scan radio btn clicked ${it.id}")
+                currentScanSubject.onNext(Optional(it.id))
+            }
         }
 
         // Remove radio buttons
@@ -246,7 +248,9 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
         actionDisposable = repo.addScan(scan).take(1).subscribeBy(
             onNext = {
                 Log.i(ScanFragment.TAG, "Created scan (id: ${it.id})")
-                currentScanSubject.onNext(Optional(it.id))
+                runOnUiThread {
+                    currentScanSubject.onNext(Optional(it.id))
+                }
             },
             onError = {
                 Log.e(ScanFragment.TAG, "Could not add scan", it)
@@ -280,7 +284,9 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
         repo.removeScan(curScan.value).subscribeBy(
             onNext = {
                 Log.i(ScanFragment.TAG, "Deleted scan")
-                currentScanSubject.onNext(Optional.empty())
+                runOnUiThread {
+                    currentScanSubject.onNext(Optional.empty())
+                }
             },
             onError = {
                 Log.e(ScanFragment.TAG, "Could not delete scan", it)

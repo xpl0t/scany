@@ -1,6 +1,7 @@
 package com.xpl0t.scany.dependencyinjection
 
 import com.xpl0t.scany.repository.Repository
+import com.xpl0t.scany.repository.RepositoryImpl
 import com.xpl0t.scany.repository.RepositoryMockImpl
 import com.xpl0t.scany.settings.SettingsService
 import com.xpl0t.scany.settings.SettingsServiceMockImpl
@@ -19,7 +20,7 @@ abstract class HiltModule {
     abstract fun bindSettingsService(settingsService: SettingsServiceMockImpl): SettingsService
 
     @Binds
-    abstract fun bindRepository(repository: RepositoryMockImpl): Repository
+    abstract fun bindRepository(repository: RepositoryImpl): Repository
 
     @Binds
     abstract fun bindScanNameGenerator(generator: RandomScanNameGenerator): ScanNameGenerator

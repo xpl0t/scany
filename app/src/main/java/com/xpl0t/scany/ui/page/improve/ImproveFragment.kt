@@ -7,10 +7,12 @@ import android.view.View
 import android.widget.ImageView
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.finish
+import com.xpl0t.scany.extensions.runOnUiThread
 import com.xpl0t.scany.extensions.toBitmap
 import com.xpl0t.scany.models.Page
 import com.xpl0t.scany.repository.Repository
@@ -21,6 +23,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import org.opencv.core.Mat
+import org.opencv.core.MatOfByte
+import org.opencv.core.MatOfInt
+import org.opencv.imgcodecs.Imgcodecs
+import org.opencv.imgcodecs.Imgcodecs.IMWRITE_JPEG_QUALITY
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -34,7 +40,6 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
     private var actionDisposable: Disposable? = null
 
     private lateinit var mat: Mat
-    private lateinit var bitmap: Bitmap
 
     private lateinit var bitmapPreview: ImageView
     private lateinit var applyCropBtn: FloatingActionButton
@@ -50,8 +55,7 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
         }
 
         mat = cameraService.page!!
-        bitmap = mat.toBitmap()
-        setDocPreview(bitmap)
+        setDocPreview(mat)
     }
 
     override fun onPause() {
@@ -65,25 +69,35 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
 
         applyCropBtn.setOnClickListener {
             Log.d(TAG, "Apply improve btn clicked")
-            addPage(bitmap)
+            addPage(mat)
         }
     }
 
-    private fun setDocPreview(bitmap: Bitmap) {
-        bitmapPreview.setImageBitmap(bitmap)
+    private fun setDocPreview(mat: Mat) {
+        val bmp = mat.toBitmap()
+
+        Glide.with(requireView())
+            .load(bmp)
+            .into(bitmapPreview)
     }
 
-    private fun addPage(bitmap: Bitmap) {
+    private fun addPage(mat: Mat) {
         Log.d(ScanFragment.TAG, "Add scan image")
 
         if (actionDisposable?.isDisposed == false) return
 
-        val page = Page(image = bitmap)
+        val params = MatOfInt(IMWRITE_JPEG_QUALITY, 95)
+        val jpgBuf = MatOfByte()
+        Imgcodecs.imencode(".jpg", mat, jpgBuf, params)
+
+        val page = Page(image = jpgBuf.toArray(), next = null)
 
         actionDisposable = repo.addPage(args.scanId, page).subscribeBy(
             onNext = {
                 Log.i(ScanFragment.TAG, "Added scan image")
-                returnToScanListFragment()
+                runOnUiThread {
+                    returnToScanListFragment()
+                }
             },
             onError = {
                 Log.e(ScanFragment.TAG, "Could not add scan image", it)
