@@ -1,6 +1,5 @@
 package com.xpl0t.scany.ui.page.improve
 
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -17,8 +16,8 @@ import com.xpl0t.scany.extensions.toBitmap
 import com.xpl0t.scany.models.Page
 import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.ui.common.BaseFragment
-import com.xpl0t.scany.ui.scan.ScanFragment
 import com.xpl0t.scany.ui.page.camera.CameraService
+import com.xpl0t.scany.ui.scan.ScanFragment
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy

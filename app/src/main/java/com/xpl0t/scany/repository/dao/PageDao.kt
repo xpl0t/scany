@@ -1,9 +1,10 @@
 package com.xpl0t.scany.repository.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
 import com.xpl0t.scany.repository.entities.PageEntity
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Observable.combineLatest
 import io.reactivex.rxjava3.core.Single
 
 @Dao

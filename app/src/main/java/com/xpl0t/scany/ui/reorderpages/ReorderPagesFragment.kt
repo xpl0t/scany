@@ -13,8 +13,8 @@ import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.add
 import com.xpl0t.scany.extensions.finish
 import com.xpl0t.scany.extensions.runOnUiThread
-import com.xpl0t.scany.models.Scan
 import com.xpl0t.scany.models.Page
+import com.xpl0t.scany.models.Scan
 import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.ui.common.BaseFragment
 import com.xpl0t.scany.util.Optional

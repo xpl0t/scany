@@ -10,10 +10,10 @@ import com.xpl0t.scany.repository.entities.ScanEntity
 import com.xpl0t.scany.util.Optional
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Observable.*
+import io.reactivex.rxjava3.core.Observable.combineLatest
+import io.reactivex.rxjava3.core.Observable.just
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 

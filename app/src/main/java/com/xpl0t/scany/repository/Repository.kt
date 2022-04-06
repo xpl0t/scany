@@ -1,8 +1,7 @@
 package com.xpl0t.scany.repository
 
-import com.xpl0t.scany.models.Scan
 import com.xpl0t.scany.models.Page
-import io.reactivex.rxjava3.core.Completable
+import com.xpl0t.scany.models.Scan
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 

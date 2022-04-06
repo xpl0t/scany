@@ -8,7 +8,6 @@ import com.bumptech.glide.module.AppGlideModule
 import com.xpl0t.scany.models.Page
 import com.xpl0t.scany.pagemodelloader.PageModelLoaderFactory
 import java.nio.ByteBuffer
-import javax.inject.Inject
 
 @GlideModule
 class ScanyGlideModule : AppGlideModule() {
