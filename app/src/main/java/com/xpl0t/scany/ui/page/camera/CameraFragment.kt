@@ -29,7 +29,8 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
 
     private val args: CameraFragmentArgs by navArgs()
 
-    @Inject() lateinit var service: CameraService
+    @Inject()
+    lateinit var service: CameraService
 
     private lateinit var cameraPreview: PreviewView
     private lateinit var takePhotoBtn: FloatingActionButton
@@ -115,38 +116,38 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
         val imageCapture = imageCapture ?: return
 
         imageCapture.takePicture(cameraExecutor!!, object : ImageCapture.OnImageCapturedCallback() {
-                override fun onError(exc: ImageCaptureException) {
-                    Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
-                    Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
-                    runOnUiThread {
-                        findNavController().popBackStack()
-                    }
-                }
-
-                override fun onCaptureSuccess(image: ImageProxy) {
-                    Log.i(TAG, "Photo capture successful")
-
-                    var mat: Mat?
-                    var dur = measureTimeMillis {
-                        mat = image.toMat()
-                    }
-                    Log.d(TAG, "Conversion from yuv to rgb bitmap took $dur milliseconds")
-
-                    dur = measureTimeMillis {
-                        mat!!.apply {
-                            scale(500.0)
-                            grayscale()
-                            blur()
-                            canny()
-                        }
-                    }
-                    Log.d(TAG, "Image processing took $dur milliseconds")
-
-                    runOnUiThread {
-                        showImproveFragment(mat!!)
-                    }
+            override fun onError(exc: ImageCaptureException) {
+                Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
+                runOnUiThread {
+                    findNavController().popBackStack()
                 }
             }
+
+            override fun onCaptureSuccess(image: ImageProxy) {
+                Log.i(TAG, "Photo capture successful")
+
+                var mat: Mat?
+                var dur = measureTimeMillis {
+                    mat = image.toMat()
+                }
+                Log.d(TAG, "Conversion from yuv to rgb bitmap took $dur milliseconds")
+
+                dur = measureTimeMillis {
+                    mat!!.apply {
+                        scale(500.0)
+                        grayscale()
+                        blur()
+                        canny()
+                    }
+                }
+                Log.d(TAG, "Image processing took $dur milliseconds")
+
+                runOnUiThread {
+                    showImproveFragment(mat!!)
+                }
+            }
+        }
         )
     }
 

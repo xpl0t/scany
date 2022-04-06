@@ -19,7 +19,8 @@ class ScanItemAdapter : RecyclerView.Adapter<ScanItemAdapter.ViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.scan_list_item, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.scan_list_item, parent, false)
         return ViewHolder(view)
     }
 

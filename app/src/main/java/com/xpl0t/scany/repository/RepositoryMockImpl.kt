@@ -12,7 +12,8 @@ import kotlin.random.Random
 @Singleton
 class RepositoryMockImpl @Inject constructor() : Repository {
 
-    private val scanSubject: BehaviorSubject<List<Scan>> = BehaviorSubject.createDefault(getMockScans())
+    private val scanSubject: BehaviorSubject<List<Scan>> =
+        BehaviorSubject.createDefault(getMockScans())
 
     private fun shouldFail(): Boolean {
         return (Random.nextInt() % 5 == 0) and false

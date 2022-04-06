@@ -17,7 +17,16 @@ fun ImageProxy.toMat(): Mat {
     val uPlane = planes[1].buffer
     val vPlane = planes[2].buffer
 
-    yuvToRgb(width, height, planes[1].rowStride, planes[1].pixelStride, yPlane, uPlane, vPlane, rgbBuf)
+    yuvToRgb(
+        width,
+        height,
+        planes[1].rowStride,
+        planes[1].pixelStride,
+        yPlane,
+        uPlane,
+        vPlane,
+        rgbBuf
+    )
 
     val mat = Mat(height, width, CV_8UC3, rgbBuf)
 
@@ -29,4 +38,12 @@ fun ImageProxy.toMat(): Mat {
 }
 
 private external fun yuvToRgb(
-    width: Int, height: Int, uvRowStride: Int, uvPixelStride: Int, y: ByteBuffer, u: ByteBuffer, v: ByteBuffer, rgb: ByteBuffer)
+    width: Int,
+    height: Int,
+    uvRowStride: Int,
+    uvPixelStride: Int,
+    y: ByteBuffer,
+    u: ByteBuffer,
+    v: ByteBuffer,
+    rgb: ByteBuffer
+)

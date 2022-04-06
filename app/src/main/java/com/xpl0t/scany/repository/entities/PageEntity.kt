@@ -6,15 +6,17 @@ import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "page", foreignKeys = [
-    ForeignKey(
-        entity = ScanEntity::class,
-        parentColumns = arrayOf("id"),
-        childColumns = arrayOf("scan_id"),
-        onDelete = CASCADE
-    )
-])
-data class PageEntity (
+@Entity(
+    tableName = "page", foreignKeys = [
+        ForeignKey(
+            entity = ScanEntity::class,
+            parentColumns = arrayOf("id"),
+            childColumns = arrayOf("scan_id"),
+            onDelete = CASCADE
+        )
+    ]
+)
+data class PageEntity(
     @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo(name = "scan_id") val scanId: Int,
     @ColumnInfo(name = "image", typeAffinity = ColumnInfo.BLOB) val image: ByteArray?,

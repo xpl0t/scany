@@ -33,8 +33,10 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
 
     private val args: ImproveFragmentArgs by navArgs()
 
-    @Inject() lateinit var repo: Repository
-    @Inject() lateinit var cameraService: CameraService
+    @Inject()
+    lateinit var repo: Repository
+    @Inject()
+    lateinit var cameraService: CameraService
 
     private var actionDisposable: Disposable? = null
 

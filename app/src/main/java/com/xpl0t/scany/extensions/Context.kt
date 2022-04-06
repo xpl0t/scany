@@ -8,7 +8,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import java.io.File
 
 fun Context.phoenixExecutablePath(): String {
-    return filesDir.absolutePath + File.separator + "phoenix";
+    return filesDir.absolutePath + File.separator + "phoenix"
 }
 
 fun Context.getThemeColor(@AttrRes attribute: Int): ColorStateList {

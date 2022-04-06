@@ -30,7 +30,8 @@ class ReorderPagesFragment : BaseFragment(R.layout.reorder_pages_fragment) {
 
     private val args: ReorderPagesFragmentArgs by navArgs()
 
-    @Inject lateinit var repo: Repository
+    @Inject
+    lateinit var repo: Repository
 
     private val disposables: MutableList<Disposable> = mutableListOf()
     private var actionDisposable: Disposable? = null

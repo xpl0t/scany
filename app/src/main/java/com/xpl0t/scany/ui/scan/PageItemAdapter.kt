@@ -15,7 +15,8 @@ import com.xpl0t.scany.models.Page
 import io.reactivex.rxjava3.subjects.PublishSubject
 
 
-class PageItemAdapter(private val ctx: Context) : RecyclerView.Adapter<PageItemAdapter.ViewHolder>() {
+class PageItemAdapter(private val ctx: Context) :
+    RecyclerView.Adapter<PageItemAdapter.ViewHolder>() {
 
     private var lastPosition = -1
 

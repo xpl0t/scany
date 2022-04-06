@@ -10,8 +10,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 /**
  * This class will block any gesture from the bottom sheet
  */
-class GestureLockedBottomSheetBehavior<V: View>(context: Context, attributeSet: AttributeSet?)
-    : BottomSheetBehavior<V>(context, attributeSet) {
+class GestureLockedBottomSheetBehavior<V : View>(context: Context, attributeSet: AttributeSet?) :
+    BottomSheetBehavior<V>(context, attributeSet) {
 
     /*constructor(context: Context) : this(context, null)*/
 

@@ -8,7 +8,11 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import com.xpl0t.scany.R
 
-class FailedCard @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
+class FailedCard @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : FrameLayout(context, attrs, defStyleAttr) {
 
     private val title by lazy { findViewById<TextView>(R.id.failedTitle) }
     private val subtitle by lazy { findViewById<TextView>(R.id.failedSubtitle) }

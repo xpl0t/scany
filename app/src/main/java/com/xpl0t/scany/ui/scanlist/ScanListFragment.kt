@@ -38,8 +38,10 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
 
-    @Inject lateinit var repo: Repository
-    @Inject lateinit var scanNameGenerator: ScanNameGenerator
+    @Inject
+    lateinit var repo: Repository
+    @Inject
+    lateinit var scanNameGenerator: ScanNameGenerator
 
     private val getScansTrigger = BehaviorSubject.createDefault(0)
 
@@ -57,8 +59,9 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
     private var currentScanSubject = BehaviorSubject.createDefault<Optional<Int>>(Optional.empty())
 
     private val scanFragment: ScanFragmentListener get() = scanFragmentContainer.getFragment()
-    private val currentScan: Int? get() =
-        if (currentScanSubject.value!!.isEmpty) null else currentScanSubject.value!!.value
+    private val currentScan: Int?
+        get() =
+            if (currentScanSubject.value!!.isEmpty) null else currentScanSubject.value!!.value
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -229,7 +232,8 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
     }
 
     private fun createRadioButton(): MaterialRadioButton {
-        val color = requireContext().getThemeColor(com.google.android.material.R.attr.colorOnPrimary)
+        val color =
+            requireContext().getThemeColor(com.google.android.material.R.attr.colorOnPrimary)
 
         return MaterialRadioButton(requireContext()).apply {
             layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)

@@ -12,7 +12,8 @@ import com.xpl0t.scany.models.Page
 import io.reactivex.rxjava3.subjects.PublishSubject
 
 
-class PageItemAdapter : RecyclerView.Adapter<PageItemAdapter.ViewHolder>(), PageMoveCallback.Contract {
+class PageItemAdapter : RecyclerView.Adapter<PageItemAdapter.ViewHolder>(),
+    PageMoveCallback.Contract {
 
     val pageOrderChanged: PublishSubject<List<Page>> = PublishSubject.create()
     private var items: MutableList<Page> = mutableListOf()
@@ -27,7 +28,8 @@ class PageItemAdapter : RecyclerView.Adapter<PageItemAdapter.ViewHolder>(), Page
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.reorder_pages_item, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.reorder_pages_item, parent, false)
         return ViewHolder(view)
     }
 

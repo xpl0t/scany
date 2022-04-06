@@ -36,7 +36,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener {
 
-    @Inject lateinit var repo: Repository
+    @Inject
+    lateinit var repo: Repository
 
     private val disposables: MutableList<Disposable> = mutableListOf()
     private var scanDisposable: Disposable? = null
@@ -58,7 +59,11 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener {
 
     private var currentState: Int = BottomSheetBehavior.STATE_COLLAPSED
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         return inflater.inflate(R.layout.scan_fragment, container, false)
     }
 
