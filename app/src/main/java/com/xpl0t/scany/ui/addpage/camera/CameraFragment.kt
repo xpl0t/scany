@@ -1,4 +1,4 @@
-package com.xpl0t.scany.ui.page.camera
+package com.xpl0t.scany.ui.addpage.camera
 
 import android.Manifest
 import android.content.pm.PackageManager

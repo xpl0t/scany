@@ -1,4 +1,4 @@
-package com.xpl0t.scany.ui.page.camera
+package com.xpl0t.scany.ui.addpage.camera
 
 import org.opencv.core.Mat
 import javax.inject.Inject

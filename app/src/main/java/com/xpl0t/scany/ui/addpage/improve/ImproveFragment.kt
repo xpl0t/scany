@@ -1,4 +1,4 @@
-package com.xpl0t.scany.ui.page.improve
+package com.xpl0t.scany.ui.addpage.improve
 
 import android.os.Bundle
 import android.util.Log
@@ -16,7 +16,7 @@ import com.xpl0t.scany.extensions.toBitmap
 import com.xpl0t.scany.models.Page
 import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.ui.common.BaseFragment
-import com.xpl0t.scany.ui.page.camera.CameraService
+import com.xpl0t.scany.ui.addpage.camera.CameraService
 import com.xpl0t.scany.ui.scan.ScanFragment
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.Disposable
