@@ -18,7 +18,11 @@ import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.*
 import com.xpl0t.scany.ui.common.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
+import org.opencv.core.CvType.*
 import org.opencv.core.Mat
+import org.opencv.core.MatOfPoint
+import org.opencv.core.Scalar
+import org.opencv.imgproc.Imgproc
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -126,29 +130,49 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
 
             override fun onCaptureSuccess(image: ImageProxy) {
                 Log.i(TAG, "Photo capture successful")
-
-                var mat: Mat?
-                var dur = measureTimeMillis {
-                    mat = image.toMat()
-                }
-                Log.d(TAG, "Conversion from yuv to rgb bitmap took $dur milliseconds")
-
-                dur = measureTimeMillis {
-                    mat!!.apply {
-                        scale(500.0)
-                        grayscale()
-                        blur()
-                        canny()
-                    }
-                }
-                Log.d(TAG, "Image processing took $dur milliseconds")
-
-                runOnUiThread {
-                    showImproveFragment(mat!!)
-                }
+                processImage(image)
             }
         }
         )
+    }
+
+    private fun processImage(image: ImageProxy) {
+        Log.i(TAG, "Process image")
+
+        var mat: Mat?
+        var dur = measureTimeMillis {
+            mat = image.toMat()
+        }
+        Log.d(TAG, "Conversion from yuv to rgb bitmap took $dur milliseconds")
+
+        dur = measureTimeMillis {
+            mat!!.apply {
+                scale(500.0)
+                grayscale()
+                blur()
+                canny()
+            }
+
+            val docContour = mat!!.getLargestQuadrilateral()
+            if (docContour == null) {
+                Log.e(TAG, "No quadrilateral contour could be found")
+                Snackbar.make(requireView(), R.string.no_doc_found, Snackbar.LENGTH_SHORT).show()
+                return
+            }
+
+            //val cont = MatOfPoint()
+            // docContour.convertTo(cont, CV_32S)
+
+            for (p in docContour.toArray()) {
+                Imgproc.drawMarker(mat!!, p, Scalar(240.0, 2.0, 5.0))
+            }
+            // Imgproc.drawContours(mat!!, mutableListOf(cont), -1, Scalar(0.0, 255.0, 0.0), 2)
+        }
+        Log.d(TAG, "Image processing took $dur milliseconds")
+
+        runOnUiThread {
+            showImproveFragment(mat!!)
+        }
     }
 
     /**

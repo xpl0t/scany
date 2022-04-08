@@ -41,6 +41,7 @@
     <!-- Camera fragment -->
     <string name="take_photo_btn">Take photo</string>
     <string name="missing_permission_err">Necessary permission was not granted :(</string>
+    <string name="no_doc_found">No document could be detected :(</string>
 
     <!-- Crop fragment -->
     <string name="source_image_descr">Source bitmap</string>
