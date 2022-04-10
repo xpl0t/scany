@@ -17,16 +17,20 @@ import com.google.android.material.snackbar.Snackbar
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.*
 import com.xpl0t.scany.ui.common.BaseFragment
+import com.xpl0t.scany.util.Stopwatch
 import dagger.hilt.android.AndroidEntryPoint
 import org.opencv.core.CvType.*
 import org.opencv.core.Mat
 import org.opencv.core.MatOfPoint
+import org.opencv.core.Point
 import org.opencv.core.Scalar
 import org.opencv.imgproc.Imgproc
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javax.inject.Inject
 import kotlin.system.measureTimeMillis
+import kotlin.time.DurationUnit
+import kotlin.time.ExperimentalTime
 
 @AndroidEntryPoint
 class CameraFragment : BaseFragment(R.layout.camera_fragment) {
@@ -137,41 +141,41 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
     }
 
     private fun processImage(image: ImageProxy) {
+        val stopwatch = Stopwatch()
         Log.i(TAG, "Process image")
 
-        var mat: Mat?
-        var dur = measureTimeMillis {
-            mat = image.toMat()
+        stopwatch.start()
+        val mat = image.toMat()
+        val processingMat = mat.clone()
+        Log.d(TAG, "Conversion from yuv to rgb bitmap took ${stopwatch.stop()} milliseconds")
+
+        stopwatch.start()
+        processingMat.apply {
+            scale(500.0)
+            grayscale()
+            blur()
+            canny()
         }
-        Log.d(TAG, "Conversion from yuv to rgb bitmap took $dur milliseconds")
 
-        dur = measureTimeMillis {
-            mat!!.apply {
-                scale(500.0)
-                grayscale()
-                blur()
-                canny()
-            }
-
-            val docContour = mat!!.getLargestQuadrilateral()
-            if (docContour == null) {
-                Log.e(TAG, "No quadrilateral contour could be found")
-                Snackbar.make(requireView(), R.string.no_doc_found, Snackbar.LENGTH_SHORT).show()
-                return
-            }
-
-            //val cont = MatOfPoint()
-            // docContour.convertTo(cont, CV_32S)
-
-            for (p in docContour.toArray()) {
-                Imgproc.drawMarker(mat!!, p, Scalar(240.0, 2.0, 5.0))
-            }
-            // Imgproc.drawContours(mat!!, mutableListOf(cont), -1, Scalar(0.0, 255.0, 0.0), 2)
+        val docContour = processingMat.getLargestQuadrangle()
+        if (docContour == null) {
+            Log.e(TAG, "No quadrangle contour could be found")
+            Snackbar.make(requireView(), R.string.no_doc_found, Snackbar.LENGTH_SHORT).show()
+            return
         }
-        Log.d(TAG, "Image processing took $dur milliseconds")
+
+        val scalingFactor = mat.height().toDouble() / processingMat.height().toDouble()
+        val quadrangleEdges = docContour.toList().map { it.multiply(scalingFactor) }
+        for (p in quadrangleEdges) {
+            Imgproc.drawMarker(mat, p, Scalar(255.0, 255.0, 255.0))
+        }
+
+        val warpedMat = mat.perspectiveTransform(quadrangleEdges)
+
+        Log.d(TAG, "Image processing took ${stopwatch.stop()} milliseconds")
 
         runOnUiThread {
-            showImproveFragment(mat!!)
+            showImproveFragment(warpedMat)
         }
     }
 
