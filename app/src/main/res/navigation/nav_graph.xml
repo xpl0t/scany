@@ -7,7 +7,7 @@
     <fragment
         android:id="@+id/cameraFragment"
         android:name="com.xpl0t.scany.ui.addpage.camera.CameraFragment"
-        android:label="CameraFragment" >
+        android:label="CameraFragment">
         <action
             android:id="@+id/action_cameraFragment_to_improveFragment"
             app:destination="@id/improveFragment" />
@@ -18,7 +18,7 @@
     <fragment
         android:id="@+id/improveFragment"
         android:name="com.xpl0t.scany.ui.addpage.improve.ImproveFragment"
-        android:label="ImproveFragment" >
+        android:label="ImproveFragment">
         <argument
             android:name="scanId"
             app:argType="integer" />
@@ -26,7 +26,7 @@
     <fragment
         android:id="@+id/scanListFragment"
         android:name="com.xpl0t.scany.ui.scanlist.ScanListFragment"
-        android:label="ScanListFragment" >
+        android:label="ScanListFragment">
         <action
             android:id="@+id/action_scanListFragment_to_cameraFragment"
             app:destination="@id/cameraFragment" />
@@ -37,7 +37,7 @@
     <fragment
         android:id="@+id/reorderPagesFragment"
         android:name="com.xpl0t.scany.ui.reorderpages.ReorderPagesFragment"
-        android:label="ReorderPagesFragment" >
+        android:label="ReorderPagesFragment">
         <argument
             android:name="scanId"
             app:argType="integer" />

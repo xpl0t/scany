@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
@@ -44,6 +43,7 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
 
     @Inject
     lateinit var repo: Repository
+
     @Inject
     lateinit var scanNameGenerator: ScanNameGenerator
 

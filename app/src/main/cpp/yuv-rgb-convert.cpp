@@ -2,8 +2,7 @@
 
 #define u_char unsigned char
 
-short clamp(short val, short lo, short hi)
-{
+short clamp(short val, short lo, short hi) {
     return val < lo ? lo : val > hi ? hi : val;
 }
 
@@ -16,10 +15,10 @@ Java_com_xpl0t_scany_extensions_ImageProxyKt_yuvToRgb(
         jobject y, jobject u, jobject v,
         jobject rgb) {
 
-    auto* yBuf = (u_char*) env->GetDirectBufferAddress(y);
-    auto* uBuf = (char*) env->GetDirectBufferAddress(u);
-    auto* vBuf = (char*) env->GetDirectBufferAddress(v);
-    auto* rgbBuf = (u_char*) env->GetDirectBufferAddress(rgb);
+    auto *yBuf = (u_char *) env->GetDirectBufferAddress(y);
+    auto *uBuf = (char *) env->GetDirectBufferAddress(u);
+    auto *vBuf = (char *) env->GetDirectBufferAddress(v);
+    auto *rgbBuf = (u_char *) env->GetDirectBufferAddress(rgb);
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {

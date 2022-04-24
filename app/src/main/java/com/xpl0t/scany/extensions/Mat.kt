@@ -6,7 +6,6 @@ import org.opencv.core.*
 import org.opencv.core.CvType.CV_32F
 import org.opencv.core.CvType.CV_8U
 import org.opencv.imgproc.Imgproc
-import java.lang.Math.pow
 import kotlin.math.pow
 import kotlin.math.sqrt
 

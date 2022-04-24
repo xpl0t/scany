@@ -1,9 +1,6 @@
 package com.xpl0t.scany.util
 
 import java.lang.System.currentTimeMillis
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.ExperimentalTime
 
 /**
  * Measure time.

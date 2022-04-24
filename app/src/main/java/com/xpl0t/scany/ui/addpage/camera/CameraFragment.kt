@@ -19,18 +19,12 @@ import com.xpl0t.scany.extensions.*
 import com.xpl0t.scany.ui.common.BaseFragment
 import com.xpl0t.scany.util.Stopwatch
 import dagger.hilt.android.AndroidEntryPoint
-import org.opencv.core.CvType.*
 import org.opencv.core.Mat
-import org.opencv.core.MatOfPoint
-import org.opencv.core.Point
 import org.opencv.core.Scalar
 import org.opencv.imgproc.Imgproc
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javax.inject.Inject
-import kotlin.system.measureTimeMillis
-import kotlin.time.DurationUnit
-import kotlin.time.ExperimentalTime
 
 @AndroidEntryPoint
 class CameraFragment : BaseFragment(R.layout.camera_fragment) {

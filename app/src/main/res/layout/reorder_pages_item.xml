@@ -15,10 +15,10 @@
         android:focusable="true"
         app:cardElevation="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="2:3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintDimensionRatio="2:3"
         app:strokeColor="@color/stroke_color"
         app:strokeWidth="1dp">
 
