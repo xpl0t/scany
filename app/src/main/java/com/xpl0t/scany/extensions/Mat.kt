@@ -5,6 +5,7 @@ import org.opencv.android.Utils
 import org.opencv.core.*
 import org.opencv.core.CvType.CV_32F
 import org.opencv.core.CvType.CV_8U
+import org.opencv.imgcodecs.Imgcodecs
 import org.opencv.imgproc.Imgproc
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -32,6 +33,16 @@ fun Mat.blur() {
 
 fun Mat.canny() {
     Imgproc.Canny(this, this, 75.0, 200.0)
+}
+
+fun Mat.toJpg(quality: Int): ByteArray {
+    val correctedMat = Mat()
+    Imgproc.cvtColor(this, correctedMat, Imgproc.COLOR_BGR2RGB)
+
+    val params = MatOfInt(Imgcodecs.IMWRITE_JPEG_QUALITY, quality)
+    val buf = MatOfByte()
+    Imgcodecs.imencode(".jpg", correctedMat, buf, params)
+    return buf.toArray()
 }
 
 /**

@@ -14,6 +14,7 @@ import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.finish
 import com.xpl0t.scany.extensions.runOnUiThread
 import com.xpl0t.scany.extensions.toBitmap
+import com.xpl0t.scany.extensions.toJpg
 import com.xpl0t.scany.models.Page
 import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.ui.addpage.camera.CameraService
@@ -77,10 +78,8 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
     }
 
     private fun setDocPreview(mat: Mat) {
-        val bmp = mat.toBitmap()
-
         Glide.with(requireView())
-            .load(bmp)
+            .load(mat)
             .into(bitmapPreview)
     }
 
@@ -89,11 +88,8 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
 
         if (actionDisposable?.isDisposed == false) return
 
-        val params = MatOfInt(IMWRITE_JPEG_QUALITY, 95)
-        val jpgBuf = MatOfByte()
-        Imgcodecs.imencode(".jpg", mat, jpgBuf, params)
-
-        val page = Page(image = jpgBuf.toArray(), next = null)
+        val jpg = mat.toJpg(98)
+        val page = Page(image = jpg, next = null)
 
         actionDisposable = repo.addPage(args.scanId, page).subscribeBy(
             onNext = {
