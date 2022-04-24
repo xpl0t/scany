@@ -7,6 +7,7 @@ import android.widget.ImageView
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
+import com.github.chrisbanes.photoview.PhotoView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.xpl0t.scany.R
@@ -43,7 +44,7 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
 
     private lateinit var mat: Mat
 
-    private lateinit var bitmapPreview: ImageView
+    private lateinit var bitmapPreview: PhotoView
     private lateinit var applyCropBtn: FloatingActionButton
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
