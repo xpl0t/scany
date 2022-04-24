@@ -1,13 +1,17 @@
 package com.xpl0t.scany.ui.scanlist
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
 import android.widget.RadioGroup
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.view.allViews
 import androidx.core.view.forEach
 import androidx.fragment.app.FragmentContainerView
@@ -45,6 +49,8 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
 
     private val getScansTrigger = BehaviorSubject.createDefault(0)
 
+    private lateinit var themedCtx: Context
+
     private lateinit var toolbar: MaterialToolbar
     private lateinit var scanRadioGroup: RadioGroup
     private lateinit var scanFragmentContainer: FragmentContainerView
@@ -69,6 +75,12 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
         val curScan = savedInstanceState?.getInt(CUR_SCAN_ID) ?: 0
         val curScanOpt = if (curScan > 0) Optional(curScan) else Optional.empty()
         currentScanSubject.onNext(curScanOpt)
+    }
+
+    override fun onGetLayoutInflater(savedInstanceState: Bundle?): LayoutInflater {
+        val inflater = super.onGetLayoutInflater(savedInstanceState)
+        themedCtx = ContextThemeWrapper(requireContext(), R.style.Theme_Scany_ScanList)
+        return inflater.cloneInContext(themedCtx)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -233,7 +245,7 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
 
     private fun createRadioButton(): MaterialRadioButton {
         val color =
-            requireContext().getThemeColor(com.google.android.material.R.attr.colorOnPrimary)
+            themedCtx.getThemeColor(com.google.android.material.R.attr.colorOnPrimary)
 
         return MaterialRadioButton(requireContext()).apply {
             layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
