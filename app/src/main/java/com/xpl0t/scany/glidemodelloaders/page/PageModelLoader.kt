@@ -1,4 +1,4 @@
-package com.xpl0t.scany.pagemodelloader
+package com.xpl0t.scany.glidemodelloaders.page
 
 import com.bumptech.glide.load.Options
 import com.bumptech.glide.load.model.ModelLoader

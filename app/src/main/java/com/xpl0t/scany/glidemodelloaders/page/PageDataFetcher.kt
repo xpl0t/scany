@@ -1,4 +1,4 @@
-package com.xpl0t.scany.pagemodelloader
+package com.xpl0t.scany.glidemodelloaders.page
 
 import androidx.annotation.NonNull
 import com.bumptech.glide.Priority
