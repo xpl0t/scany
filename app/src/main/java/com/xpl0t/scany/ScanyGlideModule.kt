@@ -6,8 +6,8 @@ import com.bumptech.glide.Registry
 import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.module.AppGlideModule
 import com.xpl0t.scany.glidemodelloaders.mat.MatModelLoaderFactory
-import com.xpl0t.scany.models.Page
 import com.xpl0t.scany.glidemodelloaders.page.PageModelLoaderFactory
+import com.xpl0t.scany.models.Page
 import org.opencv.core.Mat
 import java.nio.ByteBuffer
 
