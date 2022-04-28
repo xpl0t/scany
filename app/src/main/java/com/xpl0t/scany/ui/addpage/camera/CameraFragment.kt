@@ -140,6 +140,7 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
 
         stopwatch.start()
         val mat = image.toMat()
+        image.close()
         val processingMat = mat.clone()
         Log.d(TAG, "Conversion from yuv to rgb bitmap took ${stopwatch.stop()} milliseconds")
 
