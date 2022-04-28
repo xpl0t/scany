@@ -2,7 +2,6 @@ package com.xpl0t.scany.dependencyinjection
 
 import com.xpl0t.scany.filter.FilterList
 import com.xpl0t.scany.filter.GrayscaleFilter
-import com.xpl0t.scany.filter.NoFilter
 import com.xpl0t.scany.filter.SharpenFilter
 import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.repository.RepositoryImpl
@@ -36,12 +35,10 @@ class HiltModule {
 
     @Provides
     fun bindFilters(
-        noFilter: NoFilter,
         grayscaleFilter: GrayscaleFilter,
         sharpenFilter: SharpenFilter
     ): FilterList {
         return listOf(
-            noFilter,
             grayscaleFilter,
             sharpenFilter
         )
