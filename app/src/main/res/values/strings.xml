@@ -57,4 +57,9 @@
     <!-- Page item -->
     <string name="page_image_descr">Page</string>
 
+    <!-- Filter display names -->
+    <string name="grayscale_filter">grayscale</string>
+    <string name="sharpen_filter">sharpen</string>
+    <string name="no_filter">original</string>
+
 </resources>
