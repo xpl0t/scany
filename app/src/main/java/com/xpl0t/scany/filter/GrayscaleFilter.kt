@@ -15,9 +15,8 @@ class GrayscaleFilter @Inject constructor() : Filter {
         get() = R.string.grayscale_filter
 
     override fun apply(src: Mat): Mat {
-        val cloned = src.clone()
         val filtered = Mat()
-        Imgproc.cvtColor(cloned, filtered, COLOR_BGR2GRAY)
+        Imgproc.cvtColor(src, filtered, COLOR_BGR2GRAY)
 
         return filtered
     }

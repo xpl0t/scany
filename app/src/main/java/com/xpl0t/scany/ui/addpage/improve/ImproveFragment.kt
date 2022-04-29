@@ -74,7 +74,7 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
         initViews()
 
         if (curFilter != null) {
-            filteredMat = curFilter!!.apply(originalMat.clone())
+            filteredMat = curFilter!!.apply(originalMat)
             filterAdapter.setCurrentFilter(curFilter)
             setDocPreview(filteredMat!!)
         } else {
@@ -94,7 +94,7 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
                 return@subscribe
             }
 
-            filteredMat = it.value.apply(originalMat.clone())
+            filteredMat = it.value.apply(originalMat)
             setDocPreview(filteredMat!!)
         }
     }

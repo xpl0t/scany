@@ -16,13 +16,11 @@ class SharpenFilter @Inject constructor() : Filter {
         get() = R.string.sharpen_filter
 
     override fun apply(src: Mat): Mat {
-        val cloned = src.clone()
-
         val k = Mat(3, 3, CvType.CV_32F)
         k.put(0, 0, -1.0, -1.0, -1.0, -1.0, 9.0, -1.0, -1.0, -1.0, -1.0)
 
         val filtered = Mat()
-        Imgproc.filter2D(cloned, filtered, -1, k)
+        Imgproc.filter2D(src, filtered, -1, k)
 
         return filtered
     }
