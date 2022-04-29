@@ -161,9 +161,6 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
 
         val scalingFactor = mat.height().toDouble() / processingMat.height().toDouble()
         val quadrangleEdges = docContour.toList().map { it.multiply(scalingFactor) }
-        for (p in quadrangleEdges) {
-            Imgproc.drawMarker(mat, p, Scalar(255.0, 255.0, 255.0))
-        }
 
         val warpedMat = mat.perspectiveTransform(quadrangleEdges)
 
