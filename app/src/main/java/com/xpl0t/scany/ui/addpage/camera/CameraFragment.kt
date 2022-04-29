@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.graphics.ImageFormat
 import android.os.Bundle
 import android.util.Log
+import android.util.Size
 import android.view.View
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -20,14 +21,12 @@ import com.xpl0t.scany.ui.common.BaseFragment
 import com.xpl0t.scany.util.Stopwatch
 import dagger.hilt.android.AndroidEntryPoint
 import org.opencv.core.Mat
-import org.opencv.core.Scalar
-import org.opencv.imgproc.Imgproc
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CameraFragment : BaseFragment(R.layout.camera_fragment) {
+class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Analyzer {
 
     private val args: CameraFragmentArgs by navArgs()
 
@@ -38,6 +37,7 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
     private lateinit var takePhotoBtn: FloatingActionButton
 
     private var imageCapture: ImageCapture? = null
+    private var imageAnalysis: ImageAnalysis? = null
     private var cameraExecutor: ExecutorService? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -102,11 +102,19 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
                 .setBufferFormat(ImageFormat.YUV_420_888)
                 .build()
 
+            imageAnalysis = ImageAnalysis.Builder()
+                .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .setTargetResolution(Size(288, 512))
+                .build()
+
+            imageAnalysis!!.setAnalyzer({ run() }, this)
+
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
             try {
                 cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture)
+                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture, imageAnalysis)
             } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
@@ -169,6 +177,11 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment) {
         runOnUiThread {
             showImproveFragment(warpedMat)
         }
+    }
+
+    override fun analyze(image: ImageProxy) {
+        // val mat = image.toMat()
+        val i = 0
     }
 
     /**
