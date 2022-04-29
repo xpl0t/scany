@@ -1,5 +1,6 @@
 package com.xpl0t.scany.dependencyinjection
 
+import com.xpl0t.scany.filter.BlurFilter
 import com.xpl0t.scany.filter.FilterList
 import com.xpl0t.scany.filter.GrayscaleFilter
 import com.xpl0t.scany.filter.SharpenFilter
@@ -36,11 +37,13 @@ class HiltModule {
     @Provides
     fun bindFilters(
         grayscaleFilter: GrayscaleFilter,
-        sharpenFilter: SharpenFilter
+        sharpenFilter: SharpenFilter,
+        blurFilter: BlurFilter
     ): FilterList {
         return listOf(
             grayscaleFilter,
-            sharpenFilter
+            sharpenFilter,
+            blurFilter
         )
     }
 }

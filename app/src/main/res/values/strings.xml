@@ -60,6 +60,6 @@
     <!-- Filter display names -->
     <string name="grayscale_filter">grayscale</string>
     <string name="sharpen_filter">sharpen</string>
-    <string name="no_filter">original</string>
+    <string name="blur_filter">blur</string>
 
 </resources>
