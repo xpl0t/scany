@@ -104,6 +104,7 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Ana
         takePhotoBtn = requireView().findViewById(R.id.takePhoto)
         takePhotoBtn.setOnClickListener {
             Log.d(TAG, "Take photo btn clicked")
+            takePhotoBtn.isEnabled = false
             takePhoto()
         }
     }
@@ -193,6 +194,10 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Ana
             (processingMat.height() * minDocHeightProportion).toInt()
         )
         if (docContour == null) {
+            runOnUiThread {
+                takePhotoBtn.isEnabled = true
+            }
+
             Log.e(TAG, "No quadrangle contour could be found")
             Snackbar.make(requireView(), R.string.no_doc_found, Snackbar.LENGTH_SHORT).show()
             return
