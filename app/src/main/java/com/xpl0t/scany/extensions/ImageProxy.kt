@@ -4,10 +4,16 @@ import android.graphics.ImageFormat
 import androidx.camera.core.ImageProxy
 import org.opencv.core.Core.ROTATE_90_CLOCKWISE
 import org.opencv.core.Core.rotate
+import org.opencv.core.CvType.CV_8UC1
 import org.opencv.core.CvType.CV_8UC3
 import org.opencv.core.Mat
 import java.nio.ByteBuffer
 
+
+fun ImageProxy.toGrayscaleMat(): Mat {
+    assert(format == ImageFormat.YUV_420_888)
+    return Mat(height, width, CV_8UC1, planes[0].buffer)
+}
 
 fun ImageProxy.toMat(): Mat {
     assert(format == ImageFormat.YUV_420_888)

@@ -7,6 +7,7 @@ import org.opencv.core.CvType.CV_32F
 import org.opencv.core.CvType.CV_8U
 import org.opencv.imgcodecs.Imgcodecs
 import org.opencv.imgproc.Imgproc
+import java.nio.ByteBuffer
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -17,22 +18,41 @@ fun Mat.toBitmap(): Bitmap {
     return bmp
 }
 
-fun Mat.scale(scaledHeight: Double) {
+fun Mat.scale(scaledHeight: Double, copy: Boolean = false): Mat {
     val scaledWidth = size().width * scaledHeight / size().height
     val scaledSize = Size(scaledWidth, scaledHeight)
-    Imgproc.resize(this, this, scaledSize)
+    val dstMat = if (copy) Mat() else this
+
+    Imgproc.resize(this, dstMat, scaledSize)
+
+    return dstMat
 }
 
-fun Mat.grayscale() {
-    Imgproc.cvtColor(this, this, Imgproc.COLOR_BGR2GRAY)
+fun Mat.grayscale(copy: Boolean = false): Mat {
+    val dstMat = if (copy) Mat() else this
+    Imgproc.cvtColor(this, dstMat, Imgproc.COLOR_BGR2GRAY)
+
+    return dstMat
 }
 
-fun Mat.blur() {
-    Imgproc.GaussianBlur(this, this, Size(5.0, 5.0), 0.0)
+fun Mat.blur(copy: Boolean = false): Mat {
+    val dstMat = if (copy) Mat() else this
+    Imgproc.GaussianBlur(this, dstMat, Size(5.0, 5.0), 0.0)
+
+    return dstMat
 }
 
-fun Mat.canny() {
-    Imgproc.Canny(this, this, 75.0, 200.0)
+fun Mat.canny(copy: Boolean = false): Mat {
+    val dstMat = if (copy) Mat() else this
+    Imgproc.Canny(this, dstMat, 75.0, 200.0)
+
+    return dstMat
+}
+
+fun Mat.blend(kernel: Mat): Mat {
+    val morphed = Mat()
+    Imgproc.morphologyEx(this, morphed, Imgproc.MORPH_CLOSE, kernel, Point(-1.0, -1.0), 3)
+    return morphed
 }
 
 fun Mat.toJpg(quality: Int): ByteArray {
@@ -49,11 +69,9 @@ fun Mat.toJpg(quality: Int): ByteArray {
  * Find the largest quadrangle contour and return the contour.
  * If no quadrangle contour was found null is returned.
  */
-fun Mat.getLargestQuadrangle(): MatOfPoint2f? {
-    val mat = this.clone()
-
+fun Mat.getLargestQuadrangle(minDistX: Int, minDistY: Int): MatOfPoint2f? {
     val contours = mutableListOf<MatOfPoint>()
-    Imgproc.findContours(mat, contours, mat, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE)
+    Imgproc.findContours(this, contours, Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE)
 
     val sortedContours = contours
         .sortedByDescending { Imgproc.contourArea(it) }
@@ -70,7 +88,23 @@ fun Mat.getLargestQuadrangle(): MatOfPoint2f? {
         if (approx.total() == 4.toLong()) {
             approx.reshape(4, 2)
 
-            return approx
+            val points = approx.toList().toMutableList()
+            points.sortBy { it.x + it.y }
+            val bottomRight = points.removeAt(3)
+            val topLeft = points.removeAt(0)
+
+            points.sortBy { it.x + (height() - it.y) }
+            val bottomLeft = points[0]
+            val topRight = points[1]
+
+            if (
+                (topRight.x - topLeft.x) > minDistX
+                && (bottomRight.x - bottomLeft.x) > minDistX
+                && (bottomLeft.y - topLeft.y) > minDistY
+                && (bottomRight.y - topRight.y) > minDistY
+            ) {
+                return approx
+            }
         }
     }
 

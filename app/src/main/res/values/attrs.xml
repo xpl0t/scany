@@ -4,4 +4,8 @@
         <attr name="title" format="string" />
         <attr name="subtitle" format="string" />
     </declare-styleable>
+
+    <declare-styleable name="DocumentOutline">
+        <attr name="outlineColor" format="color" />
+    </declare-styleable>
 </resources>

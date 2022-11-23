@@ -3,10 +3,13 @@ package com.xpl0t.scany.ui.addpage.camera
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.ImageFormat
+import android.hardware.camera2.CameraCharacteristics
 import android.os.Bundle
 import android.util.Log
 import android.util.Size
+import android.view.Surface.*
 import android.view.View
+import androidx.camera.camera2.interop.Camera2CameraInfo
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -19,11 +22,15 @@ import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.*
 import com.xpl0t.scany.ui.common.BaseFragment
 import com.xpl0t.scany.util.Stopwatch
+import com.xpl0t.scany.views.DocumentOutline
 import dagger.hilt.android.AndroidEntryPoint
+import org.opencv.core.CvType
 import org.opencv.core.Mat
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javax.inject.Inject
+import android.graphics.Point
+
 
 @AndroidEntryPoint
 class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Analyzer {
@@ -34,11 +41,25 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Ana
     lateinit var service: CameraService
 
     private lateinit var cameraPreview: PreviewView
+    private lateinit var documentOutline: DocumentOutline
     private lateinit var takePhotoBtn: FloatingActionButton
 
+    private var cameraProvider: ProcessCameraProvider? = null
+    private var preview: Preview? = null
     private var imageCapture: ImageCapture? = null
     private var imageAnalysis: ImageAnalysis? = null
     private var cameraExecutor: ExecutorService? = null
+
+    private val blendKernel: Mat = getBlendKernel()
+
+    /**
+     * Minimum width proportion of the total width to get detected as document.
+     */
+    private val minDocWidthProportion = 0.2
+    /**
+     * Minimum width proportion of the total height to get detected as document.
+     */
+    private val minDocHeightProportion = 0.2
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -78,6 +99,7 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Ana
     }
 
     private fun initViews() {
+        documentOutline = requireView().findViewById(R.id.docOutline)
         cameraPreview = requireView().findViewById(R.id.camPreview)
         takePhotoBtn = requireView().findViewById(R.id.takePhoto)
         takePhotoBtn.setOnClickListener {
@@ -90,9 +112,9 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Ana
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
 
         cameraProviderFuture.addListener({
-            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+            cameraProvider = cameraProviderFuture.get()
 
-            val preview = Preview.Builder()
+            preview = Preview.Builder()
                 .build()
                 .also {
                     it.setSurfaceProvider(cameraPreview.surfaceProvider)
@@ -103,18 +125,23 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Ana
                 .build()
 
             imageAnalysis = ImageAnalysis.Builder()
-                .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .setTargetResolution(Size(288, 512))
+                .setTargetResolution(Size(640, 360))
                 .build()
 
-            imageAnalysis!!.setAnalyzer({ run() }, this)
+            imageAnalysis!!.setAnalyzer(Executors.newSingleThreadExecutor(), this)
 
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
             try {
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture, imageAnalysis)
+                cameraProvider?.unbindAll()
+                cameraProvider?.bindToLifecycle(
+                    this,
+                    cameraSelector,
+                    preview,
+                    imageCapture,
+                    imageAnalysis
+                )
             } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
@@ -125,20 +152,22 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Ana
     private fun takePhoto() {
         val imageCapture = imageCapture ?: return
 
-        imageCapture.takePicture(cameraExecutor!!, object : ImageCapture.OnImageCapturedCallback() {
-            override fun onError(exc: ImageCaptureException) {
-                Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
-                Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
-                runOnUiThread {
-                    findNavController().popBackStack()
+        imageCapture.takePicture(
+            cameraExecutor!!,
+            object : ImageCapture.OnImageCapturedCallback() {
+                override fun onError(exc: ImageCaptureException) {
+                    Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                    Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
+                    runOnUiThread {
+                        findNavController().popBackStack()
+                    }
+                }
+
+                override fun onCaptureSuccess(image: ImageProxy) {
+                    Log.i(TAG, "Photo capture successful")
+                    processImage(image)
                 }
             }
-
-            override fun onCaptureSuccess(image: ImageProxy) {
-                Log.i(TAG, "Photo capture successful")
-                processImage(image)
-            }
-        }
         )
     }
 
@@ -149,18 +178,20 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Ana
         stopwatch.start()
         val mat = image.toMat()
         image.close()
-        val processingMat = mat.clone()
+        var processingMat = mat.clone()
         Log.d(TAG, "Conversion from yuv to rgb bitmap took ${stopwatch.stop()} milliseconds")
 
         stopwatch.start()
-        processingMat.apply {
-            scale(500.0)
-            grayscale()
-            blur()
-            canny()
-        }
+        processingMat = processingMat
+            .scale(640.0)
+            .grayscale()
+            .blend(blendKernel)
+            .canny()
 
-        val docContour = processingMat.getLargestQuadrangle()
+        val docContour = processingMat.getLargestQuadrangle(
+            (processingMat.width() * minDocWidthProportion).toInt(),
+            (processingMat.height() * minDocHeightProportion).toInt()
+        )
         if (docContour == null) {
             Log.e(TAG, "No quadrangle contour could be found")
             Snackbar.make(requireView(), R.string.no_doc_found, Snackbar.LENGTH_SHORT).show()
@@ -180,8 +211,48 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Ana
     }
 
     override fun analyze(image: ImageProxy) {
-        // val mat = image.toMat()
-        val i = 0
+        var mat = image.toGrayscaleMat()
+        image.close()
+
+        mat = mat
+            .blend(blendKernel)
+            .canny()
+
+        val docContour = mat.getLargestQuadrangle(
+            (mat.width() * minDocWidthProportion).toInt(),
+            (mat.height() * minDocHeightProportion).toInt()
+        )
+        if (docContour == null) {
+            this.documentOutline.clear()
+            return
+        }
+
+        // Inverting width/height, because input frame is rotated
+        val curWidth = mat.height().toFloat()
+        val curHeight = mat.width().toFloat()
+
+        val targetXYRatio = documentOutline.height.toFloat() / documentOutline.width.toFloat()
+        val curXYRatio = curHeight / curWidth
+
+        val scalingFactor = if (targetXYRatio > curXYRatio)
+            documentOutline.height.toFloat() / curHeight // Cur is wider
+        else
+            documentOutline.width.toFloat() / curWidth // Cur is higher
+
+        val offX = if (targetXYRatio > curXYRatio) (curWidth * scalingFactor - documentOutline.width.toFloat()) / 2
+            else 0f
+        val offY = if (targetXYRatio < curXYRatio) (curHeight * scalingFactor - documentOutline.height.toFloat()) / 2
+            else 0f
+
+        val edges = docContour.toList().map {
+            // Rotating coordinates
+            val x = mat.height() - it.y
+            val y = it.x
+
+            Point((x * scalingFactor - offX).toInt(), (y * scalingFactor - offY).toInt())
+        }
+
+        documentOutline.setOutline(edges)
     }
 
     /**
@@ -196,6 +267,15 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Ana
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun getBlendKernel(size: Int = 8): Mat {
+        val kernelArr = ByteArray(size * size)
+        for (i in 0 until size * size) kernelArr[i] = 1
+
+        val kernel = Mat(5, 5, CvType.CV_8U)
+        kernel.put(0, 0, kernelArr)
+        return kernel
     }
 
     companion object {
