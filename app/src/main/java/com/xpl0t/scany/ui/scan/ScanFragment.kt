@@ -122,6 +122,16 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener {
         pageList.setHasFixedSize(true)
         pageList.setItemViewCacheSize(5)
 
+        titleTextView.setOnClickListener {
+            if (currentState == BottomSheetBehavior.STATE_COLLAPSED) {
+                expand()
+                return@setOnClickListener
+            }
+
+            if (scan != null)
+                renameTitle()
+        }
+
         addPageHeaderBtn.setOnClickListener {
             showCameraFragment()
         }
