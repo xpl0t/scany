@@ -61,6 +61,15 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Ana
      */
     private val minDocHeightProportion = 0.2
 
+    private var lastTimeDocDetected: Long? = null
+
+    /**
+     * The time the outline is displayed after the document could not be detected anymore.
+     * This prevents outline flickering but can look weird if the outline is kept too long
+     * in other occasions.
+     */
+    private val outlineTimeout: Long = 50
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
@@ -227,8 +236,12 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Ana
             (mat.width() * minDocWidthProportion).toInt(),
             (mat.height() * minDocHeightProportion).toInt()
         )
+
         if (docContour == null) {
-            this.documentOutline.clear()
+            if (lastTimeDocDetected != null && System.currentTimeMillis() - lastTimeDocDetected!! > outlineTimeout) {
+                this.documentOutline.clear()
+            }
+
             return
         }
 
@@ -258,6 +271,7 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Ana
         }
 
         documentOutline.setOutline(edges)
+        lastTimeDocDetected = System.currentTimeMillis()
     }
 
     /**
