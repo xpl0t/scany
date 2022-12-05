@@ -3,6 +3,7 @@
     <string name="retry_btn">Retry</string>
     <string name="apply_btn">Apply</string>
     <string name="cancel_btn">Cancel</string>
+    <string name="share">Share</string>
 
     <!-- Error messages -->
     <string name="error_msg">Ooops… something went wrong :(</string>
@@ -43,12 +44,12 @@
     <string name="missing_permission_err">Necessary permission was not granted :(</string>
     <string name="no_doc_found">No document could be detected :(</string>
 
-    <!-- Crop fragment -->
-    <string name="source_image_descr">Source bitmap</string>
-    <string name="apply_crop_btn">Apply crop</string>
+    <!-- View page fragment -->
+    <string name="view_page_title">View Page</string>
+    <string name="load_page_err">Could not load page :(</string>
 
     <!-- Improve fragment -->
-    <string name="crop_image_descr">Cropped bitmap</string>
+    <string name="source_image_descr">Source bitmap</string>
     <string name="apply_improve_btn">Apply improvements</string>
 
     <!-- Reorder pages fragment -->

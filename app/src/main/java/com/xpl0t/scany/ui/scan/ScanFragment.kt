@@ -100,6 +100,14 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener {
                 updateUI(scan)
             }
         }
+
+        disposables.add {
+            pageAdapter.pageClicked.subscribe {
+                val action = ScanListFragmentDirections
+                    .actionScanListFragmentToViewPageFragment(it.id)
+                findNavController().navigate(action)
+            }
+        }
     }
 
     override fun onPause() {

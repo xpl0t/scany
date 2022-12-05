@@ -24,6 +24,14 @@
             app:argType="integer" />
     </fragment>
     <fragment
+        android:id="@+id/ViewPageFragment"
+        android:name="com.xpl0t.scany.ui.viewpage.ViewPageFragment"
+        android:label="ViewPageFragment">
+        <argument
+            android:name="pageId"
+            app:argType="integer" />
+    </fragment>
+    <fragment
         android:id="@+id/scanListFragment"
         android:name="com.xpl0t.scany.ui.scanlist.ScanListFragment"
         android:label="ScanListFragment">
@@ -33,6 +41,9 @@
         <action
             android:id="@+id/action_scanListFragment_to_reorderPagesFragment"
             app:destination="@id/reorderPagesFragment" />
+        <action
+            android:id="@+id/action_scanListFragment_to_ViewPageFragment"
+            app:destination="@id/ViewPageFragment" />
     </fragment>
     <fragment
         android:id="@+id/reorderPagesFragment"
