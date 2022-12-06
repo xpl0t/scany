@@ -2,9 +2,7 @@ package com.xpl0t.scany.ui.viewpage
 
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
 import android.view.View
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.github.chrisbanes.photoview.PhotoView
@@ -13,16 +11,12 @@ import com.google.android.material.snackbar.Snackbar
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.finish
 import com.xpl0t.scany.extensions.runOnUiThread
-import com.xpl0t.scany.extensions.toJpg
-import com.xpl0t.scany.filter.Filter
-import com.xpl0t.scany.models.Page
 import com.xpl0t.scany.repository.Repository
+import com.xpl0t.scany.share.ShareService
 import com.xpl0t.scany.ui.common.BaseFragment
-import com.xpl0t.scany.ui.scan.ScanFragment
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
-import org.opencv.core.Mat
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -33,9 +27,12 @@ class ViewPageFragment : BaseFragment(R.layout.view_page) {
     @Inject()
     lateinit var repo: Repository
 
+    @Inject()
+    lateinit var shareSv: ShareService
+
     private var disposable: Disposable? = null
 
-    // private lateinit var mat: Mat
+    private var image: ByteArray? = null
 
     private lateinit var toolbar: MaterialToolbar
     private lateinit var bitmapPreview: PhotoView
@@ -56,6 +53,7 @@ class ViewPageFragment : BaseFragment(R.layout.view_page) {
                 finish()
             },
             {
+                image = it
                 runOnUiThread {
                     setDocPreview(it)
                 }
@@ -79,6 +77,7 @@ class ViewPageFragment : BaseFragment(R.layout.view_page) {
         toolbar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.share -> {
+                    shareSv.shareImage(context!!, image ?: return@setOnMenuItemClickListener true)
                     true
                 }
                 else -> false
