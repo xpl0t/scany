@@ -38,6 +38,12 @@ interface Repository {
     fun addPage(scanId: Int, scanImg: Page): Observable<Scan>
 
     /**
+     * Removes a page and returns an observable emitting once the removal succeeded.
+     * The emitted number is meant to be ignored and has no significance.
+     */
+    fun removePage(id: Int): Observable<Int>
+
+    /**
      * Removes a scan and returns an observable emitting once the removal succeeded.
      * The emitted number is meant to be ignored and has no significance.
      */

@@ -2,6 +2,7 @@
     <string name="app_name">Scany</string>
     <string name="retry_btn">Retry</string>
     <string name="apply_btn">Apply</string>
+    <string name="delete_btn">Delete</string>
     <string name="cancel_btn">Cancel</string>
     <string name="share">Share</string>
 
@@ -45,8 +46,11 @@
     <string name="no_doc_found">No document could be detected :(</string>
 
     <!-- View page fragment -->
+    <string name="delete_page">Delete page</string>
     <string name="view_page_title">View Page</string>
     <string name="load_page_err">Could not load page :(</string>
+    <string name="delete_page_question">Do you really want to delete this page?</string>
+    <string name="delete_page_failed">Could not delete page :(</string>
 
     <!-- Improve fragment -->
     <string name="source_image_descr">Source bitmap</string>
@@ -62,5 +66,10 @@
     <string name="grayscale_filter">grayscale</string>
     <string name="sharpen_filter">sharpen</string>
     <string name="blur_filter">blur</string>
+
+    <!-- Delete page dialog -->
+    <string name="delete_page">Delete page</string>
+    <string name="delete_page_question">Do you really want to delete this page?</string>
+    <string name="delete_page_failed">Could not delete page :(</string>
 
 </resources>

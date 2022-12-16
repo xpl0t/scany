@@ -135,6 +135,12 @@ class RepositoryImpl @Inject constructor(
             .subscribeOn(Schedulers.computation())
     }
 
+    override fun removePage(id: Int): Observable<Int> {
+        return db.pageDao().delete(id)
+            .toObservable()
+            .subscribeOn(Schedulers.computation())
+    }
+
     override fun removeScan(id: Int): Observable<Int> {
         return db.scanDao().delete(id)
             .toObservable()

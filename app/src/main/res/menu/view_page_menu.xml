@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/delete"
+        android:icon="@drawable/trashcan"
+        android:title="@string/delete_page"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/share"
         android:icon="@drawable/share"
         android:title="@string/share"

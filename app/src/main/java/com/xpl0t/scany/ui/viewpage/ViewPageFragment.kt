@@ -7,12 +7,14 @@ import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.github.chrisbanes.photoview.PhotoView
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.finish
 import com.xpl0t.scany.extensions.runOnUiThread
 import com.xpl0t.scany.repository.Repository
-import com.xpl0t.scany.share.ShareService
+import com.xpl0t.scany.services.DeletePageService
+import com.xpl0t.scany.services.ShareService
 import com.xpl0t.scany.ui.common.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.Disposable
@@ -30,7 +32,11 @@ class ViewPageFragment : BaseFragment(R.layout.view_page) {
     @Inject()
     lateinit var shareSv: ShareService
 
+    @Inject()
+    lateinit var deletePageSv: DeletePageService
+
     private var disposable: Disposable? = null
+    private var actionDisposable: Disposable? = null
 
     private var image: ByteArray? = null
 
@@ -80,9 +86,34 @@ class ViewPageFragment : BaseFragment(R.layout.view_page) {
                     shareSv.shareImage(context!!, image ?: return@setOnMenuItemClickListener true)
                     true
                 }
+                R.id.delete -> {
+                    initDeletePage()
+                    true
+                }
                 else -> false
             }
         }
+    }
+
+    private fun initDeletePage() {
+        if (actionDisposable?.isDisposed == false)
+            return
+
+        Log.i(TAG, "Delete page ${args.pageId}")
+
+        deletePageSv.showDeletePageDialog(context!!, args.pageId).subscribe(
+            {
+                Log.d(TAG, "Delete page succeeded")
+                runOnUiThread {
+                    finish()
+                }
+            },
+            {
+                Log.e(TAG, "Delete page failed", it)
+                Snackbar.make(requireView(), R.string.delete_page_failed, Snackbar.LENGTH_LONG)
+                    .show()
+            }
+        )
     }
 
     private fun setDocPreview(byteArray: ByteArray) {

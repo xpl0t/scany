@@ -100,6 +100,10 @@ class RepositoryMockImpl @Inject constructor() : Repository {
         return Observable.just(newScan)
     }
 
+    override fun removePage(id: Int): Observable<Int> {
+        throw NotImplementedError()
+    }
+
     override fun removeScan(id: Int): Observable<Int> {
         if (shouldFail()) return Observable.error(Error("Database offline"))
 

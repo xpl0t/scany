@@ -1,9 +1,8 @@
-package com.xpl0t.scany.share
+package com.xpl0t.scany.services
 
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
 import androidx.core.content.ContextCompat.startActivity
