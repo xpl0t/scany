@@ -46,11 +46,8 @@
     <string name="no_doc_found">No document could be detected :(</string>
 
     <!-- View page fragment -->
-    <string name="delete_page">Delete page</string>
     <string name="view_page_title">View Page</string>
     <string name="load_page_err">Could not load page :(</string>
-    <string name="delete_page_question">Do you really want to delete this page?</string>
-    <string name="delete_page_failed">Could not delete page :(</string>
 
     <!-- Improve fragment -->
     <string name="source_image_descr">Source bitmap</string>

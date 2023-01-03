@@ -21,9 +21,12 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.add
+import com.xpl0t.scany.extensions.finish
 import com.xpl0t.scany.extensions.runOnUiThread
 import com.xpl0t.scany.models.Scan
 import com.xpl0t.scany.repository.Repository
+import com.xpl0t.scany.services.backpress.BackPressHandler
+import com.xpl0t.scany.services.backpress.BackPressHandlerService
 import com.xpl0t.scany.ui.scanlist.ScanListFragmentDirections
 import com.xpl0t.scany.util.Optional
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,10 +37,13 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener {
+class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener, BackPressHandler {
 
     @Inject
     lateinit var repo: Repository
+
+    @Inject
+    lateinit var backPressHandlerService: BackPressHandlerService
 
     private val disposables: MutableList<Disposable> = mutableListOf()
     private var scanDisposable: Disposable? = null
@@ -90,6 +96,7 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener {
 
     override fun onResume() {
         super.onResume()
+        backPressHandlerService.setHandler(this)
 
         disposables.add {
             scanSubject.subscribe {
@@ -112,9 +119,18 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener {
 
     override fun onPause() {
         super.onPause()
+        backPressHandlerService.resetHandler()
+
         disposables.forEach { it.dispose() }
         scanDisposable?.dispose()
         actionDisposable?.dispose()
+    }
+
+    override fun onBackPressed() {
+        if (currentState == BottomSheetBehavior.STATE_COLLAPSED)
+            activity?.finish()
+        else
+            hide()
     }
 
     private fun initViews() {
