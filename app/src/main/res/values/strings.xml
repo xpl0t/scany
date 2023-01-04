@@ -69,4 +69,8 @@
     <string name="delete_page_question">Do you really want to delete this page?</string>
     <string name="delete_page_failed">Could not delete page :(</string>
 
+    <!-- Export PDF fragment -->
+    <string name="export_no_page">At least one page is required to generate a PDF document</string>
+    <string name="export_pdf_error">Could not generate PDF :(</string>
+
 </resources>

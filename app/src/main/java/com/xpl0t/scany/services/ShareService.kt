@@ -13,30 +13,25 @@ import javax.inject.Singleton
 @Singleton
 class ShareService @Inject() constructor() {
 
-    fun shareImage(context: Context, img: ByteArray) {
+    fun share(context: Context, data: ByteArray, mimeType: String) {
         val values = ContentValues().apply {
-            put(MediaStore.Images.Media.TITLE, "page")
-            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+            put(MediaStore.Images.Media.TITLE, "data")
+            put(MediaStore.Images.Media.MIME_TYPE, mimeType)
         }
 
         val uri = context.contentResolver.insert(
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            MediaStore.Files.getContentUri("external"),
             values
         )
 
-        try {
-            val outStream = context.contentResolver.openOutputStream(uri!!)
-            outStream?.write(img)
-            outStream?.close()
-        } catch (e: Exception) {
-            Log.e(TAG, "Could not write image to media store", e)
-            return
-        }
+        val outStream = context.contentResolver.openOutputStream(uri!!)
+        outStream?.write(data)
+        outStream?.close()
 
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_STREAM, uri)
-            type = "image/jpeg"
+            type = mimeType
         }
 
         val shareIntent = Intent.createChooser(sendIntent, null)

@@ -7,7 +7,6 @@ import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.github.chrisbanes.photoview.PhotoView
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.finish
@@ -83,7 +82,7 @@ class ViewPageFragment : BaseFragment(R.layout.view_page) {
         toolbar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.share -> {
-                    shareSv.shareImage(context!!, image ?: return@setOnMenuItemClickListener true)
+                    shareSv.share(context!!, image ?: return@setOnMenuItemClickListener true, "image/jpeg")
                     true
                 }
                 R.id.delete -> {

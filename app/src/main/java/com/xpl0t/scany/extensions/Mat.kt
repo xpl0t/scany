@@ -7,7 +7,6 @@ import org.opencv.core.CvType.CV_32F
 import org.opencv.core.CvType.CV_8U
 import org.opencv.imgcodecs.Imgcodecs
 import org.opencv.imgproc.Imgproc
-import java.nio.ByteBuffer
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -18,9 +17,18 @@ fun Mat.toBitmap(): Bitmap {
     return bmp
 }
 
-fun Mat.scale(scaledHeight: Double, copy: Boolean = false): Mat {
-    val scaledWidth = size().width * scaledHeight / size().height
-    val scaledSize = Size(scaledWidth, scaledHeight)
+fun Mat.scale(height: Double, copy: Boolean = false): Mat {
+    val scaledWidth = size().width * height / size().height
+    val scaledSize = Size(scaledWidth, height)
+    val dstMat = if (copy) Mat() else this
+
+    Imgproc.resize(this, dstMat, scaledSize)
+
+    return dstMat
+}
+
+fun Mat.scale(width: Double, height: Double, copy: Boolean = false): Mat {
+    val scaledSize = Size(width, height)
     val dstMat = if (copy) Mat() else this
 
     Imgproc.resize(this, dstMat, scaledSize)

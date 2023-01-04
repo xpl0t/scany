@@ -21,15 +21,17 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.add
-import com.xpl0t.scany.extensions.finish
 import com.xpl0t.scany.extensions.runOnUiThread
 import com.xpl0t.scany.models.Scan
 import com.xpl0t.scany.repository.Repository
+import com.xpl0t.scany.services.PdfService
+import com.xpl0t.scany.services.ShareService
 import com.xpl0t.scany.services.backpress.BackPressHandler
 import com.xpl0t.scany.services.backpress.BackPressHandlerService
 import com.xpl0t.scany.ui.scanlist.ScanListFragmentDirections
 import com.xpl0t.scany.util.Optional
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.subjects.BehaviorSubject
@@ -44,6 +46,12 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener, BackPres
 
     @Inject
     lateinit var backPressHandlerService: BackPressHandlerService
+
+    @Inject
+    lateinit var pdfService: PdfService
+
+    @Inject
+    lateinit var shareService: ShareService
 
     private val disposables: MutableList<Disposable> = mutableListOf()
     private var scanDisposable: Disposable? = null
@@ -270,7 +278,27 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener, BackPres
     }
 
     override fun export() {
-        Log.d(TAG, "Export")
+        Log.d(TAG, "Export PDF")
+        if (scan == null || actionDisposable?.isDisposed == false)
+            return
+
+        if (scan!!.pages.isEmpty()) {
+            return
+        }
+
+        val imageObservables = scan!!.pages.map {
+            repo.getPageImage(it.id).toObservable()
+        }
+        Observable.combineLatestArray(imageObservables.toTypedArray()) { it.toList() as List<ByteArray> }.subscribe(
+            {
+                val pdf = pdfService.getPdfFromImages(it)
+                shareService.share(context!!, pdf, "application/pdf")
+            },
+            {
+                Log.e(TAG, "Could not get page images and generate pdf", it)
+                Snackbar.make(requireView(), R.string.export_pdf_error, Snackbar.LENGTH_SHORT).show()
+            }
+        )
     }
 
     override fun reorderPages() {
