@@ -44,11 +44,22 @@
         <action
             android:id="@+id/action_scanListFragment_to_ViewPageFragment"
             app:destination="@id/ViewPageFragment" />
+        <action
+            android:id="@+id/action_scanListFragment_to_exportFragment"
+            app:destination="@id/exportFragment" />
     </fragment>
     <fragment
         android:id="@+id/reorderPagesFragment"
         android:name="com.xpl0t.scany.ui.reorderpages.ReorderPagesFragment"
         android:label="ReorderPagesFragment">
+        <argument
+            android:name="scanId"
+            app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/exportFragment"
+        android:name="com.xpl0t.scany.ui.export.ExportFragment"
+        android:label="ExportFragment" >
         <argument
             android:name="scanId"
             app:argType="integer" />

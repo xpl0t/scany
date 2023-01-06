@@ -72,5 +72,32 @@
     <!-- Export PDF fragment -->
     <string name="export_no_page">At least one page is required to generate a PDF document</string>
     <string name="export_pdf_error">Could not generate PDF :(</string>
+    <string name="export_title">Export Document</string>
+    <string name="export_page_list_title">Page Selection &amp; Arrangement</string>
+    <string name="select_all">Select all</string>
+    <string name="clear_selection">Clear selection</string>
+    <string name="export_page_size_title">Page Size</string>
+    <string name="page_size">Page Size</string>
+    <string name="img_scale_type_title">Image Scaling</string>
+    <string name="export_fit_img">Fit</string>
+    <string name="export_center_image_inside">Center Inside</string>
+    <string name="export">Export</string>
+    <string name="document_type">Document Type</string>
+
+    <string-array name="page_sizes">
+        <item>Legal</item>
+        <item>Letter</item>
+        <item>Tabloid</item>
+        <item>A0</item>
+        <item>A1</item>
+        <item>A2</item>
+        <item>A3</item>
+        <item>A4</item>
+        <item>A5</item>
+    </string-array>
+
+    <string-array name="document_types">
+        <item>PDF</item>
+    </string-array>
 
 </resources>

@@ -6,6 +6,9 @@ import com.xpl0t.scany.filter.GrayscaleFilter
 import com.xpl0t.scany.filter.SharpenFilter
 import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.repository.RepositoryImpl
+import com.xpl0t.scany.services.pdf.scalecalculator.CenterInsideScaleCalculator
+import com.xpl0t.scany.services.pdf.scalecalculator.FitScaleCalculator
+import com.xpl0t.scany.services.pdf.scalecalculator.ScaleCalculatorList
 import com.xpl0t.scany.settings.SettingsService
 import com.xpl0t.scany.settings.SettingsServiceMockImpl
 import com.xpl0t.scany.ui.scanlist.scannamegenerator.RandomScanNameGenerator
@@ -46,4 +49,16 @@ class HiltModule {
             blurFilter
         )
     }
+
+    @Provides
+    fun bindScaleCalculators(
+        fitScaleCalculator: FitScaleCalculator,
+        centerInsideScaleCalculator: CenterInsideScaleCalculator
+    ): ScaleCalculatorList {
+        return listOf(
+            fitScaleCalculator,
+            centerInsideScaleCalculator
+        )
+    }
+
 }

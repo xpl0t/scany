@@ -1,14 +1,12 @@
-package com.xpl0t.scany.services
+package com.xpl0t.scany.services.pdf
 
 import android.content.Context
-import android.graphics.Color
-import android.graphics.Paint
 import android.graphics.Rect
-import android.os.FileUtils
 import android.print.PrintAttributes
 import android.print.pdf.PrintedPdfDocument
 import com.xpl0t.scany.extensions.scale
 import com.xpl0t.scany.extensions.toBitmap
+import com.xpl0t.scany.services.pdf.scalecalculator.ScaleCalculatorList
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.opencv.core.MatOfByte
 import org.opencv.imgcodecs.Imgcodecs
@@ -17,15 +15,18 @@ import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
 class PdfService @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val scaleCalculators: ScaleCalculatorList
 ) {
 
-    fun getPdfFromImages(images: List<ByteArray>): ByteArray {
+    fun getPdfFromImages(images: List<ByteArray>, mediaSize: PrintAttributes.MediaSize, scaleType: ScaleType): ByteArray {
+        val scaleCalculator = scaleCalculators.find { it.scaleType == scaleType }!!
         val outputStream = ByteArrayOutputStream()
 
         val printAttrs = PrintAttributes.Builder()
-            .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
+            .setMediaSize(mediaSize)
             .setMinMargins(PrintAttributes.Margins(0, 0, 0, 0))
+            // .setResolution(PrintAttributes.Resolution("hd", "hd", 300, 300))
             .build()
 
         val document = PrintedPdfDocument(context, printAttrs)
@@ -35,7 +36,7 @@ class PdfService @Inject constructor(
             val canvas = page.canvas
             val mat = Imgcodecs.imdecode(MatOfByte(*images[i]), Imgcodecs.IMREAD_UNCHANGED)
 
-            val aspectRatioCanvas = canvas.width.toFloat() / canvas.height.toFloat()
+            /*val aspectRatioCanvas = canvas.width.toFloat() / canvas.height.toFloat()
             val aspectRatioImg = mat.width().toFloat() / mat.height().toFloat()
             val scaleByWidth = aspectRatioImg > aspectRatioCanvas
 
@@ -43,16 +44,25 @@ class PdfService @Inject constructor(
                 else canvas.height * aspectRatioImg.toDouble()
 
             val scaledHeight = if (!scaleByWidth) canvas.height.toDouble()
-                else canvas.width / aspectRatioImg.toDouble()
+                else canvas.width / aspectRatioImg.toDouble()*/
 
-            mat.scale(scaledWidth, scaledHeight, false)
+            val scaledSize = scaleCalculator.getSize(
+                Rect(0, 0, canvas.width, canvas.height),
+                Rect(0, 0, mat.width(), mat.height())
+            )
+            val offset = scaleCalculator.getOffset(
+                Rect(0, 0, canvas.width, canvas.height),
+                Rect(0, 0, mat.width(), mat.height())
+            )
+
+            mat.scale(scaledSize.width().toDouble(), scaledSize.height().toDouble(), false)
             Imgproc.cvtColor(mat, mat, Imgproc.COLOR_BGR2RGB)
             val bitmap = mat.toBitmap()
 
             canvas.drawBitmap(
                 bitmap,
-                if (scaleByWidth) 0f else (canvas.width - mat.width()) / 2f,
-                if (scaleByWidth) (canvas.height - mat.height()) / 2f else 0f,
+                offset.x.toFloat(),
+                offset.y.toFloat(),
                 null
             )
 

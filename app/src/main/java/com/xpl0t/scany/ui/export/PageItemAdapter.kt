@@ -1,4 +1,4 @@
-package com.xpl0t.scany.ui.reorderpages
+package com.xpl0t.scany.ui.export
 
 import android.view.LayoutInflater
 import android.view.View
@@ -12,10 +12,10 @@ import com.xpl0t.scany.models.Page
 import io.reactivex.rxjava3.subjects.PublishSubject
 
 
-class PageItemAdapter : RecyclerView.Adapter<PageItemAdapter.ViewHolder>(),
-    PageMoveCallback.Contract {
+class PageItemAdapter constructor(
+    private val pageSelectionService: PageSelectionService
+) : RecyclerView.Adapter<PageItemAdapter.ViewHolder>() {
 
-    val pageOrderChanged: PublishSubject<List<Page>> = PublishSubject.create()
     private var items: MutableList<Page> = mutableListOf()
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -25,7 +25,7 @@ class PageItemAdapter : RecyclerView.Adapter<PageItemAdapter.ViewHolder>(),
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.reorder_pages_item, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.export_page_item, parent, false)
         return ViewHolder(view)
     }
 
@@ -35,6 +35,12 @@ class PageItemAdapter : RecyclerView.Adapter<PageItemAdapter.ViewHolder>(),
         Glide.with(holder.itemView)
             .load(item)
             .into(holder.pageImage)
+
+        holder.pageCard.isChecked = pageSelectionService.isSelected(item.id)
+        holder.pageCard.setOnClickListener {
+            holder.pageCard.isChecked = !holder.pageCard.isChecked
+            pageSelectionService.setSelected(item.id, holder.pageCard.isChecked)
+        }
     }
 
     override fun getItemCount(): Int = items.count()
@@ -44,6 +50,33 @@ class PageItemAdapter : RecyclerView.Adapter<PageItemAdapter.ViewHolder>(),
 
         this.items = items.toMutableList()
         notifyItemRangeChanged(0, this.items.count())
+    }
+
+    fun clearSelection() {
+        val deselectedPages = pageSelectionService.getDeselectedPages()
+
+        for (i in items)
+            pageSelectionService.setSelected(i.id, false)
+
+        for (i in items.indices) {
+            if (deselectedPages.contains(items[i].id))
+                continue // Item was already deselected
+
+            notifyItemChanged(i)
+        }
+    }
+
+    fun selectAll() {
+        val deselectedPages = pageSelectionService.getDeselectedPages()
+
+        pageSelectionService.reset()
+
+        for (i in items.indices) {
+            if (!deselectedPages.contains(items[i].id))
+                continue // Item was already selected
+
+            notifyItemChanged(i)
+        }
     }
 
     /**
@@ -58,21 +91,5 @@ class PageItemAdapter : RecyclerView.Adapter<PageItemAdapter.ViewHolder>(),
         }
 
         return true
-    }
-
-    override fun onRowMoved(fromPosition: Int, toPosition: Int) {
-        val item = items.removeAt(fromPosition)
-        items.add(toPosition, item)
-
-        pageOrderChanged.onNext(items)
-        notifyItemMoved(fromPosition, toPosition)
-    }
-
-    override fun onRowSelected(viewHolder: ViewHolder) {
-        viewHolder.pageCard.isDragged = true
-    }
-
-    override fun onRowClear(viewHolder: ViewHolder) {
-        viewHolder.pageCard.isDragged = false
     }
 }

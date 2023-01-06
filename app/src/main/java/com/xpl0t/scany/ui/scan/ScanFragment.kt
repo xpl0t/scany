@@ -24,10 +24,11 @@ import com.xpl0t.scany.extensions.add
 import com.xpl0t.scany.extensions.runOnUiThread
 import com.xpl0t.scany.models.Scan
 import com.xpl0t.scany.repository.Repository
-import com.xpl0t.scany.services.PdfService
+import com.xpl0t.scany.services.pdf.PdfService
 import com.xpl0t.scany.services.ShareService
 import com.xpl0t.scany.services.backpress.BackPressHandler
 import com.xpl0t.scany.services.backpress.BackPressHandlerService
+import com.xpl0t.scany.services.pdf.ScaleType
 import com.xpl0t.scany.ui.scanlist.ScanListFragmentDirections
 import com.xpl0t.scany.util.Optional
 import dagger.hilt.android.AndroidEntryPoint
@@ -188,14 +189,6 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener, BackPres
 
     fun onStateChanged(bottomSheet: View, newState: Int) {
         currentState = newState
-        when (newState) {
-            BottomSheetBehavior.STATE_EXPANDED -> {
-                // bottomSheetToggle.setImageResource(R.drawable.clear)
-            }
-            BottomSheetBehavior.STATE_COLLAPSED -> {
-                // bottomSheetToggle.setImageResource(R.drawable.arrow_up)
-            }
-        }
     }
 
     override fun showScan(id: Int?) {
@@ -279,26 +272,16 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener, BackPres
 
     override fun export() {
         Log.d(TAG, "Export PDF")
-        if (scan == null || actionDisposable?.isDisposed == false)
-            return
 
-        if (scan!!.pages.isEmpty()) {
+        val pageCount = scan?.pages?.count()
+        if (pageCount == 0) {
+            Snackbar.make(requireView(), R.string.export_no_page, Snackbar.LENGTH_SHORT).show()
             return
         }
 
-        val imageObservables = scan!!.pages.map {
-            repo.getPageImage(it.id).toObservable()
-        }
-        Observable.combineLatestArray(imageObservables.toTypedArray()) { it.toList() as List<ByteArray> }.subscribe(
-            {
-                val pdf = pdfService.getPdfFromImages(it)
-                shareService.share(context!!, pdf, "application/pdf")
-            },
-            {
-                Log.e(TAG, "Could not get page images and generate pdf", it)
-                Snackbar.make(requireView(), R.string.export_pdf_error, Snackbar.LENGTH_SHORT).show()
-            }
-        )
+        val action = ScanListFragmentDirections
+            .actionScanListFragmentToExportFragment(scan?.id ?: return)
+        findNavController().navigate(action)
     }
 
     override fun reorderPages() {
