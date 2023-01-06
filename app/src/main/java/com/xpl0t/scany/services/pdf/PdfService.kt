@@ -36,16 +36,6 @@ class PdfService @Inject constructor(
             val canvas = page.canvas
             val mat = Imgcodecs.imdecode(MatOfByte(*images[i]), Imgcodecs.IMREAD_UNCHANGED)
 
-            /*val aspectRatioCanvas = canvas.width.toFloat() / canvas.height.toFloat()
-            val aspectRatioImg = mat.width().toFloat() / mat.height().toFloat()
-            val scaleByWidth = aspectRatioImg > aspectRatioCanvas
-
-            val scaledWidth = if (scaleByWidth) canvas.width.toDouble()
-                else canvas.height * aspectRatioImg.toDouble()
-
-            val scaledHeight = if (!scaleByWidth) canvas.height.toDouble()
-                else canvas.width / aspectRatioImg.toDouble()*/
-
             val scaledSize = scaleCalculator.getSize(
                 Rect(0, 0, canvas.width, canvas.height),
                 Rect(0, 0, mat.width(), mat.height())
