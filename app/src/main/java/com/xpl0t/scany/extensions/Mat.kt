@@ -63,13 +63,12 @@ fun Mat.blend(kernel: Mat): Mat {
     return morphed
 }
 
-fun Mat.toJpg(quality: Int): ByteArray {
+fun Mat.toPng(): ByteArray {
     val correctedMat = Mat()
     Imgproc.cvtColor(this, correctedMat, Imgproc.COLOR_BGR2RGB)
 
-    val params = MatOfInt(Imgcodecs.IMWRITE_JPEG_QUALITY, quality)
     val buf = MatOfByte()
-    Imgcodecs.imencode(".jpg", correctedMat, buf, params)
+    Imgcodecs.imencode(".png", correctedMat, buf)
     return buf.toArray()
 }
 

@@ -13,7 +13,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.finish
 import com.xpl0t.scany.extensions.runOnUiThread
-import com.xpl0t.scany.extensions.toJpg
+import com.xpl0t.scany.extensions.toPng
 import com.xpl0t.scany.filter.Filter
 import com.xpl0t.scany.filter.FilterList
 import com.xpl0t.scany.models.Page
@@ -134,8 +134,8 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
 
         if (actionDisposable?.isDisposed == false) return
 
-        val jpg = mat.toJpg(95)
-        val page = Page(image = jpg, next = null)
+        val imageBytes = mat.toPng()
+        val page = Page(image = imageBytes, next = null)
 
         actionDisposable = repo.addPage(args.scanId, page).subscribeBy(
             onNext = {

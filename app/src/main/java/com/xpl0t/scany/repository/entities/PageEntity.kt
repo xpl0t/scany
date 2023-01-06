@@ -19,7 +19,6 @@ import androidx.room.PrimaryKey
 data class PageEntity(
     @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo(name = "scan_id") val scanId: Int,
-    @ColumnInfo(name = "image", typeAffinity = ColumnInfo.BLOB) val image: ByteArray?,
     // Next is kept for the order of pages: https://stackoverflow.com/a/14640166/14981939
     @ColumnInfo(name = "next") val next: Int?
 )

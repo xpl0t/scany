@@ -19,7 +19,8 @@ import javax.inject.Singleton
 
 @Singleton
 class RepositoryImpl @Inject constructor(
-    @ApplicationContext val context: Context
+    @ApplicationContext val context: Context,
+    val pageImageStore: PageImageStore
 ) : Repository {
 
     private val db = Room.databaseBuilder(context, AppDatabase::class.java, "scany-db").build()
@@ -74,14 +75,13 @@ class RepositoryImpl @Inject constructor(
 
             Scan(
                 scan.id, scan.name,
-                sortedPages.map { Page(it.id, it.image, it.next) }
+                sortedPages.map { Page(it.id, null, it.next) }
             )
         }.subscribeOn(Schedulers.computation())
     }
 
     override fun getPageImage(pageId: Int): Single<ByteArray> {
-        return db.pageDao().getPageImage(pageId)
-            .map { it.image!! }
+        return Single.fromCallable { pageImageStore.read(pageId) }
             .subscribeOn(Schedulers.computation())
     }
 
@@ -106,7 +106,7 @@ class RepositoryImpl @Inject constructor(
     }
 
     override fun addPage(scanId: Int, page: Page): Observable<Scan> {
-        val entity = PageEntity(page.id, scanId, page.image, null)
+        val entity = PageEntity(page.id, scanId, null)
 
         val lastPageObs = db.pageDao().getLastPage(scanId)
             .toObservable()
@@ -120,6 +120,8 @@ class RepositoryImpl @Inject constructor(
                 }
             }
             .concatMap {
+                pageImageStore.create(it.first.toInt(), page.image!!)
+
                 val newPageId = it.first
                 val previousLastPage = it.second
 
@@ -137,6 +139,9 @@ class RepositoryImpl @Inject constructor(
 
     override fun removePage(id: Int): Observable<Int> {
         return db.pageDao().delete(id)
+            .doAfterSuccess {
+                pageImageStore.delete(id)
+            }
             .toObservable()
             .subscribeOn(Schedulers.computation())
     }
@@ -151,7 +156,7 @@ class RepositoryImpl @Inject constructor(
         val updatedPages = mutableListOf<Page>()
         val updateObs = mutableListOf<Observable<Int>>()
 
-        for (i in 0 until pages.count()) {
+        for (i in pages.indices) {
             val next = if (i + 1 < pages.count()) pages[i + 1].id else null
 
             updatedPages.add(pages[i].copy(next = next))
@@ -162,7 +167,7 @@ class RepositoryImpl @Inject constructor(
             }
         }
 
-        if (updateObs.count() == 0) {
+        if (updateObs.isEmpty()) {
             return just(pages)
         }
 

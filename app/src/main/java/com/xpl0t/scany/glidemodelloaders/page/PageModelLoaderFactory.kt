@@ -5,6 +5,7 @@ import com.bumptech.glide.load.model.ModelLoader
 import com.bumptech.glide.load.model.ModelLoaderFactory
 import com.bumptech.glide.load.model.MultiModelLoaderFactory
 import com.xpl0t.scany.models.Page
+import com.xpl0t.scany.repository.PageImageStore
 import com.xpl0t.scany.repository.RepositoryImpl
 import java.nio.ByteBuffer
 
@@ -13,7 +14,7 @@ class PageModelLoaderFactory constructor(
 ) : ModelLoaderFactory<Page, ByteBuffer> {
 
     override fun build(multiFactory: MultiModelLoaderFactory): ModelLoader<Page, ByteBuffer> {
-        val repo = RepositoryImpl(context)
+        val repo = RepositoryImpl(context, PageImageStore(context))
         return PageModelLoader(repo)
     }
 
