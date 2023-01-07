@@ -5,22 +5,22 @@
     android:layout_height="match_parent">
 
     <androidx.camera.view.PreviewView
-        android:id="@+id/camPreview"
+        android:id="@+id/cam_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
     <com.xpl0t.scany.views.DocumentOutline
-        android:id="@+id/docOutline"
+        android:id="@+id/doc_outline"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:outlineColor="?attr/colorPrimary"
-        app:layout_constraintBottom_toBottomOf="@+id/camPreview"
-        app:layout_constraintEnd_toEndOf="@id/camPreview"
-        app:layout_constraintStart_toStartOf="@+id/camPreview"
-        app:layout_constraintTop_toTopOf="@id/camPreview" />
+        app:layout_constraintBottom_toBottomOf="@+id/cam_preview"
+        app:layout_constraintEnd_toEndOf="@id/cam_preview"
+        app:layout_constraintStart_toStartOf="@+id/cam_preview"
+        app:layout_constraintTop_toTopOf="@id/cam_preview" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/takePhoto"
+        android:id="@+id/take_photo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -31,5 +31,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/photo" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/switch_flash"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:contentDescription="@string/take_photo_btn"
+        app:tint="@color/white"
+        app:backgroundTint="@color/black"
+        app:srcCompat="@drawable/flash_off"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toBottomOf="@+id/take_photo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/take_photo"
+        app:layout_constraintTop_toTopOf="@+id/take_photo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

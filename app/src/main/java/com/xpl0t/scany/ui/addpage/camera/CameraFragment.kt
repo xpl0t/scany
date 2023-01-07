@@ -1,15 +1,13 @@
 package com.xpl0t.scany.ui.addpage.camera
 
 import android.Manifest
+import android.content.Context.MODE_PRIVATE
 import android.content.pm.PackageManager
 import android.graphics.ImageFormat
-import android.hardware.camera2.CameraCharacteristics
 import android.os.Bundle
 import android.util.Log
 import android.util.Size
-import android.view.Surface.*
 import android.view.View
-import androidx.camera.camera2.interop.Camera2CameraInfo
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -30,6 +28,8 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javax.inject.Inject
 import android.graphics.Point
+import androidx.camera.core.ImageCapture.FLASH_MODE_OFF
+import androidx.camera.core.ImageCapture.FLASH_MODE_ON
 
 
 @AndroidEntryPoint
@@ -43,6 +43,7 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Ana
     private lateinit var cameraPreview: PreviewView
     private lateinit var documentOutline: DocumentOutline
     private lateinit var takePhotoBtn: FloatingActionButton
+    private lateinit var switchFlashBtn: FloatingActionButton
 
     private var cameraProvider: ProcessCameraProvider? = null
     private var preview: Preview? = null
@@ -108,13 +109,18 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Ana
     }
 
     private fun initViews() {
-        documentOutline = requireView().findViewById(R.id.docOutline)
-        cameraPreview = requireView().findViewById(R.id.camPreview)
-        takePhotoBtn = requireView().findViewById(R.id.takePhoto)
+        documentOutline = requireView().findViewById(R.id.doc_outline)
+        cameraPreview = requireView().findViewById(R.id.cam_preview)
+        takePhotoBtn = requireView().findViewById(R.id.take_photo)
         takePhotoBtn.setOnClickListener {
             Log.d(TAG, "Take photo btn clicked")
             takePhotoBtn.isEnabled = false
             takePhoto()
+        }
+        switchFlashBtn = requireView().findViewById(R.id.switch_flash)
+        switchFlashBtn.setOnClickListener {
+            Log.d(TAG, "Switch flash button clicked")
+            toggleFlashMode()
         }
     }
 
@@ -133,6 +139,8 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Ana
             imageCapture = ImageCapture.Builder()
                 .setBufferFormat(ImageFormat.YUV_420_888)
                 .build()
+
+            setFlashMode(getFlashMode())
 
             imageAnalysis = ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
@@ -274,6 +282,35 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Ana
         lastTimeDocDetected = System.currentTimeMillis()
     }
 
+    private fun getFlashMode(): Int {
+        val pref = requireContext().getSharedPreferences(PREFERENCES_KEY, MODE_PRIVATE)
+        return pref.getInt(FLASH_MODE, FLASH_MODE_OFF)
+    }
+
+    private fun setFlashMode(flashMode: Int) {
+        val pref = requireContext().getSharedPreferences(PREFERENCES_KEY, MODE_PRIVATE)
+        val prefEditor = pref.edit()
+        prefEditor.putInt(FLASH_MODE, flashMode)
+        prefEditor.commit()
+
+        imageCapture!!.flashMode = flashMode
+
+        val switchFlashBtnIcon = when (flashMode) {
+            FLASH_MODE_ON -> R.drawable.flash_on
+            FLASH_MODE_OFF -> R.drawable.flash_off
+            else -> R.drawable.flash_off
+        }
+        switchFlashBtn.setImageResource(switchFlashBtnIcon)
+    }
+
+    private fun toggleFlashMode() {
+        val curFlashMode = getFlashMode()
+        val newFlashMode = if (curFlashMode == FLASH_MODE_ON) FLASH_MODE_OFF
+            else FLASH_MODE_ON
+
+        setFlashMode(newFlashMode)
+    }
+
     /**
      * Set fragment result bundle and finish fragment.
      */
@@ -299,6 +336,9 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Ana
 
     companion object {
         const val TAG = "CameraFragment"
+        const val PREFERENCES_KEY = "CAMERA_FRAGMENT"
+        const val FLASH_MODE = "FLASH_MODE"
+
         private val REQUIRED_PERMISSIONS = listOf(Manifest.permission.CAMERA)
         private const val REQUEST_CODE_PERMISSIONS = 10
     }
