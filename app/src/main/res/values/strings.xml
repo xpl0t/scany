@@ -18,7 +18,7 @@
     <string name="add_page">Page</string>
     <string name="add_page_long">Add page</string>
     <string name="export_pdf">Export PDF</string>
-    <string name="delete_scan">Delete Document</string>
+    <string name="delete_scan">Delete document</string>
     <string name="no_page">No pages currently…</string>
     <string name="reorder">Reorder</string>
     <string name="edit_title">Edit title</string>
