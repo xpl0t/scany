@@ -213,6 +213,8 @@ class ExportFragment : BaseFragment(R.layout.export_fragment) {
         if (actionDisposable?.isDisposed == false || scan == null)
             return
 
+        shareBtn.isEnabled = false
+
         val deselectedPages = pageSelectionService.getDeselectedPages()
         val pageIds = scan!!.pages
             .filter { !deselectedPages.contains(it.id) }
@@ -231,10 +233,16 @@ class ExportFragment : BaseFragment(R.layout.export_fragment) {
                 }
                 val pdf = pdfService.getPdfFromImages(it, mediaSize!!, scaleType)
                 shareService.share(context!!, pdf, "application/pdf")
+                runOnUiThread {
+                    shareBtn.isEnabled = true
+                }
             },
             {
                 Log.e(ScanFragment.TAG, "Could not get page images and generate pdf", it)
                 Snackbar.make(requireView(), R.string.export_pdf_error, Snackbar.LENGTH_SHORT).show()
+                runOnUiThread {
+                    shareBtn.isEnabled = true
+                }
             }
         )
     }
