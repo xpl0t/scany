@@ -9,12 +9,11 @@ import com.bumptech.glide.Glide
 import com.google.android.material.card.MaterialCardView
 import com.xpl0t.scany.R
 import com.xpl0t.scany.models.Page
-import io.reactivex.rxjava3.subjects.PublishSubject
 
 
 class PageItemAdapter constructor(
     private val pageSelectionService: PageSelectionService
-) : RecyclerView.Adapter<PageItemAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<PageItemAdapter.ViewHolder>(), PageMoveCallback.Contract {
 
     private var items: MutableList<Page> = mutableListOf()
 
@@ -91,5 +90,24 @@ class PageItemAdapter constructor(
         }
 
         return true
+    }
+
+    fun getItems(): List<Page> {
+        return items.toList()
+    }
+
+    override fun onRowMoved(fromPosition: Int, toPosition: Int) {
+        val item = items.removeAt(fromPosition)
+        items.add(toPosition, item)
+
+        notifyItemMoved(fromPosition, toPosition)
+    }
+
+    override fun onRowSelected(viewHolder: ViewHolder) {
+        viewHolder.pageCard.isDragged = true
+    }
+
+    override fun onRowClear(viewHolder: ViewHolder) {
+        viewHolder.pageCard.isDragged = false
     }
 }

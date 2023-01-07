@@ -73,7 +73,7 @@
     <string name="export_no_page">At least one page is required to generate a PDF document</string>
     <string name="export_pdf_error">Could not generate PDF :(</string>
     <string name="export_title">Export Document</string>
-    <string name="export_page_list_title">Page Selection &amp; Arrangement</string>
+    <string name="export_page_list_title">Page Selection &amp; Order</string>
     <string name="select_all">Select all</string>
     <string name="clear_selection">Clear selection</string>
     <string name="export_page_size_title">Page Size</string>

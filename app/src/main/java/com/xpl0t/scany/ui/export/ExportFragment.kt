@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ArrayAdapter
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
@@ -97,6 +98,10 @@ class ExportFragment : BaseFragment(R.layout.export_fragment) {
     override fun onResume() {
         super.onResume()
 
+        // Reloading the scan after the share window was shown would mess up the order.
+        if (scan != null)
+            return
+
         disposables.add {
             scanSubject.subscribe {
                 val scan = if (it.isEmpty) null else it.value
@@ -155,6 +160,9 @@ class ExportFragment : BaseFragment(R.layout.export_fragment) {
             }
         }
 
+        val callback = PageMoveCallback(pageItemAdapter)
+        val touchHelper = ItemTouchHelper(callback)
+        touchHelper.attachToRecyclerView(pageList)
         pageList.adapter = pageItemAdapter
         pageList.layoutManager = GridLayoutManager(requireContext(), 3)
         pageList.setHasFixedSize(true)
@@ -216,7 +224,7 @@ class ExportFragment : BaseFragment(R.layout.export_fragment) {
         shareBtn.isEnabled = false
 
         val deselectedPages = pageSelectionService.getDeselectedPages()
-        val pageIds = scan!!.pages
+        val pageIds = pageItemAdapter.getItems() // The order of the pages is persisted in the adapter
             .filter { !deselectedPages.contains(it.id) }
             .map { it.id }
 
