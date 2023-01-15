@@ -2,6 +2,7 @@ package com.xpl0t.scany.services.pdf
 
 import android.content.Context
 import android.graphics.Rect
+import android.graphics.pdf.PdfDocument
 import android.print.PrintAttributes
 import android.print.pdf.PrintedPdfDocument
 import com.xpl0t.scany.extensions.scale
@@ -30,9 +31,11 @@ class PdfService @Inject constructor(
             .build()
 
         val document = PrintedPdfDocument(context, printAttrs)
+        val docAspectRatio = document.pageWidth.toFloat() / document.pageHeight.toFloat()
 
         for (i in images.indices) {
-            val page = document.startPage(i)
+            val pageInfo = PdfDocument.PageInfo.Builder((docAspectRatio * 2000).toInt(),2000, i).create()
+            val page = document.startPage(pageInfo)
             val canvas = page.canvas
             val mat = Imgcodecs.imdecode(MatOfByte(*images[i]), Imgcodecs.IMREAD_UNCHANGED)
 
