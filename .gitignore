@@ -7,11 +7,13 @@ local.properties
 
 # Log/OS Files
 *.log
+.DS_Store
 
 # Android Studio generated files and folders
 captures/
 .externalNativeBuild/
 *.apk
+*.aab
 output.json
 .cxx/
 
