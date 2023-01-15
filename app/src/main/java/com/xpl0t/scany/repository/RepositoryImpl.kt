@@ -147,8 +147,17 @@ class RepositoryImpl @Inject constructor(
     }
 
     override fun removeScan(id: Int): Observable<Int> {
-        return db.scanDao().delete(id)
-            .toObservable()
+        return db.pageDao().getByScanId(id)
+            .concatMap { pages ->
+                db.scanDao().delete(id)
+                    .map { pages }
+                    .toObservable()
+            }
+            .doAfterNext {
+                for (page in it)
+                    pageImageStore.delete(page.id)
+            }
+            .map { 0 }
             .subscribeOn(Schedulers.computation())
     }
 
