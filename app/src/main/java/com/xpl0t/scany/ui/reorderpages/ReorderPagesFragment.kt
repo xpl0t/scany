@@ -163,8 +163,8 @@ class ReorderPagesFragment : BaseFragment(R.layout.reorder_pages_fragment) {
 
         // Ensuring the pages from the list adapter are congruent, with those from the database.
         val congruentPages = pages.map { p ->
-            val dbEquivalent = this.pages?.find { it.id == p.id }
-            p.copy(next = dbEquivalent?.next)
+            val dbEquivalent = this.pages?.find { it.id == p.id }!!
+            p.copy(order = dbEquivalent.order)
         }
 
         actionDisposable = repo.reorderPages(scan!!.id, congruentPages).subscribeBy(

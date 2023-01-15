@@ -35,7 +35,7 @@ class RepositoryImpl @Inject constructor(
 
     private fun findFirstPage(pages: List<PageEntity>): PageEntity? {
         return pages.find { p ->
-            !pages.any { p.id == it.next }
+            !pages.any { p.id == it.order }
         }
     }
 
@@ -64,7 +64,7 @@ class RepositoryImpl @Inject constructor(
                 val nextPage = pages.find { it.id == next } ?: break
                 sortedPages.add(nextPage)
 
-                next = nextPage.next
+                next = nextPage.order
                 loopRuns++
             }
 
@@ -75,7 +75,7 @@ class RepositoryImpl @Inject constructor(
 
             Scan(
                 scan.id, scan.name,
-                sortedPages.map { Page(it.id, null, it.next) }
+                sortedPages.map { Page(it.id, null, it.order) }
             )
         }.subscribeOn(Schedulers.computation())
     }
@@ -106,30 +106,17 @@ class RepositoryImpl @Inject constructor(
     }
 
     override fun addPage(scanId: Int, page: Page): Observable<Scan> {
-        val entity = PageEntity(page.id, scanId, null)
-
-        val lastPageObs = db.pageDao().getLastPage(scanId)
-            .toObservable()
-            .map { Optional(it) }
-            .onErrorResumeNext { just(Optional.empty()) } // Might be null if there were no pages
-
-        return lastPageObs
-            .concatMap { lastPage ->
-                db.pageDao().insert(entity).toObservable().map {
-                    Pair(it, lastPage)
-                }
-            }
+        return db.pageDao().getLastPage(scanId)
             .concatMap {
-                pageImageStore.create(it.first.toInt(), page.image!!)
+                val order = if (it.isEmpty()) 0
+                    else it.first().order + 100
 
-                val newPageId = it.first
-                val previousLastPage = it.second
-
-                if (!previousLastPage.isEmpty)
-                    db.pageDao().updateNext(previousLastPage.value.id, newPageId.toInt())
-                        .toObservable()
-                else
-                    just(0)
+                val entity = PageEntity(page.id, scanId, order)
+                db.pageDao().insert(entity)
+            }
+            .toObservable()
+            .doOnNext {
+                pageImageStore.create(it.toInt(), page.image!!)
             }
             .concatMap {
                 getScan(scanId).take(1)
@@ -162,19 +149,11 @@ class RepositoryImpl @Inject constructor(
     }
 
     override fun reorderPages(scanId: Int, pages: List<Page>): Observable<List<Page>> {
-        val updatedPages = mutableListOf<Page>()
-        val updateObs = mutableListOf<Observable<Int>>()
-
-        for (i in pages.indices) {
-            val next = if (i + 1 < pages.count()) pages[i + 1].id else null
-
-            updatedPages.add(pages[i].copy(next = next))
-            if (next != pages[i].next) {
-                updateObs.add(
-                    db.pageDao().updateNext(pages[i].id, next).toObservable()
-                )
-            }
+        val updatedPages = pages.indices.map {
+            pages[it].copy(order = it * 100)
         }
+        val updateObs = updatedPages
+            .map { db.pageDao().updateOrder(it.id, it.order).toObservable() }
 
         if (updateObs.isEmpty()) {
             return just(pages)

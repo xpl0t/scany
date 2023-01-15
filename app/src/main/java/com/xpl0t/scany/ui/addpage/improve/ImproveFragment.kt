@@ -135,7 +135,7 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment) {
         if (actionDisposable?.isDisposed == false) return
 
         val imageBytes = mat.toPng()
-        val page = Page(image = imageBytes, next = null)
+        val page = Page(image = imageBytes, order = 0)
 
         actionDisposable = repo.addPage(args.scanId, page).subscribeBy(
             onNext = {

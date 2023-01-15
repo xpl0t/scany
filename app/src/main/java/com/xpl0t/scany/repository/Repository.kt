@@ -35,7 +35,7 @@ interface Repository {
     /**
      * Adds a scan and returns an observable emitting the new scan once added.
      */
-    fun addPage(scanId: Int, scanImg: Page): Observable<Scan>
+    fun addPage(scanId: Int, page: Page): Observable<Scan>
 
     /**
      * Removes a page and returns an observable emitting once the removal succeeded.
