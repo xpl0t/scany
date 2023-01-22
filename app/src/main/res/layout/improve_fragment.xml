@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <com.github.chrisbanes.photoview.PhotoView
-        android:id="@+id/bitmapPreview"
+        android:id="@+id/page_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:contentDescription="@string/source_image_descr"
@@ -13,18 +14,68 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/filterList"
-        android:layout_width="0dp"
-        android:layout_height="150dp"
-        android:layout_marginBottom="16dp"
-        android:clipToPadding="false"
-        android:orientation="horizontal"
-        android:paddingHorizontal="4dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@+id/applyImprove"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/rotate_right"
+        style="@style/Widget.Material3.FloatingActionButton.Surface"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="@string/rotate_right"
+        app:fabSize="mini"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/rotate_right" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/rotate_left"
+        style="@style/Widget.Material3.FloatingActionButton.Surface"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:contentDescription="@string/rotate_left"
+        app:fabSize="mini"
+        app:layout_constraintEnd_toStartOf="@+id/rotate_right"
+        app:layout_constraintTop_toTopOf="@+id/rotate_right"
+        app:srcCompat="@drawable/rotate_left" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/flip_vertical"
+        style="@style/Widget.Material3.FloatingActionButton.Surface"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="@string/rotate_right"
+        app:fabSize="mini"
+        android:rotation="-90"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rotate_right"
+        app:srcCompat="@drawable/flip" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/flip_horizontal"
+        style="@style/Widget.Material3.FloatingActionButton.Surface"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:contentDescription="@string/rotate_left"
+        app:fabSize="mini"
+        app:layout_constraintEnd_toStartOf="@+id/flip_vertical"
+        app:layout_constraintTop_toTopOf="@+id/flip_vertical"
+        app:srcCompat="@drawable/flip" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/choose_filters"
+        style="@style/Widget.Material3.FloatingActionButton.Surface"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:contentDescription="@string/choose_filters"
+        app:fabSize="mini"
+        app:layout_constraintEnd_toEndOf="@+id/flip_vertical"
+        app:layout_constraintTop_toBottomOf="@+id/flip_vertical"
+        app:srcCompat="@drawable/filter" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/applyImprove"

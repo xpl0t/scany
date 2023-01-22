@@ -4,6 +4,7 @@
     <string name="apply_btn">Apply</string>
     <string name="delete_btn">Delete</string>
     <string name="cancel_btn">Cancel</string>
+    <string name="done_btn">Done</string>
     <string name="share">Share</string>
 
     <!-- Error messages -->
@@ -52,6 +53,9 @@
     <!-- Improve fragment -->
     <string name="source_image_descr">Source bitmap</string>
     <string name="apply_improve_btn">Apply improvements</string>
+    <string name="rotate_right">Rotate right</string>
+    <string name="rotate_left">Rotate left</string>
+    <string name="choose_filters">Choose Filters</string>
 
     <!-- Reorder pages fragment -->
     <string name="reorder_pages_title">Reorder pages</string>
@@ -60,9 +64,10 @@
     <string name="page_image_descr">Page</string>
 
     <!-- Filter display names -->
-    <string name="grayscale_filter">grayscale</string>
-    <string name="sharpen_filter">sharpen</string>
-    <string name="blur_filter">blur</string>
+    <string name="grayscale_filter">Grayscale</string>
+    <string name="sharpen_filter">Sharpen</string>
+    <string name="blur_filter">Blur</string>
+    <string name="binarize_filter">Binarize</string>
 
     <!-- Delete page dialog -->
     <string name="delete_page">Delete page</string>

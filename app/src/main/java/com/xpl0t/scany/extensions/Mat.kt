@@ -3,6 +3,7 @@ package com.xpl0t.scany.extensions
 import android.graphics.Bitmap
 import org.opencv.android.Utils
 import org.opencv.core.*
+import org.opencv.core.Core.*
 import org.opencv.core.CvType.CV_32F
 import org.opencv.core.CvType.CV_8U
 import org.opencv.imgcodecs.Imgcodecs
@@ -32,6 +33,32 @@ fun Mat.scale(width: Double, height: Double, copy: Boolean = false): Mat {
     val dstMat = if (copy) Mat() else this
 
     Imgproc.resize(this, dstMat, scaledSize)
+
+    return dstMat
+}
+
+fun Mat.rotate(angle: Int, copy: Boolean = false): Mat {
+    val dstMat = if (copy) Mat() else this
+
+    val rotateCode = when (angle) {
+        90 -> ROTATE_90_COUNTERCLOCKWISE
+        180 -> ROTATE_180
+        270 -> ROTATE_90_CLOCKWISE
+        else -> -1
+    }
+
+    if (rotateCode == -1)
+        return this
+
+    rotate(this, dstMat, rotateCode)
+
+    return dstMat
+}
+
+fun Mat.flip(flipCode: Int, copy: Boolean = false): Mat {
+    val dstMat = if (copy) Mat() else this
+
+    flip(this, dstMat, flipCode)
 
     return dstMat
 }

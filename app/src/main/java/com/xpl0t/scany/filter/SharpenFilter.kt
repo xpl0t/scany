@@ -19,10 +19,8 @@ class SharpenFilter @Inject constructor() : Filter {
         val k = Mat(3, 3, CvType.CV_32F)
         k.put(0, 0, -1.0, -1.0, -1.0, -1.0, 9.0, -1.0, -1.0, -1.0, -1.0)
 
-        val filtered = Mat()
-        Imgproc.filter2D(src, filtered, -1, k)
-
-        return filtered
+        Imgproc.filter2D(src, src, -1, k)
+        return src
     }
 
 }

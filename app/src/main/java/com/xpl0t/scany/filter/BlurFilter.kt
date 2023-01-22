@@ -17,10 +17,8 @@ class BlurFilter @Inject constructor() : Filter {
         get() = R.string.blur_filter
 
     override fun apply(src: Mat): Mat {
-        val filtered = Mat()
-        Imgproc.GaussianBlur(src, filtered, Size(5.0, 5.0), 0.0)
-
-        return filtered
+        Imgproc.GaussianBlur(src, src, Size(5.0, 5.0), 0.0)
+        return src
     }
 
 }

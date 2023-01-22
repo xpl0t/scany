@@ -73,7 +73,7 @@ class ViewPageFragment : BaseFragment(R.layout.view_page) {
 
     private fun initViews() {
         toolbar = requireView().findViewById(R.id.toolbar)
-        bitmapPreview = requireView().findViewById(R.id.bitmapPreview)
+        bitmapPreview = requireView().findViewById(R.id.page_preview)
 
         toolbar.setNavigationOnClickListener {
             finish()

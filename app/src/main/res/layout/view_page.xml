@@ -26,7 +26,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <com.github.chrisbanes.photoview.PhotoView
-        android:id="@+id/bitmapPreview"
+        android:id="@+id/page_preview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:contentDescription="@string/page_image_descr"
