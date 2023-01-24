@@ -90,6 +90,13 @@ dependencies {
     implementation "androidx.room:room-rxjava3:$room_version"
 }
 
+dependencies {
+    def billing_version = "5.1.0"
+
+    implementation "com.android.billingclient:billing:$billing_version"
+    implementation "com.android.billingclient:billing-ktx:$billing_version"
+}
+
 kapt {
     correctErrorTypes true
 }
