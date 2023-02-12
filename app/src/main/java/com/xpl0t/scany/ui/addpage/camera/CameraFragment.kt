@@ -291,7 +291,7 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Ana
         val pref = requireContext().getSharedPreferences(PREFERENCES_KEY, MODE_PRIVATE)
         val prefEditor = pref.edit()
         prefEditor.putInt(FLASH_MODE, flashMode)
-        prefEditor.commit()
+        prefEditor.apply()
 
         imageCapture!!.flashMode = flashMode
 

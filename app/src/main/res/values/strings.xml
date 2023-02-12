@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Scany</string>
+    <string name="pro_tag_inverse">🅿🆁🅾</string>
     <string name="retry_btn">Retry</string>
     <string name="apply_btn">Apply</string>
     <string name="delete_btn">Delete</string>
@@ -103,6 +104,28 @@
 
     <string-array name="document_types">
         <item>PDF</item>
+    </string-array>
+
+    <!-- View sub fragment -->
+    <string name="view_sub_reason_doc_limit">You reached the limit of %d documents</string>
+    <string name="view_sub_reason_page_limit">You reached the limit of %d pages per document</string>
+    <string name="view_sub_title">Upgrade to PRO &#128640;</string>
+    <string name="view_sub_benefits_title">Beneftis of PRO</string>
+    <string name="view_sub_benefit_unlimited_documents">Unlimited documents</string>
+    <string name="view_sub_billing_period_title">Billing Period</string>
+    <string name="view_sub_subscribe">Subscribe</string>
+
+    <string name="view_sub_monthly">Monthly</string>
+    <string name="view_sub_yearly">Yearly</string>
+    <string name="view_sub_cost_overview_monthly">%s per month</string>
+    <string name="view_sub_cost_overview_yearly">%s per year</string>
+
+    <string name="view_sub_fetch_offers_failed_title">Could not fetch subscription offers</string>
+    <string name="view_sub_fetch_offers_failed_subtitle">Is your device connected to the internet?</string>
+
+    <string-array name="view_sub_benefits">
+        <item>Unlimited documents</item>
+        <item>Unlimited pages per document</item>
     </string-array>
 
 </resources>

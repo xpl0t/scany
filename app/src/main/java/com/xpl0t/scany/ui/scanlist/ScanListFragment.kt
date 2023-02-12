@@ -10,6 +10,7 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
 import android.widget.RadioGroup
+import android.widget.TextView
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.view.allViews
 import androidx.core.view.forEach
@@ -25,6 +26,7 @@ import com.xpl0t.scany.extensions.getThemeColor
 import com.xpl0t.scany.extensions.runOnUiThread
 import com.xpl0t.scany.models.Scan
 import com.xpl0t.scany.repository.Repository
+import com.xpl0t.scany.services.BillingService
 import com.xpl0t.scany.ui.common.BaseFragment
 import com.xpl0t.scany.ui.scan.ScanFragment
 import com.xpl0t.scany.ui.scan.ScanFragmentListener
@@ -43,6 +45,9 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
 
     @Inject
     lateinit var repo: Repository
+
+    @Inject
+    lateinit var billingService: BillingService
 
     @Inject
     lateinit var scanNameGenerator: ScanNameGenerator
@@ -121,6 +126,16 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
                 // scanRadioGroup.visibility = View.VISIBLE
                 runOnUiThread {
                     updateScanList(it)
+                }
+            }
+        }
+
+        disposables.add {
+            billingService.isSubscribedObs.subscribe {
+                runOnUiThread {
+                    var title = resources.getText(R.string.app_name).toString()
+                    if (it) title += " ${resources.getString(R.string.pro_tag_inverse)}"
+                    toolbar.title = title
                 }
             }
         }
@@ -297,7 +312,7 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
         val curScan = currentScanSubject.value!!
         if (curScan.isEmpty || actionDisposable?.isDisposed == false) return
 
-        repo.removeScan(curScan.value).subscribeBy(
+        actionDisposable = repo.removeScan(curScan.value).subscribeBy(
             onNext = {
                 Log.i(ScanFragment.TAG, "Deleted scan")
                 runOnUiThread {
