@@ -66,7 +66,7 @@ class BillingService @Inject() constructor(
     fun init() {
         val stateListener = object : BillingClientStateListener {
             override fun onBillingSetupFinished(billingResult: BillingResult) {
-                Log.i(TAG, "Billing setup finished (responseCode: ${billingResult.responseCode})")
+                Log.i(TAG, "Billing setup finished (responseCode: $billingResult)")
 
                 if (billingResult.responseCode == BillingResponseCode.OK) {
                     Log.i(TAG, "Billing client ready!")
@@ -93,7 +93,7 @@ class BillingService @Inject() constructor(
         Log.i(TAG, "Check purchases")
 
         if (!billingClient.isReady) {
-            Log.i(TAG, "Billing client not ready, skipping checkPurchases")
+            Log.w(TAG, "Billing client not ready, skipping checkPurchases")
             return
         }
 
@@ -130,7 +130,7 @@ class BillingService @Inject() constructor(
                     return@queryProductDetailsAsync
                 }
 
-                it.onError(Throwable("Could not fetch offers. Response code: ${billingResult.responseCode}"))
+                it.onError(Throwable("Could not fetch offers. Response code: $billingResult"))
             }
         }
     }
@@ -176,7 +176,7 @@ class BillingService @Inject() constructor(
 
                 Log.i(TAG, "Acknowledging purchase")
                 billingClient.acknowledgePurchase(params) {
-                    Log.i(TAG, "Acknowledge purchase responded with result ${it.responseCode}")
+                    Log.i(TAG, "Acknowledge purchase responded with result $it")
                     if (it.responseCode == BillingResponseCode.OK)
                         isSubscribedSubject.onNext(true)
                 }

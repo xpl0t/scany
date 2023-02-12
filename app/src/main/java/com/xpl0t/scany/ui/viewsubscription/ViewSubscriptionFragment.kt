@@ -1,6 +1,5 @@
 package com.xpl0t.scany.ui.viewsubscription
 
-import android.content.Context.MODE_PRIVATE
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -26,7 +25,6 @@ import com.xpl0t.scany.views.FailedCard
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import javax.inject.Inject
 
@@ -51,10 +49,7 @@ class ViewSubscriptionFragment : BaseFragment(R.layout.view_subscription) {
     private var subOffers: List<SubscriptionOffer>? = null
 
     private var disposable: Disposable? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private var disposables = mutableListOf<Disposable>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -80,6 +75,14 @@ class ViewSubscriptionFragment : BaseFragment(R.layout.view_subscription) {
     override fun onResume() {
         super.onResume()
 
+        disposables.add {
+            billingSv.isSubscribedObs
+                .filter { it }
+                .subscribe {
+                    finish()
+                }
+        }
+
         benefitsAdapter.updateItems(
             resources.getStringArray(R.array.view_sub_benefits).toList()
         )
@@ -88,6 +91,7 @@ class ViewSubscriptionFragment : BaseFragment(R.layout.view_subscription) {
     override fun onPause() {
         super.onPause()
         disposable?.dispose()
+        disposables.forEach { it.dispose() }
     }
 
     private fun initViews() {
