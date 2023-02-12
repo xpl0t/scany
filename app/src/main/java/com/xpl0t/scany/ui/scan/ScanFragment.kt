@@ -24,6 +24,7 @@ import com.xpl0t.scany.extensions.add
 import com.xpl0t.scany.extensions.runOnUiThread
 import com.xpl0t.scany.models.Scan
 import com.xpl0t.scany.repository.Repository
+import com.xpl0t.scany.services.AuthorizationService
 import com.xpl0t.scany.services.pdf.PdfService
 import com.xpl0t.scany.services.ShareService
 import com.xpl0t.scany.services.backpress.BackPressHandler
@@ -53,6 +54,9 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener, BackPres
 
     @Inject
     lateinit var shareService: ShareService
+
+    @Inject
+    lateinit var authorizationService: AuthorizationService
 
     private val disposables: MutableList<Disposable> = mutableListOf()
     private var scanDisposable: Disposable? = null
@@ -337,6 +341,18 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener, BackPres
 
     private fun showCameraFragment() {
         Log.i(TAG, "Show scan fragment")
+
+        if (!authorizationService.canAddPage(scan?.pages?.size ?: 0)) {
+            val reason = resources.getString(
+                R.string.view_sub_reason_page_limit,
+                AuthorizationService.FREE_TIER_MAX_PAGES
+            )
+            val action = ScanListFragmentDirections
+                .actionScanListFragmentToViewSubscriptionFragment(reason)
+            findNavController().navigate(action)
+
+            return
+        }
 
         val action = ScanListFragmentDirections
             .actionScanListFragmentToCameraFragment(scan?.id ?: return)

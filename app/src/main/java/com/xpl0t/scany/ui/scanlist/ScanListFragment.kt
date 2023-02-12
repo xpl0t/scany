@@ -10,11 +10,11 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
 import android.widget.RadioGroup
-import android.widget.TextView
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.view.allViews
 import androidx.core.view.forEach
 import androidx.fragment.app.FragmentContainerView
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -26,6 +26,7 @@ import com.xpl0t.scany.extensions.getThemeColor
 import com.xpl0t.scany.extensions.runOnUiThread
 import com.xpl0t.scany.models.Scan
 import com.xpl0t.scany.repository.Repository
+import com.xpl0t.scany.services.AuthorizationService
 import com.xpl0t.scany.services.BillingService
 import com.xpl0t.scany.ui.common.BaseFragment
 import com.xpl0t.scany.ui.scan.ScanFragment
@@ -52,6 +53,9 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
     @Inject
     lateinit var scanNameGenerator: ScanNameGenerator
 
+    @Inject
+    lateinit var authorizationService: AuthorizationService
+
     private val getScansTrigger = BehaviorSubject.createDefault(0)
 
     private lateinit var themedCtx: Context
@@ -73,6 +77,8 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
     private val currentScan: Int?
         get() =
             if (currentScanSubject.value!!.isEmpty) null else currentScanSubject.value!!.value
+
+    private var documents: List<Scan>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -221,9 +227,10 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
     }
 
     private fun updateScanList(scans: List<Scan>) {
-        val lel = scans.map { it.name }.joinToString()
-        Log.i(TAG, "Update radio buttons $lel")
+        val scanNamesStr = scans.map { it.name }.joinToString()
+        Log.i(TAG, "Update radio buttons $scanNamesStr")
 
+        documents = scans
         scanRadioGroup.clearCheck()
 
         // Add & update radio buttons
@@ -273,6 +280,18 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
         Log.d(ScanFragment.TAG, "Add scan")
         if (actionDisposable?.isDisposed == false) return
 
+        if (!authorizationService.canAddDocument(documents?.size ?: 0)) {
+            val reason = resources.getString(
+                R.string.view_sub_reason_doc_limit,
+                AuthorizationService.FREE_TIER_MAX_DOCUMENTS
+            )
+            val action = ScanListFragmentDirections
+                .actionScanListFragmentToViewSubscriptionFragment(reason)
+            findNavController().navigate(action)
+
+            return
+        }
+
         val scanName = scanNameGenerator.generate()
         val scan = Scan(name = scanName)
 
@@ -312,7 +331,7 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
         val curScan = currentScanSubject.value!!
         if (curScan.isEmpty || actionDisposable?.isDisposed == false) return
 
-        actionDisposable = repo.removeScan(curScan.value).subscribeBy(
+        actionDisposable = repo.removeScan(curScan.value).take(1).subscribeBy(
             onNext = {
                 Log.i(ScanFragment.TAG, "Deleted scan")
                 runOnUiThread {
