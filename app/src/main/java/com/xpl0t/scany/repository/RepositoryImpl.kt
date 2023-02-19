@@ -26,11 +26,25 @@ class RepositoryImpl @Inject constructor(
     private val db = Room.databaseBuilder(context, AppDatabase::class.java, "scany-db").build()
 
     override fun getScans(): Observable<List<Scan>> {
-        return db.scanDao().getAll().map {
-            it.map {
-                Scan(it.id, it.name)
+        val pairObs = combineLatest(
+            db.scanDao().getAll(),
+            db.pageDao().getAll()
+        ) { scan, pages ->
+            Pair(scan, pages)
+        }
+
+        return pairObs
+            .map { pair ->
+                return@map pair.first.map { scan ->
+                    val pages = pair.second
+                        .filter { it.scanId == scan.id }
+                        .sortedBy { it.order }
+                        .map { Page(it.id, null, it.order) }
+
+                    return@map Scan(scan.id, scan.name, pages)
+                }
             }
-        }.subscribeOn(Schedulers.computation())
+            .subscribeOn(Schedulers.computation())
     }
 
     private fun findFirstPage(pages: List<PageEntity>): PageEntity? {
@@ -50,33 +64,10 @@ class RepositoryImpl @Inject constructor(
         return scanPagesPairObs.map {
             val scan = it.first
             val pages = it.second
-            var sortedPages = mutableListOf<PageEntity>()
-            var next = findFirstPage(pages)?.id
-            var loopRuns = 0
+                .sortedBy { it.order }
+                .map { Page(it.id, null, it.order) }
 
-            while (next != null) {
-                if (loopRuns >= pages.count()) {
-                    Log.w(TAG, "Detected infinite loop while ordering pages")
-                    sortedPages = pages.toMutableList()
-                    break
-                }
-
-                val nextPage = pages.find { it.id == next } ?: break
-                sortedPages.add(nextPage)
-
-                next = nextPage.order
-                loopRuns++
-            }
-
-            if (pages.count() != sortedPages.count()) {
-                Log.w(TAG, "Order corrupt, resetting order")
-                sortedPages = pages.toMutableList()
-            }
-
-            Scan(
-                scan.id, scan.name,
-                sortedPages.map { Page(it.id, null, it.order) }
-            )
+            Scan(scan.id, scan.name, pages)
         }.subscribeOn(Schedulers.computation())
     }
 

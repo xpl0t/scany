@@ -14,7 +14,9 @@
 
     <!-- Scan list fragment -->
     <string name="scan_list_title">Documents</string>
-    <string name="add_scan">Add Document</string>
+    <string name="add_scan">Add</string>
+    <string name="single_page_count">%d Page</string>
+    <string name="multiple_page_count">%d Pages</string>
 
     <!-- Scan fragment -->
     <string name="add_page">Page</string>

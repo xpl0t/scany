@@ -79,7 +79,9 @@ class ViewSubscriptionFragment : BaseFragment(R.layout.view_subscription) {
             billingSv.isSubscribedObs
                 .filter { it }
                 .subscribe {
-                    finish()
+                    runOnUiThread {
+                        finish()
+                    }
                 }
         }
 

@@ -15,6 +15,8 @@ import androidx.core.view.allViews
 import androidx.core.view.forEach
 import androidx.fragment.app.FragmentContainerView
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -61,10 +63,9 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
     private lateinit var themedCtx: Context
 
     private lateinit var toolbar: MaterialToolbar
-    private lateinit var scanRadioGroup: RadioGroup
     private lateinit var scanFragmentContainer: FragmentContainerView
-    // private lateinit var list: RecyclerView
-    // private val listAdapter = ScanItemAdapter()
+    private lateinit var list: RecyclerView
+    private var listAdapter: ScanListItemAdapter? = null
 
     // private lateinit var failedCard: FailedCard
 
@@ -82,6 +83,8 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        listAdapter = ScanListItemAdapter(requireContext())
 
         val curScan = savedInstanceState?.getInt(CUR_SCAN_ID) ?: 0
         val curScanOpt = if (curScan > 0) Optional(curScan) else Optional.empty()
@@ -112,16 +115,16 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
                     Log.d(TAG, "Current scan subject emitted ${if (it.isEmpty) null else it.value}")
                     updateToolbar(it)
 
+                    listAdapter?.selectItem(if (it.isEmpty) null else it.value)
+
                     if (it.isEmpty) {
                         scanFragment.showScan(null)
                         scanFragment.hide()
-                        scanRadioGroup.clearCheck()
                         return@subscribe
                     }
 
                     scanFragment.showScan(it.value)
                     scanFragment.expand()
-                    scanRadioGroup.check(it.value)
                 }
         }
 
@@ -143,6 +146,12 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
                     if (it) title += " ${resources.getString(R.string.pro_tag_inverse)}"
                     toolbar.title = title
                 }
+            }
+        }
+
+        disposables.add {
+            listAdapter!!.scanClicked.subscribe {
+                currentScanSubject.onNext(Optional(it.id))
             }
         }
 
@@ -174,13 +183,11 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
 
         toolbar = requireView().findViewById(R.id.toolbar)
         scanFragmentContainer = requireView().findViewById(R.id.scanFragment)
-        scanRadioGroup = requireView().findViewById(R.id.scanList)
 
         toolbar.setOnMenuItemClickListener { handleMenuItem(it) }
 
-        // list = requireView().findViewById(R.id.scanList)
-        // list.adapter = listAdapter
-        // list.layoutManager = LinearLayoutManager(context)
+        list = requireView().findViewById(R.id.document_list)
+        list.adapter = listAdapter
 
         /*failedCard = requireView().findViewById(R.id.failed)
         failedCard.setOnClickListener {
@@ -231,49 +238,7 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
         Log.i(TAG, "Update radio buttons $scanNamesStr")
 
         documents = scans
-        scanRadioGroup.clearCheck()
-
-        // Add & update radio buttons
-        for (scan in scans) {
-            var radioBtn = scanRadioGroup.allViews.find { it.id == scan.id } as MaterialRadioButton?
-            if (radioBtn == null) {
-                radioBtn = createRadioButton()
-                scanRadioGroup.addView(radioBtn)
-            }
-
-            radioBtn.id = scan.id
-            radioBtn.text = scan.name
-            radioBtn.setOnClickListener {
-                Log.d(TAG, "Scan radio btn clicked ${it.id}")
-                currentScanSubject.onNext(Optional(it.id))
-            }
-        }
-
-        // Remove radio buttons
-        for (radioBtn in scanRadioGroup.allViews.toList()) {
-            if (radioBtn.javaClass != MaterialRadioButton::class.java) {
-                continue
-            }
-
-            if (!scans.any { it.id == radioBtn.id }) {
-                scanRadioGroup.removeView(radioBtn)
-            }
-        }
-
-        currentScanSubject.value!!.run {
-            if (!isEmpty) scanRadioGroup.check(value)
-        }
-    }
-
-    private fun createRadioButton(): MaterialRadioButton {
-        val color =
-            themedCtx.getThemeColor(com.google.android.material.R.attr.colorOnPrimary)
-
-        return MaterialRadioButton(requireContext()).apply {
-            layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
-            setTextColor(color)
-            buttonTintList = color
-        }
+        listAdapter?.updateItems(scans)
     }
 
     private fun addScan() {

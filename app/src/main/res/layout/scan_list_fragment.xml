@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -39,7 +40,7 @@
                 android:layout_marginHorizontal="16dp"
                 android:background="@color/toolbar_divider" />
 
-            <ScrollView
+            <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="70dp">
@@ -47,34 +48,49 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="20dp">
+                    android:paddingVertical="8dp"
+                    android:paddingHorizontal="20dp">
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/scanListTitle"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
                         android:text="@string/scan_list_title"
                         android:textColor="?colorOnPrimary"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintBottom_toBottomOf="@+id/addScan"
+                        app:layout_constraintEnd_toStartOf="@+id/addScan"
                         app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/addScan" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/addScan"
+                        style="@style/Widget.MaterialComponents.Button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="?colorSecondary"
+                        android:text="@string/add_scan"
+                        android:textColor="?colorOnSecondary"
+                        app:icon="@drawable/add"
+                        app:iconTint="?colorOnSecondary"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <!--<androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/scanList"
-                        android:layout_width="match_parent"
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/document_list"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginEnd="20dp"
+                        android:layout_marginTop="8dp"
+                        android:clickable="true"
+                        android:focusable="true"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/scanListTitle" />-->
+                        app:layout_constraintTop_toBottomOf="@+id/addScan" />
 
-                    <RadioGroup
+                    <!--<RadioGroup
                         android:id="@+id/scanList"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -82,27 +98,11 @@
                         android:checkedButton="@+id/radio_button_1"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/scanListTitle" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/addScan"
-                        style="@style/Widget.MaterialComponents.Button"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:backgroundTint="?colorSecondary"
-                        android:text="@string/add_scan"
-                        android:textColor="?colorOnSecondary"
-                        app:icon="@drawable/add"
-                        app:iconTint="?colorOnSecondary"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/scanList" />
+                        app:layout_constraintTop_toBottomOf="@+id/scanListTitle" />-->
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-            </ScrollView>
+            </androidx.core.widget.NestedScrollView>
 
         </LinearLayout>
 

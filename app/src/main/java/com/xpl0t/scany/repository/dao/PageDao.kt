@@ -11,6 +11,9 @@ import io.reactivex.rxjava3.core.Single
 @Dao
 interface PageDao {
 
+    @Query("SELECT id, scan_id, `order` FROM page")
+    fun getAll(): Observable<List<PageEntity>>
+
     @Query("SELECT id, scan_id, `order` FROM page WHERE scan_id = :scanId")
     fun getByScanId(scanId: Int): Observable<List<PageEntity>>
 
