@@ -18,6 +18,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="@android:color/transparent"
             android:elevation="0dp"
+            app:navigationIcon="@drawable/arrow_back"
             app:title="@string/export_title" />
 
     </com.google.android.material.appbar.AppBarLayout>

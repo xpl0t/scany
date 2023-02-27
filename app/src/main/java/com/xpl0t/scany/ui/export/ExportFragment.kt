@@ -127,6 +127,10 @@ class ExportFragment : BaseFragment(R.layout.export_fragment) {
         pageList = requireView().findViewById(R.id.pages)
         scaleTypeChipGroup = requireView().findViewById(R.id.img_scale_type_chip_group)
 
+        toolbar.setNavigationOnClickListener {
+            finish()
+        }
+
         pageSizeDropDown = requireView().findViewById(R.id.page_size)
         pageSizeDropDown.setAdapter(pageSizeAdapter)
         pageSizeDropDown.setText(pageSizeService.getDefaultPageSizeString(), false)
