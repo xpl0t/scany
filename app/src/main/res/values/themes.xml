@@ -16,9 +16,18 @@
     </style>
 
     <!-- Theme for backdrop background fragment. -->
-    <style name="Theme.Scany.ScanList" parent="Theme.Scany">
+    <style name="Theme.Scany.ScanList" parent="Theme.MaterialComponents.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/yellow_200</item>
-        <item name="colorSecondaryVariant">@color/yellow_500</item>
+        <item name="colorSecondary">@color/yellow_500</item>
+        <item name="colorSecondaryVariant">@color/yellow_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+        <item name="android:windowTranslucentStatus">false</item>
     </style>
 </resources>
