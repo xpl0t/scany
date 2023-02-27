@@ -54,7 +54,7 @@ class ViewPageFragment : BaseFragment(R.layout.view_page) {
         repo.getPageImage(args.pageId).subscribeBy(
             {
                 Log.e(TAG, "Could not load page", it)
-                Snackbar.make(view!!, R.string.load_page_err, Snackbar.LENGTH_LONG)
+                Snackbar.make(requireView(), R.string.load_page_err, Snackbar.LENGTH_LONG)
                 finish()
             },
             {
@@ -82,7 +82,7 @@ class ViewPageFragment : BaseFragment(R.layout.view_page) {
         toolbar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.share -> {
-                    shareSv.share(context!!, image ?: return@setOnMenuItemClickListener true, "image/jpeg")
+                    shareSv.share(requireContext(), image ?: return@setOnMenuItemClickListener true, "image/jpeg")
                     true
                 }
                 R.id.delete -> {
@@ -100,7 +100,7 @@ class ViewPageFragment : BaseFragment(R.layout.view_page) {
 
         Log.i(TAG, "Delete page ${args.pageId}")
 
-        deletePageSv.showDeletePageDialog(context!!, args.pageId).subscribe(
+        deletePageSv.showDeletePageDialog(requireContext(), args.pageId).subscribe(
             {
                 Log.d(TAG, "Delete page succeeded")
                 runOnUiThread {
