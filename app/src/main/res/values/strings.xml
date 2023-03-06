@@ -10,7 +10,6 @@
 
     <!-- Error messages -->
     <string name="error_msg">Ooops… something went wrong :(</string>
-    <string name="get_scans_err">Could not load scans</string>
 
     <!-- Scan list fragment -->
     <string name="scan_list_title">Documents</string>
@@ -89,7 +88,6 @@
     <string name="img_scale_type_title">Image Scaling</string>
     <string name="export_fit_img">Fit</string>
     <string name="export_center_image_inside">Center Inside</string>
-    <string name="export">Export</string>
     <string name="document_type">Document Type</string>
 
     <string-array name="page_sizes">
@@ -113,8 +111,7 @@
     <string name="view_sub_reason_page_limit">You reached the limit of %d pages per document</string>
     <string name="view_sub_title">Upgrade to PRO &#128640;</string>
     <string name="view_sub_benefits_title">Beneftis of PRO</string>
-    <string name="view_sub_benefit_unlimited_documents">Unlimited documents</string>
-    <string name="view_sub_billing_period_title">Billing Period</string>
+    <string name="view_sub_billing_plan_title">Billing Plans</string>
     <string name="view_sub_subscribe">Subscribe</string>
 
     <string name="view_sub_monthly">Monthly</string>
@@ -122,8 +119,8 @@
     <string name="view_sub_cost_overview_monthly">%s per month</string>
     <string name="view_sub_cost_overview_yearly">%s per year</string>
 
-    <string name="view_sub_fetch_offers_failed_title">Could not fetch subscription offers</string>
-    <string name="view_sub_fetch_offers_failed_subtitle">Is your device connected to the internet?</string>
+    <string name="view_sub_fetch_plans_failed_title">Could not fetch subscription offers</string>
+    <string name="view_sub_fetch_plans_failed_subtitle">Is your device connected to the internet?</string>
 
     <string-array name="view_sub_benefits">
         <item>Unlimited documents</item>

@@ -14,11 +14,9 @@ import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import com.xpl0t.scany.R
-import com.xpl0t.scany.models.SubscriptionOffer
-import com.xpl0t.scany.ui.viewsubscription.ViewSubscriptionFragment
+import com.xpl0t.scany.models.BillingPlan
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -109,7 +107,7 @@ class BillingService @Inject() constructor(
         billingClient.queryPurchasesAsync(params.build(), purchasesResponseListener)
     }
 
-    fun getSubscriptionOffers(subscriptionId: String): Observable<List<SubscriptionOffer>> {
+    fun getSubscriptionOffers(subscriptionId: String): Observable<List<BillingPlan>> {
         val queryProductDetailsParams =
             QueryProductDetailsParams.newBuilder()
                 .setProductList(
@@ -135,7 +133,7 @@ class BillingService @Inject() constructor(
         }
     }
 
-    private fun mapOffers(subscriptionId: String, productDetailsList: List<ProductDetails>): List<SubscriptionOffer> {
+    private fun mapOffers(subscriptionId: String, productDetailsList: List<ProductDetails>): List<BillingPlan> {
         val basicSub = productDetailsList.find { it.productId == subscriptionId }
         val priceMap = basicSub?.subscriptionOfferDetails!!
             .associateBy(
@@ -149,8 +147,8 @@ class BillingService @Inject() constructor(
             )
 
         val offers = listOf(
-            SubscriptionOffer("basic", R.string.view_sub_monthly, R.string.view_sub_cost_overview_monthly, R.id.monthly_billing),
-            SubscriptionOffer("basic-yearly", R.string.view_sub_yearly, R.string.view_sub_cost_overview_yearly, R.id.yearly_billing)
+            BillingPlan("basic", R.string.view_sub_monthly, R.string.view_sub_cost_overview_monthly),
+            BillingPlan("basic-yearly", R.string.view_sub_yearly, R.string.view_sub_cost_overview_yearly)
         )
 
         return offers.map {

@@ -8,4 +8,6 @@
     <declare-styleable name="DocumentOutline">
         <attr name="outlineColor" format="color" />
     </declare-styleable>
+
+    <attr name="colorSuccess" format="color" />
 </resources>

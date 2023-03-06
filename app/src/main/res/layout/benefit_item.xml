@@ -30,7 +30,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/check"
-            app:tint="#83C870" />
+            app:tint="?colorSuccess" />
 
         <TextView
             android:id="@+id/benefit"
@@ -38,13 +38,15 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="?colorOnBackground"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/check"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="@string/view_sub_benefit_unlimited_documents" />
+            tools:text="Unlimited documents" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

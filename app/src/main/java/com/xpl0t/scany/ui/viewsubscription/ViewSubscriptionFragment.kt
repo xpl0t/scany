@@ -3,20 +3,18 @@ package com.xpl0t.scany.ui.viewsubscription
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.billingclient.api.BillingFlowParams
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.chip.ChipGroup
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.add
 import com.xpl0t.scany.extensions.finish
 import com.xpl0t.scany.extensions.runOnUiThread
-import com.xpl0t.scany.models.SubscriptionOffer
+import com.xpl0t.scany.models.BillingPlan
 import com.xpl0t.scany.services.BillingService
 import com.xpl0t.scany.ui.common.BaseFragment
 import com.xpl0t.scany.ui.reorderpages.ReorderPagesFragment
@@ -39,37 +37,31 @@ class ViewSubscriptionFragment : BaseFragment(R.layout.view_subscription) {
 
     private val getSubOffersTrigger = BehaviorSubject.createDefault(0)
 
-    private lateinit var costOverviewTextBox: TextView
     private lateinit var benefitsList: RecyclerView
     private val benefitsAdapter = BenefitAdapter()
     private lateinit var subOptionsContainer: View
-    private lateinit var periodChipGroup: ChipGroup
+    private lateinit var billingPlanList: RecyclerView
+    private lateinit var billingPlanAdapter: BillingPlanAdapter
     private lateinit var failedCard: FailedCard
 
-    private var subOffers: List<SubscriptionOffer>? = null
+    private var subOffers: List<BillingPlan>? = null
 
     private var disposable: Disposable? = null
     private var disposables = mutableListOf<Disposable>()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        benefitsAdapter.updateItems(
+            resources.getStringArray(R.array.view_sub_benefits).toList()
+        )
+
+        billingPlanAdapter = BillingPlanAdapter(requireContext()) { subscribe(it) }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-
-        disposable = getSubscriptionOffers().subscribe {
-            Log.i(TAG, "Got subscription offers")
-            subOffers = it
-
-            runOnUiThread {
-                val preselectedOffer = it.first()
-                periodChipGroup.check(preselectedOffer.chipId)
-                costOverviewTextBox.text = resources.getString(
-                    preselectedOffer.costOverviewResId, preselectedOffer.formattedPrice
-                )
-
-                failedCard.visibility = View.GONE
-                subOptionsContainer.visibility = View.VISIBLE
-            }
-        }
     }
 
     override fun onResume() {
@@ -85,9 +77,16 @@ class ViewSubscriptionFragment : BaseFragment(R.layout.view_subscription) {
                 }
         }
 
-        benefitsAdapter.updateItems(
-            resources.getStringArray(R.array.view_sub_benefits).toList()
-        )
+        disposable = getSubscriptionOffers().subscribe {
+            Log.i(TAG, "Got subscription offers")
+            subOffers = it
+
+            runOnUiThread {
+                billingPlanAdapter.updateItems(it)
+                failedCard.visibility = View.GONE
+                subOptionsContainer.visibility = View.VISIBLE
+            }
+        }
     }
 
     override fun onPause() {
@@ -100,43 +99,29 @@ class ViewSubscriptionFragment : BaseFragment(R.layout.view_subscription) {
         val reasonTextView = requireView().findViewById<TextView>(R.id.reason)
         reasonTextView.text = args.reasonText
 
-        val clearBtn = requireView().findViewById<ImageView>(R.id.clear)
+        val clearBtn = requireView().findViewById<FloatingActionButton>(R.id.clear)
         clearBtn.setOnClickListener {
             Log.i(TAG, "Clear button clicked")
             finish()
         }
 
-        costOverviewTextBox = requireView().findViewById(R.id.cost_overview)
-
         benefitsList = requireView().findViewById(R.id.benefits_list)
         benefitsList.adapter = benefitsAdapter
         benefitsList.layoutManager = LinearLayoutManager(context)
 
+        billingPlanList = requireView().findViewById(R.id.billing_plan_list)
+        billingPlanList.adapter = billingPlanAdapter
+        billingPlanList.layoutManager = LinearLayoutManager(context)
+
         subOptionsContainer = requireView().findViewById(R.id.sub_options_container)
         subOptionsContainer.visibility = View.GONE
-
-        periodChipGroup = requireView().findViewById(R.id.billing_period_chip_group)
-        periodChipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
-            if (subOffers == null) return@setOnCheckedStateChangeListener
-
-            val offer = subOffers!!.find { it.chipId == checkedIds.first() }!!
-            costOverviewTextBox.text = resources.getString(
-                offer.costOverviewResId, offer.formattedPrice
-            )
-        }
 
         failedCard = requireView().findViewById(R.id.failed_card)
         failedCard.visibility = View.GONE
         failedCard.setOnClickListener { getSubOffersTrigger.onNext(0) }
-
-        val subscribeBtn = requireView().findViewById<MaterialButton>(R.id.subscribe)
-        subscribeBtn.setOnClickListener {
-            Log.i(TAG, "Subscribe button clicked")
-            subscribe()
-        }
     }
 
-    private fun getSubscriptionOffers(): Observable<List<SubscriptionOffer>> {
+    private fun getSubscriptionOffers(): Observable<List<BillingPlan>> {
         Log.d(ReorderPagesFragment.TAG, "Get subscription offers")
 
         return getSubOffersTrigger
@@ -162,8 +147,7 @@ class ViewSubscriptionFragment : BaseFragment(R.layout.view_subscription) {
             .map { it.value }
     }
 
-    private fun subscribe() {
-        val offer = (subOffers ?: return).first { it.chipId == periodChipGroup.checkedChipId }
+    private fun subscribe(offer: BillingPlan) {
         Log.i(TAG, "Subscribe to offer ${offer.id}")
 
         val productDetailsParamsList = listOf(
