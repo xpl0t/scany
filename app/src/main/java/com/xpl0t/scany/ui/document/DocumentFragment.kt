@@ -1,4 +1,4 @@
-package com.xpl0t.scany.ui.scan
+package com.xpl0t.scany.ui.document
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -22,18 +22,16 @@ import com.google.android.material.textview.MaterialTextView
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.add
 import com.xpl0t.scany.extensions.runOnUiThread
-import com.xpl0t.scany.models.Scan
+import com.xpl0t.scany.models.Document
 import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.services.AuthorizationService
 import com.xpl0t.scany.services.pdf.PdfService
 import com.xpl0t.scany.services.ShareService
 import com.xpl0t.scany.services.backpress.BackPressHandler
 import com.xpl0t.scany.services.backpress.BackPressHandlerService
-import com.xpl0t.scany.services.pdf.ScaleType
-import com.xpl0t.scany.ui.scanlist.ScanListFragmentDirections
+import com.xpl0t.scany.ui.documentlist.DocumentListFragmentDirections
 import com.xpl0t.scany.util.Optional
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.subjects.BehaviorSubject
@@ -41,7 +39,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener, BackPressHandler {
+class DocumentFragment : BottomSheetDialogFragment(), DocumentFragmentListener, BackPressHandler {
 
     @Inject
     lateinit var repo: Repository
@@ -59,11 +57,11 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener, BackPres
     lateinit var authorizationService: AuthorizationService
 
     private val disposables: MutableList<Disposable> = mutableListOf()
-    private var scanDisposable: Disposable? = null
+    private var documentDisposable: Disposable? = null
     private var actionDisposable: Disposable? = null
 
-    private val scanSubject = BehaviorSubject.createDefault<Optional<Scan>>(Optional.empty())
-    private var scan: Scan? = null
+    private val documentSubject = BehaviorSubject.createDefault<Optional<Document>>(Optional.empty())
+    private var document: Document? = null
 
     private lateinit var bottomSheetHeader: ConstraintLayout
     private lateinit var titleTextView: MaterialTextView
@@ -83,7 +81,7 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener, BackPres
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.scan_fragment, container, false)
+        return inflater.inflate(R.layout.document_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -95,7 +93,7 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener, BackPres
             override fun onSlide(bottomSheet: View, slideOffset: Float) {}
 
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                this@ScanFragment.onStateChanged(bottomSheet, newState)
+                this@DocumentFragment.onStateChanged(bottomSheet, newState)
             }
         })
 
@@ -112,19 +110,19 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener, BackPres
         backPressHandlerService.setHandler(this)
 
         disposables.add {
-            scanSubject.subscribe {
-                val scan = if (it.isEmpty) null else it.value
+            documentSubject.subscribe {
+                val document = if (it.isEmpty) null else it.value
 
-                Log.d(TAG, "Scan subject next value (id: ${scan?.id})")
-                this.scan = scan
-                updateUI(scan)
+                Log.d(TAG, "Document subject next value (id: ${document?.id})")
+                this.document = document
+                updateUI(document)
             }
         }
 
         disposables.add {
             pageAdapter.pageClicked.subscribe {
-                val action = ScanListFragmentDirections
-                    .actionScanListFragmentToViewPageFragment(it.id)
+                val action = DocumentListFragmentDirections
+                    .actionDocumentListFragmentToViewPageFragment(it.id)
                 findNavController().navigate(action)
             }
         }
@@ -135,7 +133,7 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener, BackPres
         backPressHandlerService.resetHandler()
 
         disposables.forEach { it.dispose() }
-        scanDisposable?.dispose()
+        documentDisposable?.dispose()
         actionDisposable?.dispose()
     }
 
@@ -165,7 +163,7 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener, BackPres
                 return@setOnClickListener
             }
 
-            if (scan != null)
+            if (document != null)
                 renameTitle()
         }
 
@@ -195,33 +193,33 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener, BackPres
         currentState = newState
     }
 
-    override fun showScan(id: Int?) {
-        Log.d(TAG, "Show scan $id")
+    override fun showDocument(id: Int?) {
+        Log.d(TAG, "Show document $id")
 
         if (id == null) {
-            scanSubject.onNext(Optional.empty())
+            documentSubject.onNext(Optional.empty())
             return
         }
 
-        // If the scan changed reset the list animation
-        if (id != scan?.id) {
+        // If the document changed reset the list animation
+        if (id != document?.id) {
             pageAdapter.resetAnimation()
         }
 
-        scanDisposable?.dispose()
+        documentDisposable?.dispose()
 
-        scanDisposable = repo.getScan(id).take(1).subscribeBy(
+        documentDisposable = repo.getDocument(id).take(1).subscribeBy(
             onNext = {
-                Log.i(TAG, "Got scan (id: ${it.id})")
+                Log.i(TAG, "Got document (id: ${it.id})")
                 runOnUiThread {
-                    scanSubject.onNext(Optional(it))
+                    documentSubject.onNext(Optional(it))
                 }
             },
             onError = {
-                Log.e(TAG, "Could not get scan", it)
+                Log.e(TAG, "Could not get document", it)
                 Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
                 runOnUiThread {
-                    scanSubject.onNext(Optional.empty())
+                    documentSubject.onNext(Optional.empty())
                 }
             }
         )
@@ -230,16 +228,16 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener, BackPres
     private fun renameTitleBase(name: String) {
         if (actionDisposable?.isDisposed == false) return
 
-        val newScan = scan!!.copy(name = name)
-        actionDisposable = repo.updateScan(newScan).subscribeBy(
+        val newDocument = document!!.copy(name = name)
+        actionDisposable = repo.updateDocument(newDocument).subscribeBy(
             onNext = {
-                Log.i(TAG, "Updated scan name successfully (id: ${it.id})")
+                Log.i(TAG, "Updated document name successfully (id: ${it.id})")
                 runOnUiThread {
-                    scanSubject.onNext(Optional(it))
+                    documentSubject.onNext(Optional(it))
                 }
             },
             onError = {
-                Log.e(TAG, "Could not set scan name", it)
+                Log.e(TAG, "Could not set document name", it)
                 Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
             }
         )
@@ -250,7 +248,7 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener, BackPres
             val dlgView = LayoutInflater.from(context).inflate(R.layout.edit_name_dlg, null)
             val inputLayout = dlgView.findViewById<TextInputLayout>(R.id.nameInputLayout)
             val editText = dlgView.findViewById<TextInputEditText>(R.id.nameEditText)
-            editText.setText(scan?.name ?: "")
+            editText.setText(document?.name ?: "")
             editText.requestFocus()
 
             setTitle(resources.getString(R.string.edit_name_dlg_title))
@@ -262,12 +260,12 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener, BackPres
 
             val dlg = show()
             dlg.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                val scanName = editText.text.toString()
-                val err = validateScanName(scanName)
+                val documentName = editText.text.toString()
+                val err = validateDocumentName(documentName)
                 if (err != null) {
                     inputLayout.error = err
                 } else {
-                    renameTitleBase(scanName)
+                    renameTitleBase(documentName)
                     dlg.dismiss()
                 }
             }
@@ -277,28 +275,28 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener, BackPres
     override fun export() {
         Log.d(TAG, "Export PDF")
 
-        val pageCount = scan?.pages?.count()
+        val pageCount = document?.pages?.count()
         if (pageCount == 0) {
             Snackbar.make(requireView(), R.string.export_no_page, Snackbar.LENGTH_SHORT).show()
             return
         }
 
-        val action = ScanListFragmentDirections
-            .actionScanListFragmentToExportFragment(scan?.id ?: return)
+        val action = DocumentListFragmentDirections
+            .actionDocumentListFragmentToExportFragment(document?.id ?: return)
         findNavController().navigate(action)
     }
 
     override fun reorderPages() {
         Log.d(TAG, "Reorder pages")
 
-        val pageCount = scan?.pages?.count()
+        val pageCount = document?.pages?.count()
         if (pageCount != null && pageCount < 2) {
             Snackbar.make(requireView(), R.string.reorder_min_2_pages, Snackbar.LENGTH_SHORT).show()
             return
         }
 
-        val action = ScanListFragmentDirections
-            .actionScanListFragmentToReorderPagesFragment(scan?.id ?: return)
+        val action = DocumentListFragmentDirections
+            .actionDocumentListFragmentToReorderPagesFragment(document?.id ?: return)
         findNavController().navigate(action)
     }
 
@@ -312,8 +310,8 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener, BackPres
         bottomSheetToggle.setImageResource(R.drawable.arrow_up)
     }
 
-    private fun updateUI(scan: Scan?) {
-        if (scan == null) {
+    private fun updateUI(document: Document?) {
+        if (document == null) {
             titleTextView.text = ""
             addPageHeaderBtn.visibility = View.GONE
             pageList.visibility = View.GONE
@@ -323,43 +321,43 @@ class ScanFragment : BottomSheetDialogFragment(), ScanFragmentListener, BackPres
 
         addPageHeaderBtn.visibility = View.VISIBLE
 
-        noPageCard.visibility = if (scan.pages.isEmpty()) View.VISIBLE else View.GONE
-        pageList.visibility = if (scan.pages.isNotEmpty()) View.VISIBLE else View.GONE
+        noPageCard.visibility = if (document.pages.isEmpty()) View.VISIBLE else View.GONE
+        pageList.visibility = if (document.pages.isNotEmpty()) View.VISIBLE else View.GONE
 
-        titleTextView.text = scan.name
-        pageAdapter.updateItems(scan.pages)
+        titleTextView.text = document.name
+        pageAdapter.updateItems(document.pages)
     }
 
     /**
-     * Validate a scan name.
+     * Validate a document name.
      *
      * @return Null if name is valid and a error text otherwise.
      */
-    private fun validateScanName(name: String): String? {
+    private fun validateDocumentName(name: String): String? {
         return if (name.isEmpty()) resources.getString(R.string.name_to_short_err) else null
     }
 
     private fun showCameraFragment() {
-        Log.i(TAG, "Show scan fragment")
+        Log.i(TAG, "Show document fragment")
 
-        if (!authorizationService.canAddPage(scan?.pages?.size ?: 0)) {
+        if (!authorizationService.canAddPage(document?.pages?.size ?: 0)) {
             val reason = resources.getString(
                 R.string.view_sub_reason_page_limit,
                 AuthorizationService.FREE_TIER_MAX_PAGES
             )
-            val action = ScanListFragmentDirections
-                .actionScanListFragmentToViewSubscriptionFragment(reason)
+            val action = DocumentListFragmentDirections
+                .actionDocumentListFragmentToViewSubscriptionFragment(reason)
             findNavController().navigate(action)
 
             return
         }
 
-        val action = ScanListFragmentDirections
-            .actionScanListFragmentToCameraFragment(scan?.id ?: return)
+        val action = DocumentListFragmentDirections
+            .actionDocumentListFragmentToCameraFragment(document?.id ?: return)
         findNavController().navigate(action)
     }
 
     companion object {
-        const val TAG = "ScanFragment"
+        const val TAG = "DocumentFragment"
     }
 }

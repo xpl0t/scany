@@ -1,4 +1,4 @@
-package com.xpl0t.scany.ui.scanlist
+package com.xpl0t.scany.ui.documentlist
 
 import android.content.Context
 import android.os.Bundle
@@ -6,34 +6,26 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import android.widget.LinearLayout
-import android.widget.RadioGroup
 import androidx.appcompat.view.ContextThemeWrapper
-import androidx.core.view.allViews
 import androidx.core.view.forEach
 import androidx.fragment.app.FragmentContainerView
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.android.material.snackbar.Snackbar
 import com.xpl0t.scany.R
 import com.xpl0t.scany.extensions.add
-import com.xpl0t.scany.extensions.getThemeColor
 import com.xpl0t.scany.extensions.runOnUiThread
-import com.xpl0t.scany.models.Scan
+import com.xpl0t.scany.models.Document
 import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.services.AuthorizationService
 import com.xpl0t.scany.services.BillingService
 import com.xpl0t.scany.ui.common.BaseFragment
-import com.xpl0t.scany.ui.scan.ScanFragment
-import com.xpl0t.scany.ui.scan.ScanFragmentListener
-import com.xpl0t.scany.ui.scanlist.scannamegenerator.ScanNameGenerator
+import com.xpl0t.scany.ui.document.DocumentFragment
+import com.xpl0t.scany.ui.document.DocumentFragmentListener
+import com.xpl0t.scany.ui.documentlist.documentnamegenerator.DocumentNameGenerator
 import com.xpl0t.scany.util.Optional
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.core.Observable
@@ -44,7 +36,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
+class DocumentListFragment : BaseFragment(R.layout.document_list_fragment) {
 
     @Inject
     lateinit var repo: Repository
@@ -53,47 +45,47 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
     lateinit var billingService: BillingService
 
     @Inject
-    lateinit var scanNameGenerator: ScanNameGenerator
+    lateinit var documentNameGenerator: DocumentNameGenerator
 
     @Inject
     lateinit var authorizationService: AuthorizationService
 
-    private val getScansTrigger = BehaviorSubject.createDefault(0)
+    private val getDocumentsTrigger = BehaviorSubject.createDefault(0)
 
     private lateinit var themedCtx: Context
 
     private lateinit var toolbar: MaterialToolbar
-    private lateinit var scanFragmentContainer: FragmentContainerView
+    private lateinit var documentFragmentContainer: FragmentContainerView
     private lateinit var list: RecyclerView
-    private var listAdapter: ScanListItemAdapter? = null
+    private var listAdapter: DocumentListItemAdapter? = null
 
     // private lateinit var failedCard: FailedCard
 
     private val disposables: MutableList<Disposable> = mutableListOf()
     private var actionDisposable: Disposable? = null
 
-    private var currentScanSubject = BehaviorSubject.createDefault<Optional<Int>>(Optional.empty())
+    private var currentDocumentSubject = BehaviorSubject.createDefault<Optional<Int>>(Optional.empty())
 
-    private val scanFragment: ScanFragmentListener get() = scanFragmentContainer.getFragment()
-    private val currentScan: Int?
+    private val documentFragment: DocumentFragmentListener get() = documentFragmentContainer.getFragment()
+    private val currentDocument: Int?
         get() =
-            if (currentScanSubject.value!!.isEmpty) null else currentScanSubject.value!!.value
+            if (currentDocumentSubject.value!!.isEmpty) null else currentDocumentSubject.value!!.value
 
-    private var documents: List<Scan>? = null
+    private var documents: List<Document>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        listAdapter = ScanListItemAdapter(requireContext())
+        listAdapter = DocumentListItemAdapter(requireContext())
 
-        val curScan = savedInstanceState?.getInt(CUR_SCAN_ID) ?: 0
-        val curScanOpt = if (curScan > 0) Optional(curScan) else Optional.empty()
-        currentScanSubject.onNext(curScanOpt)
+        val curDocument = savedInstanceState?.getInt(CUR_DOCUMENT_ID) ?: 0
+        val curDocumentOpt = if (curDocument > 0) Optional(curDocument) else Optional.empty()
+        currentDocumentSubject.onNext(curDocumentOpt)
     }
 
     override fun onGetLayoutInflater(savedInstanceState: Bundle?): LayoutInflater {
         val inflater = super.onGetLayoutInflater(savedInstanceState)
-        themedCtx = ContextThemeWrapper(requireContext(), R.style.Theme_Scany_ScanList)
+        themedCtx = ContextThemeWrapper(requireContext(), R.style.Theme_Scany_DocumentList)
         return inflater.cloneInContext(themedCtx)
     }
 
@@ -106,35 +98,35 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
         super.onResume()
 
         disposables.add {
-            currentScanSubject
+            currentDocumentSubject
                 .distinctUntilChanged { v1, v2 ->
                     if (v1.isEmpty == v2.isEmpty) v1.isEmpty || v1.value == v2.value
                     else false
                 }
                 .subscribe {
-                    Log.d(TAG, "Current scan subject emitted ${if (it.isEmpty) null else it.value}")
+                    Log.d(TAG, "Current document subject emitted ${if (it.isEmpty) null else it.value}")
                     updateToolbar(it)
 
                     listAdapter?.selectItem(if (it.isEmpty) null else it.value)
 
                     if (it.isEmpty) {
-                        scanFragment.showScan(null)
-                        scanFragment.hide()
+                        documentFragment.showDocument(null)
+                        documentFragment.hide()
                         return@subscribe
                     }
 
-                    scanFragment.showScan(it.value)
-                    scanFragment.expand()
+                    documentFragment.showDocument(it.value)
+                    documentFragment.expand()
                 }
         }
 
         disposables.add {
-            getScans().subscribe {
-                Log.i(TAG, "Got scans")
+            getDocuments().subscribe {
+                Log.i(TAG, "Got documents")
                 // failedCard.visibility = View.GONE
-                // scanRadioGroup.visibility = View.VISIBLE
+                // documentRadioGroup.visibility = View.VISIBLE
                 runOnUiThread {
-                    updateScanList(it)
+                    updateDocumentList(it)
                 }
             }
         }
@@ -150,15 +142,15 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
         }
 
         disposables.add {
-            listAdapter!!.scanClicked.subscribe {
-                currentScanSubject.onNext(Optional(it.id))
+            listAdapter!!.documentClicked.subscribe {
+                currentDocumentSubject.onNext(Optional(it.id))
             }
         }
 
         /*disposables.add {
-            listAdapter.scanClicked.subscribe {
-                Log.i(TAG, "Scan card clicked (id: ${it.id})")
-                showScanView(it.id)
+            listAdapter.documentClicked.subscribe {
+                Log.i(TAG, "Document card clicked (id: ${it.id})")
+                showDocumentView(it.id)
             }
         }*/
     }
@@ -171,18 +163,18 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt(CUR_SCAN_ID, currentScan ?: 0)
+        outState.putInt(CUR_DOCUMENT_ID, currentDocument ?: 0)
     }
 
     private fun initViews() {
-        val addScanBtn = requireView().findViewById<MaterialButton>(R.id.addScan)
-        addScanBtn.setOnClickListener {
-            Log.i(TAG, "Add scan btn clicked")
-            addScan()
+        val addDocumentBtn = requireView().findViewById<MaterialButton>(R.id.addDocument)
+        addDocumentBtn.setOnClickListener {
+            Log.i(TAG, "Add document btn clicked")
+            addDocument()
         }
 
         toolbar = requireView().findViewById(R.id.toolbar)
-        scanFragmentContainer = requireView().findViewById(R.id.scanFragment)
+        documentFragmentContainer = requireView().findViewById(R.id.documentFragment)
 
         toolbar.setOnMenuItemClickListener { handleMenuItem(it) }
 
@@ -191,40 +183,40 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
 
         /*failedCard = requireView().findViewById(R.id.failed)
         failedCard.setOnClickListener {
-            getScansTrigger.onNext(0)
+            getDocumentsTrigger.onNext(0)
         }*/
     }
 
     private fun handleMenuItem(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.deleteScan -> {
-                Log.d(ScanFragment.TAG, "Delete scan menu item clicked")
-                showDeleteScanDlg()
+            R.id.deleteDocument -> {
+                Log.d(DocumentFragment.TAG, "Delete document menu item clicked")
+                showDeleteDocumentDlg()
                 true
             }
             R.id.export -> {
-                Log.d(ScanFragment.TAG, "Export pdf menu item clicked")
-                scanFragment.export()
+                Log.d(DocumentFragment.TAG, "Export pdf menu item clicked")
+                documentFragment.export()
                 true
             }
             R.id.editTitle -> {
-                Log.d(ScanFragment.TAG, "Edit title menu item clicked")
-                scanFragment.renameTitle()
+                Log.d(DocumentFragment.TAG, "Edit title menu item clicked")
+                documentFragment.renameTitle()
                 true
             }
             R.id.reorder -> {
-                Log.d(ScanFragment.TAG, "Reorder pages menu item clicked")
-                scanFragment.reorderPages()
+                Log.d(DocumentFragment.TAG, "Reorder pages menu item clicked")
+                documentFragment.reorderPages()
                 true
             }
             else -> false
         }
     }
 
-    private fun getScans(): Observable<List<Scan>> {
-        return getScansTrigger.switchMap {
-            repo.getScans().onErrorComplete {
-                Log.e(TAG, "Get scans failed", it)
+    private fun getDocuments(): Observable<List<Document>> {
+        return getDocumentsTrigger.switchMap {
+            repo.getDocuments().onErrorComplete {
+                Log.e(TAG, "Get documents failed", it)
                 // list.visibility = View.GONE
                 // failedCard.visibility = View.VISIBLE
 
@@ -233,16 +225,16 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
         }
     }
 
-    private fun updateScanList(scans: List<Scan>) {
-        val scanNamesStr = scans.map { it.name }.joinToString()
-        Log.i(TAG, "Update radio buttons $scanNamesStr")
+    private fun updateDocumentList(documents: List<Document>) {
+        val documentNamesStr = documents.map { it.name }.joinToString()
+        Log.i(TAG, "Update radio buttons $documentNamesStr")
 
-        documents = scans
-        listAdapter?.updateItems(scans)
+        this.documents = documents
+        listAdapter?.updateItems(documents)
     }
 
-    private fun addScan() {
-        Log.d(ScanFragment.TAG, "Add scan")
+    private fun addDocument() {
+        Log.d(DocumentFragment.TAG, "Add document")
         if (actionDisposable?.isDisposed == false) return
 
         if (!authorizationService.canAddDocument(documents?.size ?: 0)) {
@@ -250,69 +242,69 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
                 R.string.view_sub_reason_doc_limit,
                 AuthorizationService.FREE_TIER_MAX_DOCUMENTS
             )
-            val action = ScanListFragmentDirections
-                .actionScanListFragmentToViewSubscriptionFragment(reason)
+            val action = DocumentListFragmentDirections
+                .actionDocumentListFragmentToViewSubscriptionFragment(reason)
             findNavController().navigate(action)
 
             return
         }
 
-        actionDisposable = scanNameGenerator.generate()
-            .concatMap { repo.addScan(Scan(name = it)) }
+        actionDisposable = documentNameGenerator.generate()
+            .concatMap { repo.addDocument(Document(name = it)) }
             .take(1)
             .subscribeBy(
                 onNext = {
-                    Log.i(ScanFragment.TAG, "Created scan (id: ${it.id})")
+                    Log.i(DocumentFragment.TAG, "Created document (id: ${it.id})")
                     runOnUiThread {
-                        currentScanSubject.onNext(Optional(it.id))
+                        currentDocumentSubject.onNext(Optional(it.id))
                     }
                 },
                 onError = {
-                    Log.e(ScanFragment.TAG, "Could not add scan", it)
+                    Log.e(DocumentFragment.TAG, "Could not add document", it)
                     Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
                 }
             )
     }
 
-    private fun showDeleteScanDlg() {
-        Log.d(ScanFragment.TAG, "Show delete scan dialog")
+    private fun showDeleteDocumentDlg() {
+        Log.d(DocumentFragment.TAG, "Show delete document dialog")
 
-        if (currentScanSubject.value!!.isEmpty) return
+        if (currentDocumentSubject.value!!.isEmpty) return
 
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle(resources.getString(R.string.delete_scan_dlg_title))
+            .setTitle(resources.getString(R.string.delete_document_dlg_title))
             .setNegativeButton(resources.getString(R.string.cancel_btn)) { _, _ ->
-                Log.d(ScanFragment.TAG, "Delete scan canceled")
+                Log.d(DocumentFragment.TAG, "Delete document canceled")
             }
-            .setPositiveButton(resources.getString(R.string.delete_scan_dlg_delete)) { _, _ ->
-                deleteScan()
+            .setPositiveButton(resources.getString(R.string.delete_document_dlg_delete)) { _, _ ->
+                deleteDocument()
             }
             .show()
     }
 
-    private fun deleteScan() {
-        Log.d(ScanFragment.TAG, "Delete scan")
+    private fun deleteDocument() {
+        Log.d(DocumentFragment.TAG, "Delete document")
 
-        val curScan = currentScanSubject.value!!
-        if (curScan.isEmpty || actionDisposable?.isDisposed == false) return
+        val curDocument = currentDocumentSubject.value!!
+        if (curDocument.isEmpty || actionDisposable?.isDisposed == false) return
 
-        actionDisposable = repo.removeScan(curScan.value).take(1).subscribeBy(
+        actionDisposable = repo.removeDocument(curDocument.value).take(1).subscribeBy(
             onNext = {
-                Log.i(ScanFragment.TAG, "Deleted scan")
+                Log.i(DocumentFragment.TAG, "Deleted document")
                 runOnUiThread {
-                    currentScanSubject.onNext(Optional.empty())
+                    currentDocumentSubject.onNext(Optional.empty())
                 }
             },
             onError = {
-                Log.e(ScanFragment.TAG, "Could not delete scan", it)
+                Log.e(DocumentFragment.TAG, "Could not delete document", it)
                 Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT)
                     .show()
             }
         )
     }
 
-    private fun updateToolbar(currentScan: Optional<Int>) {
-        val menuItemVisible = !currentScan.isEmpty
+    private fun updateToolbar(currentDocument: Optional<Int>) {
+        val menuItemVisible = !currentDocument.isEmpty
 
         toolbar.menu.forEach {
             it.isVisible = menuItemVisible
@@ -320,7 +312,7 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
     }
 
     companion object {
-        const val TAG = "ScanListFragment"
-        const val CUR_SCAN_ID = "CUR_SCAN_ID"
+        const val TAG = "DocumentListFragment"
+        const val CUR_DOCUMENT_ID = "CUR_DOCUMENT_ID"
     }
 }

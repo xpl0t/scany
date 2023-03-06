@@ -8,9 +8,8 @@ import com.xpl0t.scany.services.pdf.scalecalculator.FitScaleCalculator
 import com.xpl0t.scany.services.pdf.scalecalculator.ScaleCalculatorList
 import com.xpl0t.scany.settings.SettingsService
 import com.xpl0t.scany.settings.SettingsServiceMockImpl
-import com.xpl0t.scany.ui.scanlist.scannamegenerator.RandomScanNameGenerator
-import com.xpl0t.scany.ui.scanlist.scannamegenerator.ScanNameGenerator
-import com.xpl0t.scany.ui.scanlist.scannamegenerator.SequentialDocumentNameGenerator
+import com.xpl0t.scany.ui.documentlist.documentnamegenerator.DocumentNameGenerator
+import com.xpl0t.scany.ui.documentlist.documentnamegenerator.SequentialDocumentNameGenerator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,7 +30,7 @@ class HiltModule {
     }
 
     @Provides
-    fun bindScanNameGenerator(generator: SequentialDocumentNameGenerator): ScanNameGenerator {
+    fun bindDocumentNameGenerator(generator: SequentialDocumentNameGenerator): DocumentNameGenerator {
         return generator
     }
 

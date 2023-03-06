@@ -1,7 +1,7 @@
-package com.xpl0t.scany.ui.scan
+package com.xpl0t.scany.ui.document
 
-interface ScanFragmentListener {
-    fun showScan(id: Int?)
+interface DocumentFragmentListener {
+    fun showDocument(id: Int?)
     fun renameTitle()
     fun export()
     fun reorderPages()

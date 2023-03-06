@@ -14,7 +14,7 @@ import com.xpl0t.scany.extensions.add
 import com.xpl0t.scany.extensions.finish
 import com.xpl0t.scany.extensions.runOnUiThread
 import com.xpl0t.scany.models.Page
-import com.xpl0t.scany.models.Scan
+import com.xpl0t.scany.models.Document
 import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.ui.common.BaseFragment
 import com.xpl0t.scany.util.Optional
@@ -36,8 +36,8 @@ class ReorderPagesFragment : BaseFragment(R.layout.reorder_pages_fragment) {
     private val disposables: MutableList<Disposable> = mutableListOf()
     private var actionDisposable: Disposable? = null
 
-    private val scanSubject = BehaviorSubject.createDefault<Optional<Scan>>(Optional.empty())
-    private var scan: Scan? = null
+    private val documentSubject = BehaviorSubject.createDefault<Optional<Document>>(Optional.empty())
+    private var document: Document? = null
 
     private lateinit var toolbar: MaterialToolbar
     private lateinit var pageList: RecyclerView
@@ -59,13 +59,13 @@ class ReorderPagesFragment : BaseFragment(R.layout.reorder_pages_fragment) {
         super.onResume()
 
         disposables.add {
-            scanSubject.subscribe {
-                val scan = if (it.isEmpty) null else it.value
+            documentSubject.subscribe {
+                val document = if (it.isEmpty) null else it.value
 
-                Log.d(TAG, "Scan subject next value (id: ${scan?.id})")
-                this.scan = scan
-                pages = scan?.pages
-                updateUI(scan)
+                Log.d(TAG, "Document subject next value (id: ${document?.id})")
+                this.document = document
+                pages = document?.pages
+                updateUI(document)
             }
         }
 
@@ -78,7 +78,7 @@ class ReorderPagesFragment : BaseFragment(R.layout.reorder_pages_fragment) {
                 }
         }
 
-        getScan(args.scanId)
+        getDocument(args.documentId)
     }
 
     override fun onPause() {
@@ -113,24 +113,24 @@ class ReorderPagesFragment : BaseFragment(R.layout.reorder_pages_fragment) {
         pageList.setItemViewCacheSize(20)
     }
 
-    private fun getScan(id: Int?) {
-        Log.d(TAG, "get scan $id")
+    private fun getDocument(id: Int?) {
+        Log.d(TAG, "get document $id")
 
         if (id == null) {
-            scanSubject.onNext(Optional.empty())
+            documentSubject.onNext(Optional.empty())
             return
         }
 
         disposables.add {
-            repo.getScan(id).take(1).subscribeBy(
+            repo.getDocument(id).take(1).subscribeBy(
                 onNext = {
-                    Log.i(TAG, "Got scan (id: ${it.id})")
+                    Log.i(TAG, "Got document (id: ${it.id})")
                     runOnUiThread {
-                        scanSubject.onNext(Optional(it))
+                        documentSubject.onNext(Optional(it))
                     }
                 },
                 onError = {
-                    Log.e(TAG, "Could not get scan", it)
+                    Log.e(TAG, "Could not get document", it)
                     Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
                     runOnUiThread {
                         finish()
@@ -141,20 +141,20 @@ class ReorderPagesFragment : BaseFragment(R.layout.reorder_pages_fragment) {
 
     }
 
-    private fun updateUI(scan: Scan?) {
-        if (scan == null) {
+    private fun updateUI(document: Document?) {
+        if (document == null) {
             pageList.visibility = View.GONE
             return
         }
 
         pageList.visibility = View.VISIBLE
-        pageItemAdapter.updateItems(scan.pages)
+        pageItemAdapter.updateItems(document.pages)
     }
 
     private fun updatePageOrder(pages: List<Page>) {
         Log.d(TAG, "Update page order")
 
-        if (scan == null) return
+        if (document == null) return
 
         if (actionDisposable?.isDisposed == false) {
             Log.w(TAG, "Can not update page order, because previous query did not finish yet")
@@ -167,13 +167,13 @@ class ReorderPagesFragment : BaseFragment(R.layout.reorder_pages_fragment) {
             p.copy(order = dbEquivalent.order)
         }
 
-        actionDisposable = repo.reorderPages(scan!!.id, congruentPages).subscribeBy(
+        actionDisposable = repo.reorderPages(document!!.id, congruentPages).subscribeBy(
             onNext = {
-                Log.i(TAG, "Updated scan images")
+                Log.i(TAG, "Updated document images")
                 this.pages = it
             },
             onError = {
-                Log.e(TAG, "Could not update scan", it)
+                Log.e(TAG, "Could not update document", it)
                 Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
             }
         )

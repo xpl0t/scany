@@ -1,13 +1,11 @@
 package com.xpl0t.scany.repository
 
 import android.content.Context
-import android.util.Log
 import androidx.room.Room
 import com.xpl0t.scany.models.Page
-import com.xpl0t.scany.models.Scan
+import com.xpl0t.scany.models.Document
 import com.xpl0t.scany.repository.entities.PageEntity
-import com.xpl0t.scany.repository.entities.ScanEntity
-import com.xpl0t.scany.util.Optional
+import com.xpl0t.scany.repository.entities.DocumentEntity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Observable.combineLatest
@@ -25,49 +23,49 @@ class RepositoryImpl @Inject constructor(
 
     private val db = Room.databaseBuilder(context, AppDatabase::class.java, "scany-db").build()
 
-    override fun getScans(): Observable<List<Scan>> {
+    override fun getDocuments(): Observable<List<Document>> {
         val pairObs = combineLatest(
-            db.scanDao().getAll(),
+            db.documentDao().getAll(),
             db.pageDao().getAll()
-        ) { scan, pages ->
-            Pair(scan, pages)
+        ) { document, pages ->
+            Pair(document, pages)
         }
 
         return pairObs
             .map { pair ->
-                return@map pair.first.map { scan ->
+                return@map pair.first.map { document ->
                     val pages = pair.second
-                        .filter { it.scanId == scan.id }
+                        .filter { it.documentId == document.id }
                         .sortedBy { it.order }
                         .map { Page(it.id, null, it.order) }
 
-                    return@map Scan(scan.id, scan.name, pages)
+                    return@map Document(document.id, document.name, pages)
                 }
             }
             .subscribeOn(Schedulers.computation())
     }
 
-    override fun getScanCount(): Observable<Int> {
-        return db.scanDao().getCount()
+    override fun getDocumentCount(): Observable<Int> {
+        return db.documentDao().getCount()
             .toObservable()
             .subscribeOn(Schedulers.computation())
     }
 
-    override fun getScan(id: Int): Observable<Scan> {
-        val scanPagesPairObs = combineLatest(
-            db.scanDao().get(id),
-            db.pageDao().getByScanId(id)
-        ) { scan, pages ->
-            Pair(scan, pages)
+    override fun getDocument(id: Int): Observable<Document> {
+        val documentPagesPairObs = combineLatest(
+            db.documentDao().get(id),
+            db.pageDao().getByDocumentId(id)
+        ) { document, pages ->
+            Pair(document, pages)
         }
 
-        return scanPagesPairObs.map {
-            val scan = it.first
+        return documentPagesPairObs.map {
+            val document = it.first
             val pages = it.second
                 .sortedBy { it.order }
                 .map { Page(it.id, null, it.order) }
 
-            Scan(scan.id, scan.name, pages)
+            Document(document.id, document.name, pages)
         }.subscribeOn(Schedulers.computation())
     }
 
@@ -76,33 +74,33 @@ class RepositoryImpl @Inject constructor(
             .subscribeOn(Schedulers.computation())
     }
 
-    override fun addScan(scan: Scan): Observable<Scan> {
-        val entity = ScanEntity(0, scan.name)
+    override fun addDocument(document: Document): Observable<Document> {
+        val entity = DocumentEntity(0, document.name)
 
-        return db.scanDao().insert(entity).toObservable()
+        return db.documentDao().insert(entity).toObservable()
             .concatMap {
-                getScan(it.toInt()).take(1)
+                getDocument(it.toInt()).take(1)
             }
             .subscribeOn(Schedulers.computation())
     }
 
-    override fun updateScan(scan: Scan): Observable<Scan> {
-        val entity = ScanEntity(scan.id, scan.name)
+    override fun updateDocument(document: Document): Observable<Document> {
+        val entity = DocumentEntity(document.id, document.name)
 
-        return db.scanDao().update(entity).toObservable()
+        return db.documentDao().update(entity).toObservable()
             .concatMap {
-                getScan(scan.id).take(1)
+                getDocument(document.id).take(1)
             }
             .subscribeOn(Schedulers.computation())
     }
 
-    override fun addPage(scanId: Int, page: Page): Observable<Scan> {
-        return db.pageDao().getLastPage(scanId)
+    override fun addPage(documentId: Int, page: Page): Observable<Document> {
+        return db.pageDao().getLastPage(documentId)
             .concatMap {
                 val order = if (it.isEmpty()) 0
                     else it.first().order + 100
 
-                val entity = PageEntity(page.id, scanId, order)
+                val entity = PageEntity(page.id, documentId, order)
                 db.pageDao().insert(entity)
             }
             .toObservable()
@@ -110,7 +108,7 @@ class RepositoryImpl @Inject constructor(
                 pageImageStore.create(it.toInt(), page.image!!)
             }
             .concatMap {
-                getScan(scanId).take(1)
+                getDocument(documentId).take(1)
             }
             .subscribeOn(Schedulers.computation())
     }
@@ -124,10 +122,10 @@ class RepositoryImpl @Inject constructor(
             .subscribeOn(Schedulers.computation())
     }
 
-    override fun removeScan(id: Int): Observable<Int> {
-        return db.pageDao().getByScanId(id)
+    override fun removeDocument(id: Int): Observable<Int> {
+        return db.pageDao().getByDocumentId(id)
             .concatMap { pages ->
-                db.scanDao().delete(id)
+                db.documentDao().delete(id)
                     .map { pages }
                     .toObservable()
             }
@@ -139,7 +137,7 @@ class RepositoryImpl @Inject constructor(
             .subscribeOn(Schedulers.computation())
     }
 
-    override fun reorderPages(scanId: Int, pages: List<Page>): Observable<List<Page>> {
+    override fun reorderPages(documentId: Int, pages: List<Page>): Observable<List<Page>> {
         val updatedPages = pages.indices.map {
             pages[it].copy(order = it * 100)
         }

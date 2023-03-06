@@ -11,32 +11,32 @@
     <!-- Error messages -->
     <string name="error_msg">Ooops… something went wrong :(</string>
 
-    <!-- Scan list fragment -->
-    <string name="scan_list_title">Documents</string>
-    <string name="add_scan">Add</string>
+    <!-- Document list fragment -->
+    <string name="document_list_title">Documents</string>
+    <string name="add_document">Add</string>
     <string name="single_page_count">%d Page</string>
     <string name="multiple_page_count">%d Pages</string>
 
-    <!-- Scan fragment -->
+    <!-- Document fragment -->
     <string name="add_page">Page</string>
     <string name="add_page_long">Add page</string>
     <string name="export_pdf">Export PDF</string>
-    <string name="delete_scan">Delete document</string>
+    <string name="delete_document">Delete document</string>
     <string name="no_page">No pages currently…</string>
     <string name="reorder">Reorder</string>
     <string name="edit_title">Edit title</string>
     <string name="reorder_min_2_pages">A minimum of two pages is required to reorder</string>
 
-    <!-- Delete scan dialog -->
-    <string name="delete_scan_dlg_title">Delete Document?</string>
-    <string name="delete_scan_dlg_delete">Delete</string>
+    <!-- Delete document dialog -->
+    <string name="delete_document_dlg_title">Delete Document?</string>
+    <string name="delete_document_dlg_delete">Delete</string>
 
     <!-- Edit name dialog -->
     <string name="edit_name_dlg_title">Set name</string>
     <string name="edit_name_label">Name</string>
     <string name="name_to_short_err">Name to short</string>
 
-    <string-array name="random_scan_names">
+    <string-array name="random_document_names">
         <item>Steve\'s CV</item>
         <item>Grandma\'s insurance</item>
         <item>Billy\'s poster</item>

@@ -9,15 +9,15 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = "page", foreignKeys = [
         ForeignKey(
-            entity = ScanEntity::class,
+            entity = DocumentEntity::class,
             parentColumns = arrayOf("id"),
-            childColumns = arrayOf("scan_id"),
+            childColumns = arrayOf("document_id"),
             onDelete = CASCADE
         )
     ]
 )
 data class PageEntity(
     @PrimaryKey(autoGenerate = true) val id: Int,
-    @ColumnInfo(name = "scan_id") val scanId: Int,
+    @ColumnInfo(name = "document_id") val documentId: Int,
     @ColumnInfo(name = "order") val order: Int
 )

@@ -317,7 +317,7 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Ana
     private fun showImproveFragment(image: Mat) {
         service.page = image
         val action = CameraFragmentDirections
-            .actionCameraFragmentToImproveFragment(args.scanId)
+            .actionCameraFragmentToImproveFragment(args.documentId)
         findNavController().navigate(action)
     }
 

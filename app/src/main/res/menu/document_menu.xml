@@ -18,9 +18,9 @@
         android:title="@string/edit_title"
         app:showAsAction="ifRoom|withText" />
     <item
-        android:id="@+id/deleteScan"
+        android:id="@+id/deleteDocument"
         android:icon="@drawable/trashcan"
-        android:title="@string/delete_scan"
+        android:title="@string/delete_document"
         app:showAsAction="ifRoom|withText" />
 
 </menu>

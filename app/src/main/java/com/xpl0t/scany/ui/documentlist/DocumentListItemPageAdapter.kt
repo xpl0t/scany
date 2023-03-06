@@ -1,23 +1,18 @@
-package com.xpl0t.scany.ui.scanlist
+package com.xpl0t.scany.ui.documentlist
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.card.MaterialCardView
 import com.xpl0t.scany.R
 import com.xpl0t.scany.models.Page
-import com.xpl0t.scany.models.Scan
-import io.reactivex.rxjava3.subjects.PublishSubject
 
-class ScanListItemPageAdapter constructor(
+class DocumentListItemPageAdapter constructor(
     private val context: Context
-) : RecyclerView.Adapter<ScanListItemPageAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<DocumentListItemPageAdapter.ViewHolder>() {
 
     private var items: List<Page> = listOf()
 
@@ -27,7 +22,7 @@ class ScanListItemPageAdapter constructor(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.scan_list_item_page_preview, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.document_list_item_page_preview, parent, false)
         return ViewHolder(view)
     }
 
@@ -47,6 +42,6 @@ class ScanListItemPageAdapter constructor(
     }
 
     companion object {
-        const val TAG = "ScanListItemPageAdapter"
+        const val TAG = "DocumentListItemPageAdapter"
     }
 }

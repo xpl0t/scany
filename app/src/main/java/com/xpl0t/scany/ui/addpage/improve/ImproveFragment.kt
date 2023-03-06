@@ -21,7 +21,7 @@ import com.xpl0t.scany.models.Page
 import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.ui.addpage.camera.CameraService
 import com.xpl0t.scany.ui.common.BaseFragment
-import com.xpl0t.scany.ui.scan.ScanFragment
+import com.xpl0t.scany.ui.document.DocumentFragment
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -199,29 +199,29 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment), DialogInterface
     }
 
     private fun addPage(mat: Mat) {
-        Log.d(ScanFragment.TAG, "Add scan image")
+        Log.d(DocumentFragment.TAG, "Add document image")
 
         if (actionDisposable?.isDisposed == false) return
 
         val imageBytes = mat.toPng()
         val page = Page(image = imageBytes, order = 0)
 
-        actionDisposable = repo.addPage(args.scanId, page).subscribeBy(
+        actionDisposable = repo.addPage(args.documentId, page).subscribeBy(
             onNext = {
-                Log.i(ScanFragment.TAG, "Added scan image")
+                Log.i(DocumentFragment.TAG, "Added document image")
                 runOnUiThread {
-                    returnToScanListFragment()
+                    returnToDocumentListFragment()
                 }
             },
             onError = {
-                Log.e(ScanFragment.TAG, "Could not add scan image", it)
+                Log.e(DocumentFragment.TAG, "Could not add document image", it)
                 Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
             }
         )
     }
 
-    private fun returnToScanListFragment() {
-        findNavController().popBackStack(R.id.scanListFragment, false)
+    private fun returnToDocumentListFragment() {
+        findNavController().popBackStack(R.id.documentListFragment, false)
     }
 
     companion object {

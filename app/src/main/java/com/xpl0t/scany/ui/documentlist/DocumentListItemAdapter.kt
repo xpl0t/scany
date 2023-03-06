@@ -1,7 +1,6 @@
-package com.xpl0t.scany.ui.scanlist
+package com.xpl0t.scany.ui.documentlist
 
 import android.content.Context
-import android.graphics.Point
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.MotionEvent.ACTION_UP
@@ -12,23 +11,23 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener
 import com.google.android.material.card.MaterialCardView
 import com.xpl0t.scany.R
-import com.xpl0t.scany.models.Scan
+import com.xpl0t.scany.models.Document
 import io.reactivex.rxjava3.subjects.PublishSubject
 
-class ScanListItemAdapter constructor(
+class DocumentListItemAdapter constructor(
     private val context: Context
-) : RecyclerView.Adapter<ScanListItemAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<DocumentListItemAdapter.ViewHolder>() {
 
-    val scanClicked = PublishSubject.create<Scan>()
+    val documentClicked = PublishSubject.create<Document>()
     private var selectedItemId: Int? = null
-    private var items: List<Scan> = listOf()
+    private var items: List<Document> = listOf()
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val card: MaterialCardView = view.findViewById(R.id.card)
         val title: TextView = view.findViewById(R.id.title)
         val subtitle: TextView = view.findViewById(R.id.subtitle)
         val pageList: RecyclerView = view.findViewById(R.id.page_list)
-        val pageAdapter = ScanListItemPageAdapter(view.context)
+        val pageAdapter = DocumentListItemPageAdapter(view.context)
 
         init {
             pageList.adapter = pageAdapter
@@ -37,7 +36,7 @@ class ScanListItemAdapter constructor(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.scan_list_item, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.document_list_item, parent, false)
         return ViewHolder(view)
     }
 
@@ -47,7 +46,7 @@ class ScanListItemAdapter constructor(
 
         holder.card.isChecked = selectedItemId == item.id
         holder.card.setOnClickListener {
-            scanClicked.onNext(item)
+            documentClicked.onNext(item)
         }
 
         val motionEvents = mutableListOf<Pair<Float, Float>>()
@@ -89,7 +88,7 @@ class ScanListItemAdapter constructor(
 
     override fun getItemCount(): Int = items.count()
 
-    fun updateItems(items: List<Scan>) {
+    fun updateItems(items: List<Document>) {
         this.items = items
         notifyDataSetChanged()
     }
@@ -108,6 +107,6 @@ class ScanListItemAdapter constructor(
     }
 
     companion object {
-        const val TAG = "ScanListItemAdapter"
+        const val TAG = "DocumentListItemAdapter"
     }
 }

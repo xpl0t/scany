@@ -19,14 +19,14 @@ import com.xpl0t.scany.extensions.add
 import com.xpl0t.scany.extensions.finish
 import com.xpl0t.scany.extensions.runOnUiThread
 import com.xpl0t.scany.models.Page
-import com.xpl0t.scany.models.Scan
+import com.xpl0t.scany.models.Document
 import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.services.PageSizeService
 import com.xpl0t.scany.services.pdf.PdfService
 import com.xpl0t.scany.services.ShareService
 import com.xpl0t.scany.services.pdf.ScaleType
 import com.xpl0t.scany.ui.common.BaseFragment
-import com.xpl0t.scany.ui.scan.ScanFragment
+import com.xpl0t.scany.ui.document.DocumentFragment
 import com.xpl0t.scany.util.Optional
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.core.Observable
@@ -58,8 +58,8 @@ class ExportFragment : BaseFragment(R.layout.export_fragment) {
     private val disposables: MutableList<Disposable> = mutableListOf()
     private var actionDisposable: Disposable? = null
 
-    private val scanSubject = BehaviorSubject.createDefault<Optional<Scan>>(Optional.empty())
-    private var scan: Scan? = null
+    private val documentSubject = BehaviorSubject.createDefault<Optional<Document>>(Optional.empty())
+    private var document: Document? = null
 
     private lateinit var toolbar: MaterialToolbar
     private lateinit var pageList: RecyclerView
@@ -98,22 +98,22 @@ class ExportFragment : BaseFragment(R.layout.export_fragment) {
     override fun onResume() {
         super.onResume()
 
-        // Reloading the scan after the share window was shown would mess up the order.
-        if (scan != null)
+        // Reloading the document after the share window was shown would mess up the order.
+        if (document != null)
             return
 
         disposables.add {
-            scanSubject.subscribe {
-                val scan = if (it.isEmpty) null else it.value
+            documentSubject.subscribe {
+                val document = if (it.isEmpty) null else it.value
 
-                Log.d(TAG, "Scan subject next value (id: ${scan?.id})")
-                this.scan = scan
-                pages = scan?.pages
-                updateUI(scan)
+                Log.d(TAG, "Document subject next value (id: ${document?.id})")
+                this.document = document
+                pages = document?.pages
+                updateUI(document)
             }
         }
 
-        getScan(args.scanId)
+        getDocument(args.documentId)
     }
 
     override fun onPause() {
@@ -182,24 +182,24 @@ class ExportFragment : BaseFragment(R.layout.export_fragment) {
         return resources.getStringArray(R.array.document_types).toList()
     }
 
-    private fun getScan(id: Int?) {
-        Log.d(TAG, "get scan $id")
+    private fun getDocument(id: Int?) {
+        Log.d(TAG, "get document $id")
 
         if (id == null) {
-            scanSubject.onNext(Optional.empty())
+            documentSubject.onNext(Optional.empty())
             return
         }
 
         disposables.add {
-            repo.getScan(id).take(1).subscribeBy(
+            repo.getDocument(id).take(1).subscribeBy(
                 onNext = {
-                    Log.i(TAG, "Got scan (id: ${it.id})")
+                    Log.i(TAG, "Got document (id: ${it.id})")
                     runOnUiThread {
-                        scanSubject.onNext(Optional(it))
+                        documentSubject.onNext(Optional(it))
                     }
                 },
                 onError = {
-                    Log.e(TAG, "Could not get scan", it)
+                    Log.e(TAG, "Could not get document", it)
                     Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
                     runOnUiThread {
                         finish()
@@ -210,19 +210,19 @@ class ExportFragment : BaseFragment(R.layout.export_fragment) {
 
     }
 
-    private fun updateUI(scan: Scan?) {
-        if (scan == null) {
+    private fun updateUI(document: Document?) {
+        if (document == null) {
             pageList.visibility = View.GONE
             return
         }
 
         pageList.visibility = View.VISIBLE
-        pageItemAdapter.updateItems(scan.pages)
+        pageItemAdapter.updateItems(document.pages)
     }
 
     private fun genPdfAndShare() {
         Log.i(TAG, "Generate PDF and share")
-        if (actionDisposable?.isDisposed == false || scan == null)
+        if (actionDisposable?.isDisposed == false || document == null)
             return
 
         shareBtn.isEnabled = false
@@ -250,7 +250,7 @@ class ExportFragment : BaseFragment(R.layout.export_fragment) {
                 }
             },
             {
-                Log.e(ScanFragment.TAG, "Could not get page images and generate pdf", it)
+                Log.e(DocumentFragment.TAG, "Could not get page images and generate pdf", it)
                 Snackbar.make(requireView(), R.string.export_pdf_error, Snackbar.LENGTH_SHORT).show()
                 runOnUiThread {
                     shareBtn.isEnabled = true

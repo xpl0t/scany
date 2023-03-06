@@ -17,7 +17,7 @@
     </style>
 
     <!-- Theme for backdrop background fragment. -->
-    <style name="Theme.Scany.ScanList" parent="Theme.MaterialComponents.NoActionBar">
+    <style name="Theme.Scany.DocumentList" parent="Theme.MaterialComponents.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>

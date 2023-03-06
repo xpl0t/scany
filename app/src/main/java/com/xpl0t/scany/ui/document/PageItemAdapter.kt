@@ -1,4 +1,4 @@
-package com.xpl0t.scany.ui.scan
+package com.xpl0t.scany.ui.document
 
 import android.content.Context
 import android.util.Log
@@ -25,7 +25,7 @@ class PageItemAdapter(private val ctx: Context) :
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val card: MaterialCardView = view.findViewById(R.id.pageCard)
-        val scanImage: ImageView = view.findViewById(R.id.pageImage)
+        val documentImage: ImageView = view.findViewById(R.id.pageImage)
 
         fun clearAnimation() {
             itemView.clearAnimation()
@@ -42,10 +42,10 @@ class PageItemAdapter(private val ctx: Context) :
 
         Glide.with(ctx)
             .load(item)
-            .into(holder.scanImage)
+            .into(holder.documentImage)
 
         holder.card.setOnClickListener {
-            Log.d(TAG, "Scan image card clicked (id: ${item.id})")
+            Log.d(TAG, "Document image card clicked (id: ${item.id})")
             pageClicked.onNext(item)
         }
         setAnimation(holder.itemView, position)
@@ -93,6 +93,6 @@ class PageItemAdapter(private val ctx: Context) :
     }
 
     companion object {
-        const val TAG = "ScanImageItemAdapter"
+        const val TAG = "DocumentImageItemAdapter"
     }
 }

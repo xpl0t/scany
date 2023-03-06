@@ -1,4 +1,4 @@
-package com.xpl0t.scany.ui.scanlist.scannamegenerator
+package com.xpl0t.scany.ui.documentlist.documentnamegenerator
 
 import android.content.Context
 import com.xpl0t.scany.R
@@ -10,13 +10,13 @@ import javax.inject.Inject
 class SequentialDocumentNameGenerator @Inject constructor(
     @ApplicationContext private val context: Context,
     private val repo: Repository
-) : ScanNameGenerator {
+) : DocumentNameGenerator {
 
     /**
      * Generate new document name.
      */
     override fun generate(): Observable<String> {
-        return repo.getScanCount()
+        return repo.getDocumentCount()
             .map { context.resources.getString(R.string.new_document_name, it + 1) }
     }
 

@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@id/scanListFragment">
+    app:startDestination="@id/documentListFragment">
 
     <fragment
         android:id="@+id/cameraFragment"
@@ -12,7 +12,7 @@
             android:id="@+id/action_cameraFragment_to_improveFragment"
             app:destination="@id/improveFragment" />
         <argument
-            android:name="scanId"
+            android:name="documentId"
             app:argType="integer" />
     </fragment>
     <fragment
@@ -20,7 +20,7 @@
         android:name="com.xpl0t.scany.ui.addpage.improve.ImproveFragment"
         android:label="ImproveFragment">
         <argument
-            android:name="scanId"
+            android:name="documentId"
             app:argType="integer" />
     </fragment>
     <fragment
@@ -32,23 +32,23 @@
             app:argType="integer" />
     </fragment>
     <fragment
-        android:id="@+id/scanListFragment"
-        android:name="com.xpl0t.scany.ui.scanlist.ScanListFragment"
-        android:label="ScanListFragment">
+        android:id="@+id/documentListFragment"
+        android:name="com.xpl0t.scany.ui.documentlist.DocumentListFragment"
+        android:label="DocumentListFragment">
         <action
-            android:id="@+id/action_scanListFragment_to_cameraFragment"
+            android:id="@+id/action_documentListFragment_to_cameraFragment"
             app:destination="@id/cameraFragment" />
         <action
-            android:id="@+id/action_scanListFragment_to_reorderPagesFragment"
+            android:id="@+id/action_documentListFragment_to_reorderPagesFragment"
             app:destination="@id/reorderPagesFragment" />
         <action
-            android:id="@+id/action_scanListFragment_to_ViewPageFragment"
+            android:id="@+id/action_documentListFragment_to_ViewPageFragment"
             app:destination="@id/ViewPageFragment" />
         <action
-            android:id="@+id/action_scanListFragment_to_exportFragment"
+            android:id="@+id/action_documentListFragment_to_exportFragment"
             app:destination="@id/exportFragment" />
         <action
-            android:id="@+id/action_scanListFragment_to_ViewSubscriptionFragment"
+            android:id="@+id/action_documentListFragment_to_ViewSubscriptionFragment"
             app:destination="@id/ViewSubscriptionFragment" />
     </fragment>
     <fragment
@@ -56,7 +56,7 @@
         android:name="com.xpl0t.scany.ui.reorderpages.ReorderPagesFragment"
         android:label="ReorderPagesFragment">
         <argument
-            android:name="scanId"
+            android:name="documentId"
             app:argType="integer" />
     </fragment>
     <fragment
@@ -64,7 +64,7 @@
         android:name="com.xpl0t.scany.ui.export.ExportFragment"
         android:label="ExportFragment" >
         <argument
-            android:name="scanId"
+            android:name="documentId"
             app:argType="integer" />
     </fragment>
     <fragment

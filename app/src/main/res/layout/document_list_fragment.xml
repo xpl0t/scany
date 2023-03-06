@@ -18,7 +18,7 @@
             style="@style/Widget.MaterialComponents.Toolbar.Primary"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:menu="@menu/scan_menu"
+            app:menu="@menu/document_menu"
             app:title="@string/app_name" />
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -52,26 +52,26 @@
                     android:paddingHorizontal="20dp">
 
                     <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/scanListTitle"
+                        android:id="@+id/documentListTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
-                        android:text="@string/scan_list_title"
+                        android:text="@string/document_list_title"
                         android:textColor="?colorOnPrimary"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="@+id/addScan"
-                        app:layout_constraintEnd_toStartOf="@+id/addScan"
+                        app:layout_constraintBottom_toBottomOf="@+id/addDocument"
+                        app:layout_constraintEnd_toStartOf="@+id/addDocument"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/addScan" />
+                        app:layout_constraintTop_toTopOf="@+id/addDocument" />
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/addScan"
+                        android:id="@+id/addDocument"
                         style="@style/Widget.MaterialComponents.Button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:backgroundTint="?colorSecondary"
-                        android:text="@string/add_scan"
+                        android:text="@string/add_document"
                         android:textColor="?colorOnSecondary"
                         app:icon="@drawable/add"
                         app:iconTint="?colorOnSecondary"
@@ -88,17 +88,17 @@
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/addScan" />
+                        app:layout_constraintTop_toBottomOf="@+id/addDocument" />
 
                     <!--<RadioGroup
-                        android:id="@+id/scanList"
+                        android:id="@+id/documentList"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
                         android:checkedButton="@+id/radio_button_1"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/scanListTitle" />-->
+                        app:layout_constraintTop_toBottomOf="@+id/documentListTitle" />-->
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -107,8 +107,8 @@
         </LinearLayout>
 
         <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/scanFragment"
-            android:name="com.xpl0t.scany.ui.scan.ScanFragment"
+            android:id="@+id/documentFragment"
+            android:name="com.xpl0t.scany.ui.document.DocumentFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:elevation="1dp"

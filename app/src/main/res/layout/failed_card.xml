@@ -39,7 +39,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/failedTitle"
-            tools:text="Could not load scans" />
+            tools:text="Could not load documents" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/failedRetry"

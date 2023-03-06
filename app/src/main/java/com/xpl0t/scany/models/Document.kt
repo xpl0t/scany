@@ -1,6 +1,6 @@
 package com.xpl0t.scany.models
 
-data class Scan(
+data class Document(
     val id: Int = 0,
     val name: String,
     val pages: List<Page> = listOf()
