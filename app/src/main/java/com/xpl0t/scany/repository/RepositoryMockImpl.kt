@@ -34,6 +34,12 @@ class RepositoryMockImpl @Inject constructor() : Repository {
         return scanSubject
     }
 
+    override fun getScanCount(): Observable<Int> {
+        if (shouldFail()) return Observable.error(Error("Database offline"))
+
+        return Observable.just(8)
+    }
+
     override fun getScan(id: Int): Observable<Scan> {
         if (shouldFail()) return Observable.error(Error("Database offline"))
 

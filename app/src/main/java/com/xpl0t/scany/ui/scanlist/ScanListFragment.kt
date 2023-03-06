@@ -257,21 +257,21 @@ class ScanListFragment : BaseFragment(R.layout.scan_list_fragment) {
             return
         }
 
-        val scanName = scanNameGenerator.generate()
-        val scan = Scan(name = scanName)
-
-        actionDisposable = repo.addScan(scan).take(1).subscribeBy(
-            onNext = {
-                Log.i(ScanFragment.TAG, "Created scan (id: ${it.id})")
-                runOnUiThread {
-                    currentScanSubject.onNext(Optional(it.id))
+        actionDisposable = scanNameGenerator.generate()
+            .concatMap { repo.addScan(Scan(name = it)) }
+            .take(1)
+            .subscribeBy(
+                onNext = {
+                    Log.i(ScanFragment.TAG, "Created scan (id: ${it.id})")
+                    runOnUiThread {
+                        currentScanSubject.onNext(Optional(it.id))
+                    }
+                },
+                onError = {
+                    Log.e(ScanFragment.TAG, "Could not add scan", it)
+                    Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
                 }
-            },
-            onError = {
-                Log.e(ScanFragment.TAG, "Could not add scan", it)
-                Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
-            }
-        )
+            )
     }
 
     private fun showDeleteScanDlg() {

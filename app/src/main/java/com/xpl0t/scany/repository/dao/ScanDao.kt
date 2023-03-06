@@ -19,6 +19,9 @@ interface ScanDao {
     @Query("SELECT * FROM scan LIMIT 1 OFFSET :rowId")
     fun getByIdx(rowId: Long): Single<ScanEntity>
 
+    @Query("SELECT count(*) FROM scan")
+    fun getCount(): Single<Int>
+
     @Insert
     fun insert(scan: ScanEntity): Single<Long>
 

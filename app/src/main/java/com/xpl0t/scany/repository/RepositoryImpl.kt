@@ -47,10 +47,10 @@ class RepositoryImpl @Inject constructor(
             .subscribeOn(Schedulers.computation())
     }
 
-    private fun findFirstPage(pages: List<PageEntity>): PageEntity? {
-        return pages.find { p ->
-            !pages.any { p.id == it.order }
-        }
+    override fun getScanCount(): Observable<Int> {
+        return db.scanDao().getCount()
+            .toObservable()
+            .subscribeOn(Schedulers.computation())
     }
 
     override fun getScan(id: Int): Observable<Scan> {

@@ -13,6 +13,11 @@ interface Repository {
     fun getScans(): Observable<List<Scan>>
 
     /**
+     * Get an observable emitting the amount of scans.
+     */
+    fun getScanCount(): Observable<Int>
+
+    /**
      * Get an observable emitting the scan with the specified id if found.
      */
     fun getScan(id: Int): Observable<Scan>

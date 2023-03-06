@@ -10,6 +10,7 @@ import com.xpl0t.scany.settings.SettingsService
 import com.xpl0t.scany.settings.SettingsServiceMockImpl
 import com.xpl0t.scany.ui.scanlist.scannamegenerator.RandomScanNameGenerator
 import com.xpl0t.scany.ui.scanlist.scannamegenerator.ScanNameGenerator
+import com.xpl0t.scany.ui.scanlist.scannamegenerator.SequentialDocumentNameGenerator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,7 +31,7 @@ class HiltModule {
     }
 
     @Provides
-    fun bindScanNameGenerator(generator: RandomScanNameGenerator): ScanNameGenerator {
+    fun bindScanNameGenerator(generator: SequentialDocumentNameGenerator): ScanNameGenerator {
         return generator
     }
 
