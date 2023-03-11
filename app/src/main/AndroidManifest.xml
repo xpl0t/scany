@@ -19,7 +19,8 @@
         android:theme="@style/Theme.Scany">
         <activity
             android:name="com.xpl0t.scany.ui.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
