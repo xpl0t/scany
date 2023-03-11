@@ -2,20 +2,26 @@ package com.xpl0t.scany.ui.document
 
 import android.content.Context
 import android.util.Log
+import android.view.ContextMenu
+import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
+import android.widget.PopupMenu
+import androidx.annotation.MenuRes
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xpl0t.scany.R
 import com.xpl0t.scany.models.Page
 import io.reactivex.rxjava3.subjects.PublishSubject
 
 
-class PageItemAdapter(private val ctx: Context) :
+class PageItemAdapter(private val ctx: Context, private val deletePageCallback: ((pageId: Int) -> Unit)) :
     RecyclerView.Adapter<PageItemAdapter.ViewHolder>() {
 
     private var lastPosition = -1
@@ -47,6 +53,11 @@ class PageItemAdapter(private val ctx: Context) :
         holder.card.setOnClickListener {
             Log.d(TAG, "Document image card clicked (id: ${item.id})")
             pageClicked.onNext(item)
+        }
+        holder.card.setOnLongClickListener {
+            Log.d(TAG, "Document image card long clicked (id: ${item.id})")
+            showPageContextMenu(item.id)
+            true
         }
         setAnimation(holder.itemView, position)
     }
@@ -92,7 +103,21 @@ class PageItemAdapter(private val ctx: Context) :
         return true
     }
 
+    private fun showPageContextMenu(pageId: Int) {
+        val actions = mapOf<String, (() -> Unit)>(
+            ctx.resources.getString(R.string.delete_btn) to { deletePageCallback(pageId) }
+        )
+
+        MaterialAlertDialogBuilder(ctx)
+            .setTitle(R.string.page_card_context_menu_title)
+            .setItems(actions.keys.toTypedArray()) { _, item ->
+                val action = actions.values.toList()[item]
+                action.invoke()
+            }
+            .show()
+    }
+
     companion object {
-        const val TAG = "DocumentImageItemAdapter"
+        const val TAG = "PageItemAdapter"
     }
 }

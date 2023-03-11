@@ -102,7 +102,7 @@ class DocumentFragment : BottomSheetDialogFragment(), DocumentFragmentListener, 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        pageAdapter = PageItemAdapter(requireContext())
+        pageAdapter = PageItemAdapter(requireContext()) { deletePage(it) }
     }
 
     override fun onResume() {
@@ -208,7 +208,7 @@ class DocumentFragment : BottomSheetDialogFragment(), DocumentFragmentListener, 
 
         documentDisposable?.dispose()
 
-        documentDisposable = repo.getDocument(id).take(1).subscribeBy(
+        documentDisposable = repo.getDocument(id).subscribeBy(
             onNext = {
                 Log.i(TAG, "Got document (id: ${it.id})")
                 runOnUiThread {
@@ -232,9 +232,6 @@ class DocumentFragment : BottomSheetDialogFragment(), DocumentFragmentListener, 
         actionDisposable = repo.updateDocument(newDocument).subscribeBy(
             onNext = {
                 Log.i(TAG, "Updated document name successfully (id: ${it.id})")
-                runOnUiThread {
-                    documentSubject.onNext(Optional(it))
-                }
             },
             onError = {
                 Log.e(TAG, "Could not set document name", it)
@@ -355,6 +352,22 @@ class DocumentFragment : BottomSheetDialogFragment(), DocumentFragmentListener, 
         val action = DocumentListFragmentDirections
             .actionDocumentListFragmentToCameraFragment(document?.id ?: return)
         findNavController().navigate(action)
+    }
+
+    private fun deletePage(pageId: Int) {
+        if (actionDisposable?.isDisposed == false)
+            return
+
+        Log.i(TAG, "Delete page $pageId")
+        actionDisposable = repo.removePage(pageId).subscribe(
+            {
+                Log.i(TAG, "Delete page successful")
+            },
+            {
+                Log.e(TAG, "Delete page failed", it)
+                Snackbar.make(requireView(), R.string.error_msg, Snackbar.LENGTH_SHORT).show()
+            }
+        )
     }
 
     companion object {

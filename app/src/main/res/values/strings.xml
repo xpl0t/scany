@@ -27,6 +27,9 @@
     <string name="edit_title">Edit title</string>
     <string name="reorder_min_2_pages">A minimum of two pages is required to reorder</string>
 
+    <!-- Page card context menu -->
+    <string name="page_card_context_menu_title">Page Options</string>
+
     <!-- Delete document dialog -->
     <string name="delete_document_dlg_title">Delete Document?</string>
     <string name="delete_document_dlg_delete">Delete</string>
