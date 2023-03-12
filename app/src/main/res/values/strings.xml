@@ -18,6 +18,9 @@
     <string name="single_page_count">%d Page</string>
     <string name="multiple_page_count">%d Pages</string>
 
+    <!-- Init database values -->
+    <string name="doc_name_1">Example Document</string>
+
     <!-- Document fragment -->
     <string name="add_page">Page</string>
     <string name="add_page_long">Add page</string>

@@ -24,7 +24,7 @@ interface PageDao {
     fun getPageImage(pageId: Int): Single<PageEntity>
 
     @Insert
-    fun insert(page: PageEntity): Single<Long>
+    fun insert(vararg page: PageEntity): Single<List<Long>>
 
     @Query("UPDATE page SET `order` = :next WHERE id = :pageId")
     fun updateOrder(pageId: Int, next: Int?): Single<Int>

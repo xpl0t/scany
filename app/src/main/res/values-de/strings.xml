@@ -21,7 +21,7 @@
     <string name="reorder_min_2_pages">Mindestens zwei Seiten werden benötigt, um die Anordnung zu ändern</string>
     <string name="delete_document_dlg_title">Dokument löschen?</string>
     <string name="delete_document_dlg_delete">Löschen</string>
-    <string name="edit_name_dlg_title">Dokument Namen ändern</string>
+    <string name="edit_name_dlg_title">Namen ändern</string>
     <string name="edit_name_label">Name</string>
     <string name="name_to_short_err">Name zu kurz</string>
     <string name="new_document_name">Dokument %d</string>
@@ -70,9 +70,9 @@
     <string name="view_sub_fetch_plans_failed_subtitle">Ist Ihr Gerät mit dem Internet verbunden?</string>
     <string name="page_card_context_menu_title">Seiten-Optionen</string>
     <string name="export">Exportieren</string>
-
     <string-array name="view_sub_benefits">
         <item>Unendlich viele Dokumente</item>
         <item>Unendlich viele Seiten pro Dokument</item>
     </string-array>
+    <string name="doc_name_1">Beispiel Dokument</string>
 </resources>

@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.xpl0t.scany.repository.entities.DocumentEntity
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 
@@ -23,7 +24,7 @@ interface DocumentDao {
     fun getCount(): Single<Int>
 
     @Insert
-    fun insert(document: DocumentEntity): Single<Long>
+    fun insert(vararg documents: DocumentEntity): Single<List<Long>>
 
     @Update
     fun update(document: DocumentEntity): Single<Int>

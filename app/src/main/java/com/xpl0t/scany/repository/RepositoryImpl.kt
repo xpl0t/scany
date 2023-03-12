@@ -1,27 +1,83 @@
 package com.xpl0t.scany.repository
 
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import android.util.Log
 import androidx.room.Room
-import com.xpl0t.scany.models.Page
+import com.xpl0t.scany.R
 import com.xpl0t.scany.models.Document
-import com.xpl0t.scany.repository.entities.PageEntity
+import com.xpl0t.scany.models.Page
 import com.xpl0t.scany.repository.entities.DocumentEntity
+import com.xpl0t.scany.repository.entities.PageEntity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Observable.combineLatest
 import io.reactivex.rxjava3.core.Observable.just
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 import javax.inject.Singleton
+
 
 @Singleton
 class RepositoryImpl @Inject constructor(
     @ApplicationContext val context: Context,
-    val pageImageStore: PageImageStore
+    private val pageImageStore: PageImageStore
 ) : Repository {
 
-    private val db = Room.databaseBuilder(context, AppDatabase::class.java, "scany-db").build()
+    private val db = Room.databaseBuilder(context, AppDatabase::class.java, "scany-db")
+        .build()
+
+    init {
+        val sharedPref = context.getSharedPreferences(REPOSITORY_PREF_KEY, MODE_PRIVATE)
+        val dbInitialized = sharedPref.getBoolean(DB_INITIALIZED, false)
+
+        if (!dbInitialized) {
+            initDb().subscribeOn(Schedulers.computation()).subscribe(
+                { Log.i(TAG, "Database successfully initialized") },
+                { Log.e(TAG, "Database initialization failed", it) },
+                {
+                    val prefEditor = sharedPref.edit()
+                    prefEditor.putBoolean(DB_INITIALIZED, true)
+                    prefEditor.apply()
+                }
+            )
+        }
+    }
+
+    private fun initDb(): Observable<List<Long>> {
+        val documents = arrayOf(
+            DocumentEntity(1, context.resources.getString(R.string.doc_name_1))
+        )
+        val pages = arrayOf(
+            PageEntity(1, 1, 0),
+            PageEntity(2, 1, 1)
+        )
+
+        return db.documentDao().insert(*documents)
+            .concatMap { db.pageDao().insert(*pages) }
+            .doOnSuccess {
+                for (pageId in it) {
+                    val pageImg = getAsset("$pageId.png")
+                    pageImageStore.create(pageId.toInt(), pageImg)
+                }
+            }
+            .toObservable()
+    }
+
+    private fun getAsset(fileName: String): ByteArray {
+        val asset = context.assets.open(fileName)
+        val buffer = ByteArray(1024 * 100)
+        val output = ByteArrayOutputStream()
+
+        var bytesRead: Int
+        while (asset.read(buffer).also { bytesRead = it } != -1) {
+            output.write(buffer, 0, bytesRead)
+        }
+
+        return output.toByteArray()
+    }
 
     override fun getDocuments(): Observable<List<Document>> {
         val pairObs = combineLatest(
@@ -79,7 +135,7 @@ class RepositoryImpl @Inject constructor(
 
         return db.documentDao().insert(entity).toObservable()
             .concatMap {
-                getDocument(it.toInt()).take(1)
+                getDocument(it.first().toInt()).take(1)
             }
             .subscribeOn(Schedulers.computation())
     }
@@ -105,7 +161,7 @@ class RepositoryImpl @Inject constructor(
             }
             .toObservable()
             .doOnNext {
-                pageImageStore.create(it.toInt(), page.image!!)
+                pageImageStore.create(it.first().toInt(), page.image!!)
             }
             .concatMap {
                 getDocument(documentId).take(1)
@@ -154,6 +210,8 @@ class RepositoryImpl @Inject constructor(
     }
 
     companion object {
-        val TAG = "RepositoryImpl"
+        const val TAG = "RepositoryImpl"
+        const val REPOSITORY_PREF_KEY = "INIT_DB"
+        const val DB_INITIALIZED = "INIT_DB"
     }
 }
