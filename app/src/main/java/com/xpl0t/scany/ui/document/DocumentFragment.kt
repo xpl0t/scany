@@ -25,6 +25,7 @@ import com.xpl0t.scany.extensions.runOnUiThread
 import com.xpl0t.scany.models.Document
 import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.services.AuthorizationService
+import com.xpl0t.scany.services.DeletePageService
 import com.xpl0t.scany.services.pdf.PdfService
 import com.xpl0t.scany.services.ShareService
 import com.xpl0t.scany.services.backpress.BackPressHandler
@@ -52,6 +53,9 @@ class DocumentFragment : BottomSheetDialogFragment(), DocumentFragmentListener, 
 
     @Inject
     lateinit var shareService: ShareService
+
+    @Inject
+    lateinit var deletePageService: DeletePageService
 
     @Inject
     lateinit var authorizationService: AuthorizationService
@@ -359,7 +363,7 @@ class DocumentFragment : BottomSheetDialogFragment(), DocumentFragmentListener, 
             return
 
         Log.i(TAG, "Delete page $pageId")
-        actionDisposable = repo.removePage(pageId).subscribe(
+        actionDisposable = deletePageService.showDeletePageDialog(requireContext(), pageId).subscribe(
             {
                 Log.i(TAG, "Delete page successful")
             },

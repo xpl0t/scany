@@ -14,6 +14,7 @@ class DeletePageService @Inject() constructor(
     fun showDeletePageDialog(context: Context, pageId: Int): Observable<Int> {
         val dlgObs = Observable.create<Int> {
             MaterialAlertDialogBuilder(context)
+                .setTitle(R.string.delete_page)
                 .setMessage(R.string.delete_page_question)
                 .setNegativeButton(R.string.cancel_btn) { _, _ ->
                     it.onComplete()
