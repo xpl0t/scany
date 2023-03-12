@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="retry_btn">Wiederholen</string>
+    <string name="apply_btn">Anwenden</string>
+    <string name="delete_btn">Löschen</string>
+    <string name="cancel_btn">Abbrechen</string>
+    <string name="done_btn">Fertig</string>
+    <string name="share">Teilen</string>
+    <string name="error_msg">Upps… etwas ist schiefgelaufen :(</string>
+    <string name="document_list_title">Dokumente</string>
+    <string name="add_document">Hinzufügen</string>
+    <string name="single_page_count">%d Seite</string>
+    <string name="multiple_page_count">%d Seiten</string>
+    <string name="add_page">Seite</string>
+    <string name="add_page_long">Seite hinzufügen</string>
+    <string name="export_pdf">PDF exportieren</string>
+    <string name="delete_document">Dokument löschen</string>
+    <string name="no_page">Keine Seiten…</string>
+    <string name="reorder">Anordnen</string>
+    <string name="edit_title">Titel editieren</string>
+    <string name="reorder_min_2_pages">Mindestens zwei Seiten werden benötigt, um die Anordnung zu ändern</string>
+    <string name="delete_document_dlg_title">Dokument löschen?</string>
+    <string name="delete_document_dlg_delete">Löschen</string>
+    <string name="edit_name_dlg_title">Dokument Namen ändern</string>
+    <string name="edit_name_label">Name</string>
+    <string name="name_to_short_err">Name zu kurz</string>
+    <string name="new_document_name">Dokument %d</string>
+    <string name="take_photo_btn">Foto schießen</string>
+    <string name="missing_permission_err">Benötigte Berechtigung wurde nicht erteilt :(</string>
+    <string name="no_doc_found">Kein Dokument konnte erkannt werden</string>
+    <string name="view_page_title">Seite anzeigen</string>
+    <string name="load_page_err">Konnte Seite nicht laden :(</string>
+    <string name="source_image_descr">Quell Bitmap</string>
+    <string name="apply_improve_btn">Verbesserungen übernehmen</string>
+    <string name="rotate_right">Nach rechts rotieren</string>
+    <string name="rotate_left">Nach links rotieren</string>
+    <string name="choose_filters">Filter auswählen</string>
+    <string name="reorder_pages_title">Seiten anordnen</string>
+    <string name="page_image_descr">Seite</string>
+    <string name="grayscale_filter">Schwarz / Weiß</string>
+    <string name="sharpen_filter">Schärfen</string>
+    <string name="blur_filter">Blur</string>
+    <string name="binarize_filter">Binarisieren</string>
+    <string name="delete_page">Seite löschen</string>
+    <string name="delete_page_question">Wollen Sie wirklich die Seite löschen?</string>
+    <string name="delete_page_failed">Konnte Seite nicht löschen :(</string>
+    <string name="export_no_page">Mindestens eine Seite wird benötigt, um ein PDF Dokument zu erstellen</string>
+    <string name="export_pdf_error">Konnte PDF nicht generieren :(</string>
+    <string name="export_title">Dokument Exportieren</string>
+    <string name="export_page_list_title">Seiten Selektion &amp; Anordnung</string>
+    <string name="select_all">Alle auswählen</string>
+    <string name="clear_selection">Auswahl aufheben</string>
+    <string name="export_page_size_title">Format</string>
+    <string name="page_size">Format</string>
+    <string name="img_scale_type_title">Seitenskalierung</string>
+    <string name="export_fit_img">Strecken</string>
+    <string name="export_center_image_inside">Innen zentrieren</string>
+    <string name="document_type">Dokument Typ</string>
+    <string name="view_sub_reason_doc_limit">Sie haben das Limit von %d Dokumenten erreicht</string>
+    <string name="view_sub_reason_page_limit">Sie haben das Limit von %d Seiten pro Dokument erreicht</string>
+    <string name="view_sub_title">Upgrade auf PRO &#128640;</string>
+    <string name="view_sub_benefits_title">Vorteile von 🅿🆁🅾</string>
+    <string name="view_sub_billing_plan_title">Abo-Modelle</string>
+    <string name="view_sub_subscribe">Abonnieren</string>
+    <string name="view_sub_monthly">Monatlich</string>
+    <string name="view_sub_yearly">Jährlich</string>
+    <string name="view_sub_cost_overview_monthly">%s pro Monat</string>
+    <string name="view_sub_cost_overview_yearly">%s pro Jahr</string>
+    <string name="view_sub_fetch_plans_failed_title">Konnte Abonnement Modelle nicht laden</string>
+    <string name="view_sub_fetch_plans_failed_subtitle">Ist Ihr Gerät mit dem Internet verbunden?</string>
+    <string name="page_card_context_menu_title">Optionen</string>
+    <string name="export">Exportieren</string>
+
+    <string-array name="view_sub_benefits">
+        <item>Unendlich viele Dokumente</item>
+        <item>Unendlich viele Seiten pro Dokument</item>
+    </string-array>
+</resources>

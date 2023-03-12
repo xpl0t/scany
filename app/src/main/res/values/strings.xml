@@ -1,12 +1,13 @@
 <resources>
-    <string name="app_name">Scany</string>
-    <string name="pro_tag_inverse">🅿🆁🅾</string>
+    <string name="app_name" translatable="false">Scany</string>
+    <string name="pro_tag_inverse" translatable="false">🅿🆁🅾</string>
     <string name="retry_btn">Retry</string>
     <string name="apply_btn">Apply</string>
     <string name="delete_btn">Delete</string>
     <string name="cancel_btn">Cancel</string>
     <string name="done_btn">Done</string>
     <string name="share">Share</string>
+    <string name="export">Export</string>
 
     <!-- Error messages -->
     <string name="error_msg">Ooops… something went wrong :(</string>
@@ -35,7 +36,7 @@
     <string name="delete_document_dlg_delete">Delete</string>
 
     <!-- Edit name dialog -->
-    <string name="edit_name_dlg_title">Set name</string>
+    <string name="edit_name_dlg_title">Set document name</string>
     <string name="edit_name_label">Name</string>
     <string name="name_to_short_err">Name to short</string>
 
@@ -115,7 +116,7 @@
     <string name="view_sub_reason_doc_limit">You reached the limit of %d documents</string>
     <string name="view_sub_reason_page_limit">You reached the limit of %d pages per document</string>
     <string name="view_sub_title">Upgrade to PRO &#128640;</string>
-    <string name="view_sub_benefits_title">Beneftis of PRO</string>
+    <string name="view_sub_benefits_title">Beneftis of 🅿🆁🅾</string>
     <string name="view_sub_billing_plan_title">Billing Plans</string>
     <string name="view_sub_subscribe">Subscribe</string>
 
