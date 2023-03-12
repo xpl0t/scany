@@ -68,7 +68,7 @@
     <string name="view_sub_cost_overview_yearly">%s pro Jahr</string>
     <string name="view_sub_fetch_plans_failed_title">Konnte Abonnement Modelle nicht laden</string>
     <string name="view_sub_fetch_plans_failed_subtitle">Ist Ihr Gerät mit dem Internet verbunden?</string>
-    <string name="page_card_context_menu_title">Optionen</string>
+    <string name="page_card_context_menu_title">Seiten-Optionen</string>
     <string name="export">Exportieren</string>
 
     <string-array name="view_sub_benefits">
