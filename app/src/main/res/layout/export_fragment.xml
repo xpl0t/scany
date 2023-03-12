@@ -203,12 +203,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="8dp"
                 android:layout_marginBottom="16dp"
                 android:hint="@string/document_type"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/share"
-                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/divider3">
 
@@ -226,13 +224,13 @@
                 android:id="@+id/share"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
-                android:text="@string/share"
+                android:text="@string/export"
                 app:icon="@drawable/share"
                 app:layout_constraintBottom_toBottomOf="@id/document_type_container"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/document_type_container"
                 app:layout_constraintTop_toTopOf="@+id/document_type_container" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
