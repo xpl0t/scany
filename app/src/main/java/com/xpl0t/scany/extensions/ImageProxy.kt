@@ -7,12 +7,19 @@ import org.opencv.core.Core.rotate
 import org.opencv.core.CvType.CV_8UC1
 import org.opencv.core.CvType.CV_8UC3
 import org.opencv.core.Mat
+import org.opencv.core.Range
 import java.nio.ByteBuffer
 
 
 fun ImageProxy.toGrayscaleMat(): Mat {
     assert(format == ImageFormat.YUV_420_888)
-    return Mat(height, width, CV_8UC1, planes[0].buffer)
+    assert(planes[0].rowStride >= width)
+
+    return Mat( // row stride might be bigger than width. Overlapping pixels have to be cut.
+        Mat(height, planes[0].rowStride, CV_8UC1, planes[0].buffer),
+        Range(0, height),
+        Range(0, width)
+    )
 }
 
 fun ImageProxy.toMat(): Mat {
@@ -26,6 +33,7 @@ fun ImageProxy.toMat(): Mat {
     yuvToRgb(
         width,
         height,
+        planes[0].rowStride,
         planes[1].rowStride,
         planes[1].pixelStride,
         yPlane,
@@ -46,6 +54,7 @@ fun ImageProxy.toMat(): Mat {
 private external fun yuvToRgb(
     width: Int,
     height: Int,
+    yRowStride: Int,
     uvRowStride: Int,
     uvPixelStride: Int,
     y: ByteBuffer,

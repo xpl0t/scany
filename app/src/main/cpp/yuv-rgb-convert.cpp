@@ -11,7 +11,7 @@ JNIEXPORT void JNICALL
 Java_com_xpl0t_scany_extensions_ImageProxyKt_yuvToRgb(
         JNIEnv *env, jclass clazz,
         jint width, jint height,
-        jint uvRowStride, jint uvPixelStride,
+        jint yRowStride, jint uvRowStride, jint uvPixelStride,
         jobject y, jobject u, jobject v,
         jobject rgb) {
 
@@ -22,7 +22,7 @@ Java_com_xpl0t_scany_extensions_ImageProxyKt_yuvToRgb(
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            int yIdx = (y * width) + x;
+            int yIdx = (y * yRowStride) + x;
             auto yVal = (float) yBuf[yIdx];
 
             int uvx = x / 2;
@@ -39,7 +39,7 @@ Java_com_xpl0t_scany_extensions_ImageProxyKt_yuvToRgb(
             g = clamp(g, 0, 255);
             b = clamp(b, 0, 255);
 
-            int rgbIdx = yIdx * 3;
+            int rgbIdx = (y * width + x) * 3;
             rgbBuf[rgbIdx] = (u_char) r;
             rgbBuf[rgbIdx + 1] = (u_char) g;
             rgbBuf[rgbIdx + 2] = (u_char) b;
