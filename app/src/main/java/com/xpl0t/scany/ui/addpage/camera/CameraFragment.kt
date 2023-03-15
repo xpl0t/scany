@@ -144,7 +144,6 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Ana
 
             imageAnalysis = ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .setTargetResolution(Size(640, 360))
                 .build()
 
             imageAnalysis!!.setAnalyzer(Executors.newSingleThreadExecutor(), this)
