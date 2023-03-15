@@ -16,11 +16,11 @@
         android:id="@+id/editTitle"
         android:icon="@drawable/title"
         android:title="@string/edit_title"
-        app:showAsAction="ifRoom|withText" />
+        app:showAsAction="never" />
     <item
         android:id="@+id/deleteDocument"
         android:icon="@drawable/trashcan"
         android:title="@string/delete_document"
-        app:showAsAction="ifRoom|withText" />
+        app:showAsAction="never" />
 
 </menu>
