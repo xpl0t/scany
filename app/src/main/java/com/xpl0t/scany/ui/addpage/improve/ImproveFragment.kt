@@ -22,11 +22,13 @@ import com.xpl0t.scany.repository.Repository
 import com.xpl0t.scany.ui.addpage.camera.CameraService
 import com.xpl0t.scany.ui.common.BaseFragment
 import com.xpl0t.scany.ui.document.DocumentFragment
+import com.xpl0t.scany.util.Stopwatch
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.opencv.core.Mat
+import java.lang.Thread.sleep
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -45,6 +47,11 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment), DialogInterface
     private var actionDisposable: Disposable? = null
 
     private var filterDialog: AlertDialog? = null
+
+    /**
+     * Minimum duration of an apply filter operation.
+     */
+    private val minApplyFilterDuration = 300
 
     private lateinit var originalMat: Mat
     private var transformedMat: Mat? = null
@@ -160,6 +167,11 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment), DialogInterface
         filterDialog!!.listView.adapter = null
         filterDialog!!.getButton(DialogInterface.BUTTON_POSITIVE).visibility = View.GONE
 
+        val waitMinDuration = { duration: Long ->
+            if (duration < minApplyFilterDuration)
+                sleep(minApplyFilterDuration - duration)
+        }
+
         val hideProgressBar = {
             runOnUiThread {
                 filterDialog!!.listView.removeHeaderView(headerView)
@@ -170,9 +182,13 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment), DialogInterface
 
         Schedulers.computation().scheduleDirect {
             try {
+                val stopwatch = Stopwatch()
+                stopwatch.start()
                 val filter = filters[which]
 
                 if (filtersApplied.contains(filter)) {
+                    waitMinDuration(stopwatch.stop())
+
                     filtersApplied.remove(filter)
                     transformedAndFilteredMat = applyFilters(transformedMat!!)
                     runOnUiThread { setDocPreview(transformedAndFilteredMat!!) }
@@ -180,6 +196,7 @@ class ImproveFragment : BaseFragment(R.layout.improve_fragment), DialogInterface
                     return@scheduleDirect
                 }
 
+                waitMinDuration(stopwatch.stop())
                 transformedAndFilteredMat = filter.apply(transformedAndFilteredMat!!)
                 runOnUiThread { setDocPreview(transformedAndFilteredMat!!) }
                 filtersApplied.add(filter)
