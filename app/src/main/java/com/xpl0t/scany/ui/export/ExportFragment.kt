@@ -12,6 +12,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.xpl0t.scany.R
@@ -62,6 +63,7 @@ class ExportFragment : BaseFragment(R.layout.export_fragment) {
     private var document: Document? = null
 
     private lateinit var toolbar: MaterialToolbar
+    private lateinit var loadingIndicator: LinearProgressIndicator
     private lateinit var pageList: RecyclerView
     private lateinit var pageItemAdapter: PageItemAdapter
     private lateinit var selectAllChip: Chip
@@ -130,6 +132,8 @@ class ExportFragment : BaseFragment(R.layout.export_fragment) {
         toolbar.setNavigationOnClickListener {
             finish()
         }
+
+        loadingIndicator = requireView().findViewById(R.id.loading_indicator)
 
         pageSizeDropDown = requireView().findViewById(R.id.page_size)
         pageSizeDropDown.setAdapter(pageSizeAdapter)
@@ -236,6 +240,7 @@ class ExportFragment : BaseFragment(R.layout.export_fragment) {
         }
 
         shareBtn.isEnabled = false
+        loadingIndicator.visibility = View.VISIBLE
 
         val imageObservables = pageIds.map {
             repo.getPageImage(it).toObservable()
@@ -255,6 +260,7 @@ class ExportFragment : BaseFragment(R.layout.export_fragment) {
                     shareService.share(requireContext(), it, "application/pdf")
                     runOnUiThread {
                         shareBtn.isEnabled = true
+                        loadingIndicator.visibility = View.GONE
                     }
                 },
                 {
@@ -262,6 +268,7 @@ class ExportFragment : BaseFragment(R.layout.export_fragment) {
                     Snackbar.make(requireView(), R.string.export_pdf_error, Snackbar.LENGTH_SHORT).show()
                     runOnUiThread {
                         shareBtn.isEnabled = true
+                        loadingIndicator.visibility = View.GONE
                     }
                 }
             )
