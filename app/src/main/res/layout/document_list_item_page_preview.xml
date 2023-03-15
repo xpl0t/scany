@@ -9,7 +9,7 @@
     android:checkable="false"
     android:clickable="false"
     android:focusable="false"
-    app:cardElevation="2dp"
+    app:cardElevation="0dp"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"

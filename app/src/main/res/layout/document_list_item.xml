@@ -10,6 +10,7 @@
     android:clickable="true"
     android:focusable="true"
     app:cardCornerRadius="8dp"
+    app:cardElevation="0dp"
     app:checkedIconTint="?colorSecondary"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
