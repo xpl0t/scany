@@ -38,6 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:contentDescription="@string/take_photo_btn"
+        android:visibility="gone"
         app:tint="@color/white"
         app:backgroundTint="@color/black"
         app:srcCompat="@drawable/flash_off"

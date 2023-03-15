@@ -152,13 +152,16 @@ class CameraFragment : BaseFragment(R.layout.camera_fragment), ImageAnalysis.Ana
 
             try {
                 cameraProvider?.unbindAll()
-                cameraProvider?.bindToLifecycle(
+                val camera = cameraProvider?.bindToLifecycle(
                     this,
                     cameraSelector,
                     preview,
                     imageCapture,
                     imageAnalysis
                 )
+
+                val hasFlash = camera?.cameraInfo?.hasFlashUnit() ?: false
+                switchFlashBtn.visibility = if (hasFlash) View.VISIBLE else View.GONE
             } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
