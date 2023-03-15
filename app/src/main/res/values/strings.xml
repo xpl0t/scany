@@ -130,6 +130,7 @@
 
     <string name="view_sub_fetch_plans_failed_title">Could not fetch subscription offers</string>
     <string name="view_sub_fetch_plans_failed_subtitle">Is your device connected to the internet?</string>
+    <string name="export_pdf_no_pages_selected">No pages selected</string>
 
     <string-array name="view_sub_benefits">
         <item>Unlimited documents</item>

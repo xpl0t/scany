@@ -225,12 +225,17 @@ class ExportFragment : BaseFragment(R.layout.export_fragment) {
         if (actionDisposable?.isDisposed == false || document == null)
             return
 
-        shareBtn.isEnabled = false
-
         val deselectedPages = pageSelectionService.getDeselectedPages()
         val pageIds = pageItemAdapter.getItems() // The order of the pages is persisted in the adapter
             .filter { !deselectedPages.contains(it.id) }
             .map { it.id }
+
+        if (pageIds.isEmpty()) {
+            Snackbar.make(requireView(), R.string.export_pdf_no_pages_selected, Snackbar.LENGTH_SHORT).show()
+            return
+        }
+
+        shareBtn.isEnabled = false
 
         val imageObservables = pageIds.map {
             repo.getPageImage(it).toObservable()

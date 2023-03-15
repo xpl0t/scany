@@ -75,4 +75,5 @@
         <item>Unendlich viele Seiten pro Dokument</item>
     </string-array>
     <string name="doc_name_1">Beispiel Dokument</string>
+    <string name="export_pdf_no_pages_selected">Keine Seiten ausgewählt</string>
 </resources>
