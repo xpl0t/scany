@@ -235,28 +235,31 @@ class ExportFragment : BaseFragment(R.layout.export_fragment) {
         val imageObservables = pageIds.map {
             repo.getPageImage(it).toObservable()
         }
-        Observable.combineLatestArray(imageObservables.toTypedArray()) { it.toList() as List<ByteArray> }.subscribe(
-            {
+        actionDisposable = Observable.combineLatestArray(imageObservables.toTypedArray()) { it.toList() as List<ByteArray> }
+            .map {
                 val mediaSize = pageSizeService.getMediaSizeForPageSizeStr(pageSizeDropDown.text.toString())
                 val scaleType = when (scaleTypeChipGroup.checkedChipId) {
                     R.id.fit_img -> ScaleType.Fit
                     R.id.center_img_inside -> ScaleType.CenterInside
                     else -> ScaleType.Fit
                 }
-                val pdf = pdfService.getPdfFromImages(it, mediaSize!!, scaleType)
-                shareService.share(context!!, pdf, "application/pdf")
-                runOnUiThread {
-                    shareBtn.isEnabled = true
-                }
-            },
-            {
-                Log.e(DocumentFragment.TAG, "Could not get page images and generate pdf", it)
-                Snackbar.make(requireView(), R.string.export_pdf_error, Snackbar.LENGTH_SHORT).show()
-                runOnUiThread {
-                    shareBtn.isEnabled = true
-                }
+                pdfService.getPdfFromImages(it, mediaSize!!, scaleType)
             }
-        )
+            .subscribe(
+                {
+                    shareService.share(requireContext(), it, "application/pdf")
+                    runOnUiThread {
+                        shareBtn.isEnabled = true
+                    }
+                },
+                {
+                    Log.e(DocumentFragment.TAG, "Could not get page images and generate pdf", it)
+                    Snackbar.make(requireView(), R.string.export_pdf_error, Snackbar.LENGTH_SHORT).show()
+                    runOnUiThread {
+                        shareBtn.isEnabled = true
+                    }
+                }
+            )
     }
 
     companion object {
