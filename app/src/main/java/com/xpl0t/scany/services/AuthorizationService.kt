@@ -17,7 +17,7 @@ class AuthorizationService @Inject constructor(
     companion object {
         private const val TAG = "AuthorizationService"
         const val FREE_TIER_MAX_DOCUMENTS = 3
-        const val FREE_TIER_MAX_PAGES = 2
+        const val FREE_TIER_MAX_PAGES = 3
     }
 
 }
